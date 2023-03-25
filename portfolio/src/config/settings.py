@@ -18,7 +18,6 @@ from loguru import logger
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 root = environ.Path(__file__) - 3  # get root of the project
 
 env = environ.Env()
@@ -28,16 +27,20 @@ logger.debug(f"ProcessId {os.getpid()}")
 logger.debug(f"BaseDir: {BASE_DIR} {type(BASE_DIR)}")
 logger.debug(f"RootDir: {root}")
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o*-fgd!4xf$z=wk^q$o(c^!omg)o7so*1j#bt@x5@+$&x=yc^d'
+SECRET_KEY = env.str('SECRET_KEY', default='')
+logger.debug(f'SECRET_KEY: {SECRET_KEY}')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
+logger.debug(f'DEBUG: {DEBUG}')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+logger.debug(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
 
 
 # Application definition

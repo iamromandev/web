@@ -1,3 +1,7 @@
+# Ignore
 __pycache__/
 poetry.lock
 .env
+
+# Allow
+!.env.example

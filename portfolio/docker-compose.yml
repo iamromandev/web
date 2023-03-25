@@ -1,4 +1,27 @@
 services:
+  db:
+    image: mariadb
+    hostname: db
+    container_name: db
+    platform: linux/arm64
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/db:/var/lib/mysql/data
+    command: [ 'mysqld', '--character-set-server=utf8', '--collation-server=utf8_unicode_ci' ]
+    healthcheck:
+      test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost' ]
+      start_period: 3s
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
   web:
     hostname: web
     container_name: web
@@ -11,6 +34,11 @@ services:
         ENV: local
     ports:
       - 8000:8000
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
     command: >
       bash -c "python src/manage.py makemigrations
       && python src/manage.py migrate

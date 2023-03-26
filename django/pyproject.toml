@@ -11,6 +11,8 @@ loguru = "^0.6.0"
 django = "^4.1.7"
 django-environ = "^0.10.0"
 pymysql = "^1.0.2"
+django-compressor = "^4.3.1"
+django-tailwind = "^3.5.0"
 
 
 [build-system]

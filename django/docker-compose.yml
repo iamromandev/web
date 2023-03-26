@@ -1,9 +1,9 @@
 services:
   db:
+    platform: linux/arm64
     image: mariadb
     hostname: db
     container_name: db
-    platform: linux/arm64
     restart: on-failure
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -23,9 +23,9 @@ services:
       retries: 3
 
   web:
+    platform: linux/arm64
     hostname: web
     container_name: web
-    platform: linux/arm64
     build:
       context: .
       dockerfile: dockerfile

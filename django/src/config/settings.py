@@ -16,6 +16,7 @@ from pathlib import Path
 import environ
 from loguru import logger
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 root = environ.Path(__file__) - 3  # get root of the project
@@ -93,7 +94,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db.portfolio',
+        'NAME': 'db.django',
         'USER': 'local',
         'PASSWORD': 'local',
         'HOST': 'db',  # db for container name; 127.0.0.1 for terminal

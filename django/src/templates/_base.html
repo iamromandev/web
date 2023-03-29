@@ -1,6 +1,3 @@
-<!--{% load compress %}
-{% load static %}-->
-
 <!doctype html>
 <html lang="en-US">
 
@@ -10,15 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         {% block title %}
-        {{ page_title|default:"Untitled Page" }}
+        {{ title|default:"Untitled Page" }}
         {% endblock title %}
     </title>
 </head>
 
 <body>
-    {% block content %}
-    <p>Placeholder text in base template. Replace with page content.</p>
-    {% endblock content %}
+    <header>
+        {% block header %}
+        {% endblock header %}
+    </header>
+
+    <main>
+        {% block content %}
+        <p>Placeholder text in base template. Replace with page content.</p>
+        {% endblock content %}
+    </main>
+
 </body>
 
 </html>

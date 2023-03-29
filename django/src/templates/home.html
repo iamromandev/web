@@ -1,1 +1,20 @@
-<h1>Homepage</h1>
+{% extends '_base.html' %}
+
+{% block title %}
+Personal Page
+{% endblock title %}
+
+{% block header %}
+<nav>
+    <ul>
+        <li><a>Home</a></li>
+        <li><a>About</a></li>
+        <li><a>Contact</a></li>
+    </ul>
+</nav>
+{% endblock header %}
+
+{% block content %}
+<h1>Welcome</h1>
+<p>Placeholder text in base template. Replace with page content.</p>
+{% endblock content %}

@@ -3,29 +3,43 @@ ARG PYTHON_VERSION=3.9.12
 
 FROM python:$PYTHON_VERSION AS base
 
+## arguements ##
 #ARG ENV
+# poetry
 ARG POETRY_HOME="/opt/poetry"
 ARG POETRY_VERSION=1.4.1
+# pysetup
 ARG PYSETUP_PATH="/opt/pysetup"
+# node
+ARG NODE_HOME="/opt/.nvm"
+ARG NODE_VERSION=14.20.1
 
+## environments ##
 #ENV ENV=$ENV
+# python
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONFAULTHANDLER=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONHASHSEED=random
+# pip
 #ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 #ENV PIP_NO_CACHE_DIR=1
 #ENV PIP_DEFAULT_TIMEOUT=100
+# poetry
 ENV POETRY_HOME=$POETRY_HOME
 ENV POETRY_VERSION=$POETRY_VERSION
 ENV POETRY_NO_ANSI=1
 ENV POETRY_NO_INTERACTION=1
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+# node
+ENV NODE_HOME=$NODE_HOME
+ENV NODE_VERSION=$NODE_VERSION
+# path
 ENV PYSETUP_PATH=$PYSETUP_PATH
 ENV VENV_PATH="$PYSETUP_PATH/.venv"
 
 # prepend poetry and venv to path
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin::$PATH"
 
 ### builder image ###
 FROM base AS builder
@@ -48,6 +62,10 @@ COPY pyproject.toml $PYSETUP_PATH
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 RUN poetry install $(test $ENV != prod && echo "--with dev,tests,docs -vvv") --sync
 
+# install nodejs for tailwind css
+RUN apt-get update
+RUN apt-get install -y nodejs --no-install-recommends
+
 ### local image ###
 FROM base AS local
 
@@ -58,6 +76,9 @@ ENV ENV=$ENV
 COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 COPY .env /
 COPY /src /src
+
+RUN apt-get update
+RUN apt-get install -y nodejs --no-install-recommends
 
 #CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
 #CMD [ "python3", "./src/main.py" ]

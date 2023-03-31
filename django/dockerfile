@@ -56,7 +56,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # install node
 RUN apt install -y curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | NVM_DIR=$NVM_PATH bash
 RUN . "$NVM_PATH/nvm.sh" && nvm install $NODE_VERSION
 RUN . "$NVM_PATH/nvm.sh" && nvm use v$NODE_VERSION
 RUN . "$NVM_PATH/nvm.sh" && nvm alias default v$NODE_VERSION
@@ -81,7 +81,7 @@ ARG ENV
 ENV ENV=$ENV
 
 COPY --from=builder $SETUP_PATH $SETUP_PATH
-COPY --from=builder $NVM_PATH $NVM_PATH
+COPY --from=builder $NVM_PATH/versions/node/v${NODE_VERSION}/bin $NVM_PATH/versions/node/v${NODE_VERSION}/bin
 COPY .env /
 COPY /src /src
 

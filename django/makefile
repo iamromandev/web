@@ -24,4 +24,5 @@ down:
 .PHONY: restart
 restart:
 	make down
+	make build
 	make up

@@ -3,29 +3,42 @@ ARG PYTHON_VERSION=3.9.12
 
 FROM python:$PYTHON_VERSION AS base
 
+## arguements ##
 #ARG ENV
+# poetry
 ARG POETRY_HOME="/opt/poetry"
 ARG POETRY_VERSION=1.4.1
-ARG PYSETUP_PATH="/opt/pysetup"
+# setup
+ARG SETUP_PATH="/opt/setup"
+# node
+ARG NODE_VERSION=14.20.1
 
+## environments ##
 #ENV ENV=$ENV
+# python
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONFAULTHANDLER=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONHASHSEED=random
+# pip
 #ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 #ENV PIP_NO_CACHE_DIR=1
 #ENV PIP_DEFAULT_TIMEOUT=100
+# poetry
 ENV POETRY_HOME=$POETRY_HOME
 ENV POETRY_VERSION=$POETRY_VERSION
 ENV POETRY_NO_ANSI=1
 ENV POETRY_NO_INTERACTION=1
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-ENV PYSETUP_PATH=$PYSETUP_PATH
-ENV VENV_PATH="$PYSETUP_PATH/.venv"
+# node
+ENV NODE_VERSION=$NODE_VERSION
+# path
+ENV SETUP_PATH=$SETUP_PATH
+ENV VENV_PATH="$SETUP_PATH/.venv"
+ENV NVM_PATH="/root/.nvm"
 
-# prepend poetry and venv to path
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+# prepend poetry, venv, nvm to path
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$NVM_PATH/versions/node/v${NODE_VERSION}/bin:$PATH"
 
 ### builder image ###
 FROM base AS builder
@@ -41,12 +54,24 @@ ENV ENV=$ENV
 # install poetry - respects $POETRY_VERSION & $POETRY_HOME
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
+# install node
+RUN apt install -y curl
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | NVM_DIR=$NVM_PATH bash
+RUN . "$NVM_PATH/nvm.sh" && nvm install $NODE_VERSION
+RUN . "$NVM_PATH/nvm.sh" && nvm use v$NODE_VERSION
+RUN . "$NVM_PATH/nvm.sh" && nvm alias default v$NODE_VERSION
+RUN node --version
+RUN npm --version
+
 # copy project requirement files here to ensure they will be cached.
-WORKDIR $PYSETUP_PATH
-COPY pyproject.toml $PYSETUP_PATH
+WORKDIR $SETUP_PATH
+COPY pyproject.toml $SETUP_PATH
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 RUN poetry install $(test $ENV != prod && echo "--with dev,tests,docs -vvv") --sync
+
+# install node for tailwind css
+
 
 ### local image ###
 FROM base AS local
@@ -55,8 +80,13 @@ ARG ENV
 
 ENV ENV=$ENV
 
-COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
+COPY --from=builder $SETUP_PATH $SETUP_PATH
+COPY --from=builder $NVM_PATH $NVM_PATH
+COPY .env /
 COPY /src /src
+RUN SECRET_KEY=nothing python src/manage.py tailwind install --no-input
+RUN SECRET_KEY=nothing python src/manage.py tailwind build --no-input
+RUN SECRET_KEY=nothing python src/manage.py collectstatic --no-input
 
 #CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
 #CMD [ "python3", "./src/main.py" ]

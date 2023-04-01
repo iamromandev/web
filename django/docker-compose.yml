@@ -4,7 +4,6 @@ services:
     image: mariadb
     hostname: db
     container_name: db
-    restart: on-failure
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -21,6 +20,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+    restart: on-failure
 
   theme:
     platform: linux/arm64
@@ -32,9 +32,13 @@ services:
       target: local
       args:
         ENV: local
+        WORK_DIR: /workdir
     tty: true
+    volumes:
+      - .:/workdir
     command: >
       bash -c "python src/manage.py tailwind start"
+    restart: unless-stopped
 
   web:
     platform: linux/arm64
@@ -46,10 +50,13 @@ services:
       target: local
       args:
         ENV: local
+        WORK_DIR: /workdir
     ports:
       - 8000:8000
     links:
       - db
+    volumes:
+      - .:/workdir
     depends_on:
       db:
         condition: service_healthy
@@ -57,4 +64,5 @@ services:
       bash -c "python src/manage.py makemigrations
       && python src/manage.py migrate
       && python src/manage.py runserver 0.0.0.0:8000"
+    restart: unless-stopped
 

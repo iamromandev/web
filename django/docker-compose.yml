@@ -22,6 +22,20 @@ services:
       timeout: 3s
       retries: 3
 
+  theme:
+    platform: linux/arm64
+    hostname: theme
+    container_name: theme
+    build:
+      context: .
+      dockerfile: dockerfile
+      target: local
+      args:
+        ENV: local
+    tty: true
+    command: >
+      bash -c "python src/manage.py tailwind start"
+
   web:
     platform: linux/arm64
     hostname: web

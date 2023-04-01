@@ -1,3 +1,10 @@
-# Ignore
-__pycache__/
+### Ignore ###
+__pycache__
 poetry.lock
+**/node_modules
+
+# Ignore generated files
+**/*.pyc
+
+### Allow ###
+!.env.example

@@ -1,7 +1,11 @@
-# Ignore
-__pycache__/
-poetry.lock
+### Ignore ###
 .env
+__pycache__
+poetry.lock
+**/node_modules
 
-# Allow
+# Ignore generated files
+**/*.pyc
+
+### Allow ###
 !.env.example

@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     # apps
-    'apps.home'
+    'apps.home',
+    'apps.portfolio',
 ]
 
 MIDDLEWARE = [

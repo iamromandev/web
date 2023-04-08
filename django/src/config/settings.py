@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'theme',
     # apps
     'apps.home',
-    'apps.portfolio'
+    'apps.bio'
 ]
 
 MIDDLEWARE = [

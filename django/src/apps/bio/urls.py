@@ -3,5 +3,5 @@ from django.urls import path
 from .views import IndexView
 
 urlpatterns = [
-    path('', IndexView.as_view(), name='Portfolio'),
+    path('', IndexView.as_view(), name='Bio'),
 ]

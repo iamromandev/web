@@ -30,6 +30,5 @@ restart:
 # deploy
 .PHONY: deploy
 deploy:
-	python src/manage.py tailwind install --no-input
-	python src/manage.py tailwind build --no-input
+	python src/manage.py tailwind build
 

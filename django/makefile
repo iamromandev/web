@@ -31,4 +31,4 @@ restart:
 .PHONY: deploy
 deploy:
 	source /home/iamromandev/virtualenv/repositories/web/django/3.9/bin/activate && cd /home/iamromandev/repositories/web/django
-	python src/manage.py tailwind install --no-input
+#python src/manage.py tailwind install --no-input

@@ -3,10 +3,11 @@
 __pycache__
 poetry.lock
 **/node_modules
-**/staticfiles
+**/static/*
 
 # Ignore generated files
 **/*.pyc
 
 ### Allow ###
 !.env.example
+!**/static/.gitkeep

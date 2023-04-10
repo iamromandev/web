@@ -26,3 +26,8 @@ restart:
 	make down
 	make build
 	make up
+
+# deploy
+.PHONY: deploy
+deploy:
+	python src/manage.py tailwind install --no-input

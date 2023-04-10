@@ -166,4 +166,4 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 #if DEBUG:
-NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/14/bin'
+NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/14/bin/npm'

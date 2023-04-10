@@ -3,6 +3,7 @@
 __pycache__
 poetry.lock
 **/node_modules
+**/staticfiles
 
 # Ignore generated files
 **/*.pyc

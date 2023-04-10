@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.3.0 | MIT License | https://tailwindcss.com
+! tailwindcss v3.3.1 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -725,6 +725,10 @@ select {
   margin-right: auto;
 }
 
+.mr-6 {
+  margin-right: 1.5rem;
+}
+
 .block {
   display: block;
 }
@@ -745,9 +749,19 @@ select {
   justify-content: center;
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
 .bg-gray-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
+.bg-slate-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 245 249 / var(--tw-bg-opacity));
 }
 
 .font-serif {
@@ -765,4 +779,14 @@ select {
 
 .tracking-normal {
   letter-spacing: 0em;
+}
+
+.text-blue-500 {
+  --tw-text-opacity: 1;
+  color: rgb(59 130 246 / var(--tw-text-opacity));
+}
+
+.hover\:text-blue-800:hover {
+  --tw-text-opacity: 1;
+  color: rgb(30 64 175 / var(--tw-text-opacity));
 }

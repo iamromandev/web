@@ -1,0 +1,42 @@
+{% load static tailwind_tags %}
+
+<!doctype html>
+
+<html lang="en-us">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {% tailwind_css %}
+
+        <title>
+            {% block title %}
+            {{ title|default:"Untitled Page [Portfolio]" }}
+            {% endblock title %}
+        </title>
+
+    </head>
+
+    <body>
+
+        <header>
+            {% block header %}
+            {% endblock header %}
+        </header>
+
+        <main>
+            {% block content %}
+            <p>Placeholder text in base template. Replace with page content.</p>
+            {% endblock content %}
+        </main>
+
+        <footer>
+            {% block footer %}
+            {% endblock footer %}
+        </footer>
+
+    </body>
+
+</html>

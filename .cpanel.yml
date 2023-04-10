@@ -1,0 +1,4 @@
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/iamromandev/deploy/web/
+    - /bin/cp -R * $DEPLOYPATH

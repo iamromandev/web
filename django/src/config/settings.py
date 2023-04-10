@@ -165,3 +165,4 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+NPM_BIN_PATH='/home/iamromandev/nodevenv/repositories/web/14/bin'

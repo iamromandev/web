@@ -166,4 +166,4 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 if not DEBUG:
-    NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/14/bin/npm'
+    NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/django/src/theme/static_src/14/bin/npm'

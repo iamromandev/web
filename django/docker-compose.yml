@@ -33,6 +33,7 @@ services:
       args:
         ENV: local
         WORK_DIR: /workdir
+        PYTHON_VERSION: 3.9.16
     tty: true
     volumes:
       - .:/workdir
@@ -51,6 +52,7 @@ services:
       args:
         ENV: local
         WORK_DIR: /workdir
+        PYTHON_VERSION: 3.9.16
     ports:
       - 8000:8000
     links:

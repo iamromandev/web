@@ -94,7 +94,7 @@ COPY . $WORK_DIR
 
 RUN SECRET_KEY=nothing python src/manage.py tailwind install --no-input
 RUN SECRET_KEY=nothing python src/manage.py tailwind build --no-input
-RUN SECRET_KEY=nothing python src/manage.py collectstatic --no-input
+#RUN SECRET_KEY=nothing python src/manage.py collectstatic --no-input
 
 #CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
 #CMD [ "python3", "./src/main.py" ]

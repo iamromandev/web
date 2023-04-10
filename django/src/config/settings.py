@@ -153,7 +153,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'src/static/'
-STATIC_ROOT = BASE_DIR.joinpath(STATIC_URL)
+STATIC_ROOT = BASE_DIR.joinpath('src/static_files')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -165,3 +165,5 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+#if not DEBUG:
+#    NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/django/src/theme/static_src/14/bin/npm'

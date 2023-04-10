@@ -13,6 +13,7 @@ django-environ = "0.10.0"
 pymysql = "1.0.3"
 django-browser-reload = "1.7.0"
 django-tailwind = "3.5.0"
+django-bootstrap5 = "23.1"
 
 
 [build-system]

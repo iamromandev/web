@@ -153,7 +153,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = '/src/static/'
+STATIC_URL = 'src/static/'
 STATIC_ROOT = BASE_DIR.joinpath('/src/staticfiles') if DEBUG else '/home/iamromandev/public_html/staticfiles'
 
 # Default primary key field type

@@ -4,6 +4,9 @@ asgiref==3.6.0 ; python_full_version == "3.9.16" \
 colorama==0.4.6 ; python_full_version == "3.9.16" and sys_platform == "win32" \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
+django-bootstrap5==23.1 ; python_full_version == "3.9.16" \
+    --hash=sha256:3a3748b1ce1a2a73c2eca851c2926e7b6e5a317815e4da7ced6b1807c4792b1a \
+    --hash=sha256:d0b1997528b8a557968cf1ac7ff4c68659897779011a5a42816fb1ad9e57d6ae
 django-browser-reload==1.7.0 ; python_full_version == "3.9.16" \
     --hash=sha256:0d7cc4308ebbdf9b5637e28ee7b41ae28d4fcdf350d55ce007515b44cd10291b \
     --hash=sha256:712d0a4d6caa6833c8c205d4ce177b474feb45583cd6ee684c9ea7b71dd921b6

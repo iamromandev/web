@@ -4,8 +4,6 @@ asgiref==3.6.0 ; python_full_version == "3.9.16" \
 colorama==0.4.6 ; python_full_version == "3.9.16" and sys_platform == "win32" \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
-dj-static==0.0.6 ; python_full_version == "3.9.16" \
-    --hash=sha256:032ec1c532617922e6e3e956d504a6fb1acce4fc1c7c94612d0fda21828ce8ef
 django-bootstrap5==23.1 ; python_full_version == "3.9.16" \
     --hash=sha256:3a3748b1ce1a2a73c2eca851c2926e7b6e5a317815e4da7ced6b1807c4792b1a \
     --hash=sha256:d0b1997528b8a557968cf1ac7ff4c68659897779011a5a42816fb1ad9e57d6ae
@@ -27,8 +25,6 @@ pymysql==1.0.3 ; python_full_version == "3.9.16" \
 sqlparse==0.4.3 ; python_full_version == "3.9.16" \
     --hash=sha256:0323c0ec29cd52bceabc1b4d9d579e311f3e4961b98d174201d5622a23b85e34 \
     --hash=sha256:69ca804846bb114d2ec380e4360a8a340db83f0ccf3afceeb1404df028f57268
-static3==0.7.0 ; python_full_version == "3.9.16" \
-    --hash=sha256:674641c64bc75507af2eb20bef7e7e3593dca993dec6674be108fa15b42f47c8
 tzdata==2023.3 ; sys_platform == "win32" and python_full_version == "3.9.16" \
     --hash=sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a \
     --hash=sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda

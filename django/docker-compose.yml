@@ -22,24 +22,24 @@ services:
       retries: 3
     restart: on-failure
 
-  theme:
-    platform: linux/arm64
-    hostname: theme
-    container_name: theme
-    build:
-      context: .
-      dockerfile: dockerfile
-      target: local
-      args:
-        ENV: local
-        WORK_DIR: /workdir
-        PYTHON_VERSION: 3.9.16
-    tty: true
-    volumes:
-      - .:/workdir
-    command: >
-      bash -c "python src/manage.py tailwind start"
-    restart: unless-stopped
+#  theme:
+#    platform: linux/arm64
+#    hostname: theme
+#    container_name: theme
+#    build:
+#      context: .
+#      dockerfile: dockerfile
+#      target: local
+#      args:
+#        ENV: local
+#        WORK_DIR: /workdir
+#        PYTHON_VERSION: 3.9.16
+#    tty: true
+#    volumes:
+#      - .:/workdir
+#    command: >
+#      bash -c "python src/manage.py tailwind start"
+#    restart: unless-stopped
 
   web:
     platform: linux/arm64

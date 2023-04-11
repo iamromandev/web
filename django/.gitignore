@@ -4,6 +4,7 @@ __pycache__
 poetry.lock
 **/node_modules
 **/static/*
+**/static_files
 
 # Ignore generated files
 **/*.pyc

@@ -9,7 +9,7 @@ ARG ENV
 ARG WORK_DIR
 # poetry
 ARG POETRY_HOME="/opt/poetry"
-ARG POETRY_VERSION=1.4.1
+ARG POETRY_VERSION=1.4.2
 # setup
 ARG SETUP_PATH="/opt/setup"
 # node

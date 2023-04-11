@@ -13,7 +13,7 @@ ARG POETRY_VERSION=1.4.2
 # setup
 ARG SETUP_PATH="/opt/setup"
 # node
-ARG NODE_VERSION=14.20.1
+#ARG NODE_VERSION=14.20.1
 
 ## environments ##
 ENV ENV=$ENV
@@ -35,11 +35,11 @@ ENV POETRY_NO_ANSI=1
 ENV POETRY_NO_INTERACTION=1
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 # node
-ENV NODE_VERSION=$NODE_VERSION
+#ENV NODE_VERSION=$NODE_VERSION
 # path
 ENV SETUP_PATH=$SETUP_PATH
 ENV VENV_PATH="$SETUP_PATH/.venv"
-ENV NVM_PATH="/root/.nvm"
+#ENV NVM_PATH="/root/.nvm"
 
 # prepend poetry, venv, nvm to path
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$NVM_PATH/versions/node/v${NODE_VERSION}/bin:$PATH"
@@ -61,13 +61,13 @@ ENV WORK_DIR=$WORK_DIR
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # install node
-RUN apt install -y curl
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | NVM_DIR=$NVM_PATH bash
-RUN . "$NVM_PATH/nvm.sh" && nvm install $NODE_VERSION
-RUN . "$NVM_PATH/nvm.sh" && nvm use v$NODE_VERSION
-RUN . "$NVM_PATH/nvm.sh" && nvm alias default v$NODE_VERSION
-RUN node --version
-RUN npm --version
+#RUN apt install -y curl
+#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | NVM_DIR=$NVM_PATH bash
+#RUN . "$NVM_PATH/nvm.sh" && nvm install $NODE_VERSION
+#RUN . "$NVM_PATH/nvm.sh" && nvm use v$NODE_VERSION
+#RUN . "$NVM_PATH/nvm.sh" && nvm alias default v$NODE_VERSION
+#RUN node --version
+#RUN npm --version
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $SETUP_PATH
@@ -92,8 +92,8 @@ COPY --from=builder $SETUP_PATH $SETUP_PATH
 COPY --from=builder $NVM_PATH $NVM_PATH
 COPY . $WORK_DIR
 
-RUN SECRET_KEY=nothing python src/manage.py tailwind install --no-input
-RUN SECRET_KEY=nothing python src/manage.py tailwind build --no-input
+#RUN SECRET_KEY=nothing python src/manage.py tailwind install --no-input
+#RUN SECRET_KEY=nothing python src/manage.py tailwind build --no-input
 RUN SECRET_KEY=nothing python src/manage.py collectstatic --no-input
 
 #CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]

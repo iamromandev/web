@@ -154,7 +154,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'src/static/'
-STATIC_ROOT = BASE_DIR.joinpath('src/staticfiles') if DEBUG else '/home/iamromandev/public_html/staticfiles'
+STATIC_ROOT = BASE_DIR.joinpath('src/staticfiles')  # if DEBUG else '/home/iamromandev/public_html/staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

@@ -1,4 +1,5 @@
 {% load static tailwind_tags %}
+{% load django_bootstrap5 %}
 <!doctype html>
 <html lang="en-us">
 <head>
@@ -7,6 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% tailwind_css %}
+
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
 
     <title>
         {% block title %}

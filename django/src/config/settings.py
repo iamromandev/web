@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django_browser_reload',
     'tailwind',
     'theme',
+    'django_bootstrap5',
     # apps
     'apps.home',
     'apps.bio'

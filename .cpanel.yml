@@ -1,4 +1,4 @@
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/iamromandev/deploy/web/
+    - export DEPLOYPATH=/home/iamromandev/repositories/web/
     - /bin/cp -R * $DEPLOYPATH

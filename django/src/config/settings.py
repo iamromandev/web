@@ -56,8 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # features
     'django_browser_reload',
-    'tailwind',
-    'theme',
+    # 'tailwind',
+    # 'theme',
     'django_bootstrap5',
     # apps
     'apps.home',
@@ -162,9 +162,9 @@ STATIC_ROOT = BASE_DIR.joinpath('src/static_files') if DEBUG else '/home/iamroma
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # tailwind
-TAILWIND_APP_NAME = 'theme'
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
+# TAILWIND_APP_NAME = 'theme'
+# INTERNAL_IPS = [
+#     '127.0.0.1',
+# ]
 # if not DEBUG:
 #     NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/django/src/theme/static_src/14/bin/npm'

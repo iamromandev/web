@@ -1,5 +1,18 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <p>Placeholder text in base template. Replace with page content.</p>
+{% load static %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6 pb-4">
+            <h1 class="display-4 font-weight-bold">Elevate your listening</h1>
+            <h5>Everyday headphones that make your favorite artists sound like their performing a never-ending
+                encore.</h5>
+            <a class="btn btn-primary mt-2" href="#">Find Your Set</a>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <img src="{% static 'images/cta-headphones.jpg' %}" alt="Headphones"/>
+        </div>
+    </div>
+</div>
 {% endblock content %}

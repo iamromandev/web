@@ -1,33 +1,42 @@
 {% extends '_base.html' %}
-
 {% block content %}
-{% load static %}
-<div class="container">
-    <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6 pb-4">
-            <h1 class="display-4 font-weight-bold">Elevate your listening</h1>
-            <h5>Everyday headphones that make your favorite artists sound like their performing a never-ending
-                encore.</h5>
-            <a class="btn btn-primary mt-2" href="#">Find Your Set</a>
-        </div>
-        <div class="col-sm-12 col-md-12 col-lg-6">
-            <img class="img-fluid rounded" src="{% static 'images/cta-headphones.jpg' %}" alt="Headphones"/>
-        </div>
+ <br>
+  <div class="w-50" style="height: 300px; overflow-y: scroll;">
+    <div id="section1" class="container-fluid bg-success ">
+      <h4>C++</h4>
+      <p>
+          C++ is a general-purpose programming language and is widely used
+          nowadays for competitive programming. It has imperative, object-oriented
+          and generic programming features. C++ runs on lots of platforms like Windows,
+          Linux, Unix, Mac etc.
+      </p>
     </div>
-    <div id="section1" class="container-fluid bg-success" style="padding-top:70px;padding-bottom:70px">
-  <h1>Section 1</h1>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-</div>
-<div id="section2" class="container-fluid bg-warning" style="padding-top:70px;padding-bottom:70px">
-  <h1>Section 2</h1>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-</div>
-<div id="section3" class="container-fluid bg-secondary" style="padding-top:70px;padding-bottom:70px">
-  <h1>Section 3</h1>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-</div>
-</div>
+
+    <div id="section2" class="container-fluid bg-secondary">
+      <h4>Java</h4>
+      <p>
+          Java has been one of the most popular programming languages for many years.
+          Java is Object Oriented. However, it is not considered as pure object-oriented
+          as it provides support for primitive data types (like int, char, etc)
+      </p>
+    </div>
+
+    <div id="section3" class="container-fluid bg-success">
+      <h4>Python</h4>
+      <p>
+          Python is a high-level, general-purpose and a very popular programming language.
+          Python programming language (latest Python 3) is being used in web development,
+          Machine Learning applications, along with all cutting edge technology in Software
+          Industry.
+      </p>
+    </div>
+    <div id="section4" class="container-fluid bg-secondary">
+      <h4>Javascript</h4>
+      <p>
+          JavaScript (JS) is the world's most popular lightweight, interpreted compiled
+          programming language. It is also known as a scripting language for web pages.
+          It can be used for Client-side as well as Server-side developments.
+      </p>
+    </div>
+  </div>
 {% endblock content %}

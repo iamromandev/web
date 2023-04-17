@@ -23,24 +23,18 @@
     </title>
 </head>
 
-<body data-bs-spy="scroll" data-bs-target=".navbar">
+<body data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="50">
 
-<header>
-    {% block header %}
-    {% include 'header.html' %}
-    {% endblock header %}
-</header>
+{% block header %}
+{% include 'header.html' %}
+{% endblock header %}
 
-<main>
-    {% block content %}
-    <p>Placeholder text in base template. Replace with page content.</p>
-    {% endblock content %}
-</main>
+{% block content %}
+<p>Placeholder text in base template. Replace with page content.</p>
+{% endblock content %}
 
-<footer>
-    {% block footer %}
-    {% endblock footer %}
-</footer>
+{% block footer %}
+{% endblock footer %}
 
 </body>
 

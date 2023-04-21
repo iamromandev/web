@@ -1,19 +1,25 @@
 {% extends '_base.html' %}
 {% block content %}
+{% load bootstrap_icons %}
 <div id="home" class="container-fluid" style="padding:100px 20px;">
-<h1>Home</h1>
-  <p>Hi, I am Roman</p>
-  <p>Full Stack Developer</p>
-  <p>I am a Backend / Full Stack Developer. I am currently working at Skipper Hospitality as a Backend Developer</p>
+    <h1 class="text-dark">Hi, I am Roman</h1>
+    <h4 class="text-primary">Full Stack Developer</h4>
+    <p>I am a Backend / Full Stack Developer. I am currently working at Skipper Hospitality as a Backend Developer</p>
+
+    <a href="https://stackoverflow.com/users/2791067/roman">{% bs_icon 'stack-overflow' %}</a>
 </div>
 <div id="about" class="container-fluid" style="padding:100px 20px;">
-<h1>About</h1>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+    <h1>About</h1>
+    <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at
+        the navigation bar while scrolling!</p>
+    <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at
+        the navigation bar while scrolling!</p>
 </div>
 <div id="portfolio" class="container-fluid" style="padding:100px 20px;">
-<h1>Portfolio</h1>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
-  <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at the navigation bar while scrolling!</p>
+    <h1>Portfolio</h1>
+    <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at
+        the navigation bar while scrolling!</p>
+    <p>Try to scroll this section and look at the navigation bar while scrolling! Try to scroll this section and look at
+        the navigation bar while scrolling!</p>
 </div>
 {% endblock content %}

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # 'tailwind',
     # 'theme',
     'django_bootstrap5',
+    'django_bootstrap_icons',
     # apps
     'apps.home',
     'apps.bio'

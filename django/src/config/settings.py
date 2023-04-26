@@ -178,4 +178,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # django bootstrap icons
 BS_ICONS_CUSTOM_PATH = 'icons'
-BS_ICONS_CACHE = STATIC_ROOT.joinpath('cache-icons')
+# BS_ICONS_CACHE = STATIC_ROOT.joinpath('cache-icons')

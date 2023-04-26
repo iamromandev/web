@@ -177,5 +177,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     NPM_BIN_PATH = '/home/iamromandev/nodevenv/repositories/web/django/src/theme/static_src/14/bin/npm'
 
 # django bootstrap icons
-# BS_ICONS_CUSTOM_PATH = 'icons'
-# BS_ICONS_CACHE = STATIC_ROOT.joinpath('cache-icons')
+BS_ICONS_CUSTOM_PATH = 'icons'
+BS_ICONS_CACHE = os.path.join(STATIC_ROOT, 'cache-icons')

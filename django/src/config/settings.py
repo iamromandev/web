@@ -16,7 +16,6 @@ from pathlib import Path
 import environ
 from loguru import logger
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 root = environ.Path(__file__) - 3  # get root of the project
@@ -28,7 +27,6 @@ logger.debug(f"ProcessId {os.getpid()}")
 logger.debug(f"RootDir: {root}")
 logger.debug(f"BaseDir: {BASE_DIR}")
 logger.debug(f"TemplatesDir: {BASE_DIR.joinpath('src/templates')}")
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -43,7 +41,6 @@ logger.debug(f'DEBUG: {DEBUG}')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 logger.debug(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
-
 
 # Application definition
 
@@ -60,7 +57,10 @@ INSTALLED_APPS = [
     # 'theme',
     'django_bootstrap5',
     'django_bootstrap_icons',
+    'django_softdelete',
+    'taggit',
     # apps
+    'apps.core',
     'apps.home',
     'apps.bio'
 ]
@@ -97,7 +97,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -106,7 +105,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':  env.str('MYSQL_DATABASE', default=''),
+        'NAME': env.str('MYSQL_DATABASE', default=''),
         'USER': env.str('MYSQL_USER', default=''),
         'PASSWORD': env.str('MYSQL_PASSWORD', default=''),
         'HOST': env.str('MYSQL_HOST', default=''),  # db for container name; 127.0.0.1 for terminal
@@ -118,7 +117,6 @@ DATABASES = {
         }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -138,7 +136,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -149,7 +146,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -179,3 +175,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # django bootstrap icons
 BS_ICONS_CUSTOM_PATH = 'icons'
 BS_ICONS_CACHE = os.path.join(STATIC_ROOT, 'cache-icons')
+
+# django taggit
+TAGGIT_CASE_INSENSITIVE = True
+
+# custom auth user model
+AUTH_USER_MODEL = 'core.User'

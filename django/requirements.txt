@@ -97,6 +97,12 @@ django-browser-reload==1.7.0 ; python_full_version == "3.9.16" \
 django-environ==0.10.0 ; python_full_version == "3.9.16" \
     --hash=sha256:510f8c9c1d0a38b0815f91504270c29440a0cf44fab07f55942fa8d31bbb9be6 \
     --hash=sha256:b3559a91439c9d774a9e0c1ced872364772c612cdf6dc919506a2b13f7a77225
+django-soft-delete==0.9.21 ; python_full_version == "3.9.16" \
+    --hash=sha256:32c5cc54f3a1990b13f0f5c66089f712a823363997749abc594112ac2c521a1c \
+    --hash=sha256:70ef192d1ad8be5ec30ca033783f199d61f2d1e1bd60ad8a7db1e8102552f23b
+django-taggit==3.1.0 ; python_full_version == "3.9.16" \
+    --hash=sha256:543218ac346fbe02a65733e0341c91b57a3e0f7a41568966b26f1cea9edc4805 \
+    --hash=sha256:c8f2e4eae387939089b3d75d1d8649e008880970c068ce9d0e82f87fd5e29508
 django==4.1.8 ; python_full_version == "3.9.16" \
     --hash=sha256:43253f4b4a2c3a1694cd52d3517847271934c84dbd060ca0e82a9f90e569dab3 \
     --hash=sha256:dba9dd0bf8b748aa9c98d6c679f8b1c0bfa43124844bea9425ad9ba0cd5e65c3
@@ -109,9 +115,9 @@ loguru==0.6.0 ; python_full_version == "3.9.16" \
 pymysql==1.0.3 ; python_full_version == "3.9.16" \
     --hash=sha256:3dda943ef3694068a75d69d071755dbecacee1adf9a1fc5b206830d2b67d25e8 \
     --hash=sha256:89fc6ae41c0aeb6e1f7710cdd623702ea2c54d040565767a78b00a5ebb12f4e5
-requests==2.28.2 ; python_full_version == "3.9.16" \
-    --hash=sha256:64299f4909223da747622c030b781c0d7811e359c37124b4bd368fb8c6518baa \
-    --hash=sha256:98b1b2782e3c6c4904938b84c0eb932721069dfdb9134313beff7c83c2df24bf
+requests==2.29.0 ; python_full_version == "3.9.16" \
+    --hash=sha256:e8f3c9be120d3333921d213eef078af392fba3933ab7ed2d1cba3b56f2568c3b \
+    --hash=sha256:f2e34a75f4749019bb0e3effb66683630e4ffeaf75819fb51bebef1bf5aef059
 sqlparse==0.4.4 ; python_full_version == "3.9.16" \
     --hash=sha256:5430a4fe2ac7d0f93e66f1efc6e1338a41884b7ddf2a350cedd20ccc4d9d28f3 \
     --hash=sha256:d446183e84b8349fa3061f0fe7f06ca94ba65b426946ffebe6e3e8295332420c

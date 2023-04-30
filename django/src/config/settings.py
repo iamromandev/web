@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.auths',
     'apps.home',
-    'apps.bio'
+    'apps.bio',
+    'apps.dictionary',
 ]
 
 MIDDLEWARE = [

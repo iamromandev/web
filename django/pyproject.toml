@@ -18,6 +18,7 @@ django-bootstrap5 = "23.1"
 django-bootstrap-icons = "0.8.3"
 django-soft-delete = "0.9.21"
 django-taggit = "3.1.0"
+wordnik-py3 = "2.1.2"
 
 [build-system]
 requires = ["poetry-core"]

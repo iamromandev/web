@@ -130,24 +130,58 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            logger.debug(f'Pronunciation need to get from wordnik')
+            logger.debug(f'wordnik.get_pronunciations')
             pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
-        else:
-            logger.debug(f'Pronunciation is stored')
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.AUDIO.name, None, self.delay):
+
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.AUDIO.name,
+            None,
+            self.delay
+        ):
+            logger.debug(f'wordnik.get_audios')
             audios = self.wordnik.get_audios(word, limit=self.limit_audio)
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.DEFINITION.name, None, self.delay):
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.DEFINITION.name,
+            None,
+            self.delay
+        ):
+            logger.debug(f'wordnik.get_definitions')
             definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.EXAMPLE.name, None, self.delay):
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.EXAMPLE.name,
+            None,
+            self.delay
+        ):
+            logger.debug(f'wordnik.get_examples')
             examples = self.wordnik.get_examples(word, limit=self.limit_example)
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.RELATION.name, None, self.delay):
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.RELATION.name,
+            None,
+            self.delay
+        ):
+            logger.debug(f'wordnik.get_relations')
             relations = self.wordnik.get_relations(word, limit=self.limit_relation)
 
         if (not word_ref and definitions) or (
-            word_ref and self.is_expired(word_ref.id, Type.WORD.name, Subtype.DEFAULT.name, None, self.delay)):
+            word_ref and self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.DEFAULT.name,
+            None,
+            self.delay)
+        ):
+            logger.debug(f'wordnik.get_relations')
             language = self.get_or_create_language()
             word_ref = self.get_or_create_word(language, word)
             self.store_expire(word_ref.id, Type.WORD.name, Subtype.DEFAULT.name, None)
@@ -177,6 +211,7 @@ class WordViewSet(viewsets.ModelViewSet):
                             logger.exception('What?!')
 
             if pronunciations:
+                logger.debug(f'build_or_create_pronunciations')
                 self.build_or_create_pronunciations(word_ref, pronunciations)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.PRONUNCIATION.name, None)
 

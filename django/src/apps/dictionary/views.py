@@ -314,13 +314,17 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=Subtype.WORD.name,
             source=pronunciation.rawType
         )
-        logger.debug(f'Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw.encode("utf8")}')
-        pronunciation, created = Pronunciation.objects.get_or_create(
-            source=source,
-            word=word,
-            pronunciation=pronunciation.raw
-        )
-        logger.debug(f'{pronunciation} [created : {created}]')
+        logger.debug(f'Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw}')
+
+        try:
+            pronunciation, created = Pronunciation.objects.get_or_create(
+                source=source,
+                word=word,
+                pronunciation=pronunciation.raw
+            )
+            logger.debug(f'{pronunciation} [created : {created}]')
+        except Exception:
+            logger.exception('What?!')
 
     def build_or_create_audios(self, word, audios):
         pers = {}

@@ -211,7 +211,6 @@ class WordViewSet(viewsets.ModelViewSet):
                             logger.exception('What?!')
 
             if pronunciations:
-                logger.debug(f'build_or_create_pronunciations')
                 self.build_or_create_pronunciations(word_ref, pronunciations)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.PRONUNCIATION.name, None)
 
@@ -293,6 +292,7 @@ class WordViewSet(viewsets.ModelViewSet):
         logger.debug(f'{translation} [created : {created}]')
 
     def build_or_create_pronunciations(self, word, pronunciations):
+        logger.debug(f'[word: {word}][pronunciations: {len(pronunciations)}]')
         pers = {}
         for pronunciation in pronunciations:
             source = pronunciation.rawType
@@ -304,8 +304,11 @@ class WordViewSet(viewsets.ModelViewSet):
             pers[source] = pers[source] + 1
 
     def build_or_create_pronunciation(self, word, pronunciation):
-        source = self.get_or_create_source(type=Type.DICTIONARY.name, subtype=Subtype.WORD.name,
-                                           source=pronunciation.rawType)
+        source = self.get_or_create_source(
+            type=Type.DICTIONARY.name,
+            subtype=Subtype.WORD.name,
+            source=pronunciation.rawType
+        )
         pronunciation, created = Pronunciation.objects.get_or_create(
             source=source,
             word=word,

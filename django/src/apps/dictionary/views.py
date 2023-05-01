@@ -81,6 +81,7 @@ class WordViewSet(viewsets.ModelViewSet):
             store = Store.objects.get(ref=ref, type=type, subtype=subtype, extra=extra)
             return store.is_expired(delay)
         except Store.DoesNotExist:
+            logger.exception('What?!')
             return True
 
     def store_expire(self, ref, type, subtype, extra):
@@ -107,21 +108,29 @@ class WordViewSet(viewsets.ModelViewSet):
         logger.debug(f'{store} [created : {created}]')
 
     def get_remote_word(self, request, kwargs, word_ref=None):
-        logger.debug(f'calling remote word: {word_ref}')
         source = request.GET.get('source')
         target = request.GET.get('target')
         word = kwargs.get('word')
+
+        logger.debug(f'calling remote word [source: {source}, target: {target}, word: {word}]')
         return self.get_word_by_wordnik(source, target, word, word_ref)
 
     def get_word_by_wordnik(self, source, target, word, word_ref):
+        logger.debug(f'calling remote word: {word}')
+
         pronunciations = None
         audios = None
         definitions = None
         examples = None
         relations = None
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.PRONUNCIATION.name, None,
-                                           self.delay):
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.PRONUNCIATION.name,
+            None,
+            self.delay
+        ):
             pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
         if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.AUDIO.name, None, self.delay):
             audios = self.wordnik.get_audios(word, limit=self.limit_audio)
@@ -163,7 +172,7 @@ class WordViewSet(viewsets.ModelViewSet):
                                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.TRANSLATION.name,
                                                   source.code + target.code)
                         except Http404 as error:
-                            logger.error(error)
+                            logger.exception('What?!')
 
             if pronunciations:
                 self.build_or_create_pronunciations(word_ref, pronunciations)

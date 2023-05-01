@@ -63,7 +63,8 @@ class WordViewSet(viewsets.ModelViewSet):
             if word and word.word != kwargs.get('word'):
                 raise Http404(f"Not matched")
             word = self.get_remote_word(request, kwargs, word_ref=word)
-        except Http404:
+        except Http404 as error:
+            logger.error(error)
             word = self.get_remote_word(request, kwargs)
 
         if not word:
@@ -106,6 +107,7 @@ class WordViewSet(viewsets.ModelViewSet):
         logger.debug(f'{store} [created : {created}]')
 
     def get_remote_word(self, request, kwargs, word_ref=None):
+        logger.debug(f'calling remote word: {word_ref}')
         source = request.GET.get('source')
         target = request.GET.get('target')
         word = kwargs.get('word')

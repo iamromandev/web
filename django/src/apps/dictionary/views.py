@@ -116,7 +116,6 @@ class WordViewSet(viewsets.ModelViewSet):
         return self.get_word_by_wordnik(source, target, word, word_ref)
 
     def get_word_by_wordnik(self, source, target, word, word_ref):
-        logger.debug(f'calling remote word: {word}')
 
         pronunciations = None
         audios = None
@@ -131,7 +130,10 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
+            logger.debug(f'Pronunciation need to get from wordnik')
             pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
+        else:
+            logger.debug(f'Pronunciation is stored')
         if not word_ref or self.is_expired(word_ref.id, Type.WORD.name, Subtype.AUDIO.name, None, self.delay):
             audios = self.wordnik.get_audios(word, limit=self.limit_audio)
 

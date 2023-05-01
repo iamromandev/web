@@ -1,5 +1,6 @@
 from urllib.error import HTTPError
 
+from loguru import logger
 from wordnik import swagger, WordApi
 
 from apps.core.libs import CircularQueue
@@ -36,6 +37,7 @@ class WordnikService:
                 pronunciations = word_api.getTextPronunciations(word, limit=limit)
                 return pronunciations
             except HTTPError as error:
+                logger.exception('What?!')
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
                     continue
@@ -50,6 +52,7 @@ class WordnikService:
                 audios = word_api.getAudio(word, limit=limit)
                 return audios
             except HTTPError as error:
+                logger.exception('What?!')
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
                     continue
@@ -64,6 +67,7 @@ class WordnikService:
                 definitions = word_api.getDefinitions(word, limit=limit)
                 return definitions
             except HTTPError as error:
+                logger.exception('What?!')
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
                     continue
@@ -78,6 +82,7 @@ class WordnikService:
                 examples = word_api.getExamples(word, limit=limit)
                 return examples
             except HTTPError as error:
+                logger.exception('What?!')
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
                     continue
@@ -92,6 +97,7 @@ class WordnikService:
                 relations = word_api.getRelatedWords(word, limitPerRelationshipType=limit)
                 return relations
             except HTTPError as error:
+                logger.exception('What?!')
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
                     continue

@@ -232,7 +232,12 @@ class WordViewSet(viewsets.ModelViewSet):
 
         return word_ref
 
-    def get_or_create_source(self, type=Type.DEFAULT.name, subtype=Subtype.DEFAULT.name, source='default'):
+    def get_or_create_source(
+        self,
+        type=Type.DEFAULT.name,
+        subtype=Subtype.DEFAULT.name,
+        source='default'
+    ):
         source, created = Source.objects.get_or_create(
             type=type,
             subtype=subtype,
@@ -309,6 +314,7 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=Subtype.WORD.name,
             source=pronunciation.rawType
         )
+        logger.debug(f'Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw}')
         pronunciation, created = Pronunciation.objects.get_or_create(
             source=source,
             word=word,

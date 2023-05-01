@@ -1,3 +1,7 @@
+from loguru import logger
+from rest_framework.views import exception_handler
+
+
 class CircularQueue:
 
     def __init__(self, max_size: int):
@@ -34,3 +38,11 @@ class CircularQueue:
 
     def iterate(self):
         self.enqueue(self.dequeue())
+
+
+def generic_exception_handler(exc, context):
+    logger.exception(exc)
+    response = exception_handler(exc, context)
+    if response is not None:
+        response.data['status_code'] = response.status_code
+    return response

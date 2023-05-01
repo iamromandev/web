@@ -314,7 +314,7 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=Subtype.WORD.name,
             source=pronunciation.rawType
         )
-        logger.debug(f'Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw}')
+        logger.debug(f'Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw.encode("utf8")}')
         pronunciation, created = Pronunciation.objects.get_or_create(
             source=source,
             word=word,

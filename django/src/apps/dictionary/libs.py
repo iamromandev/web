@@ -35,8 +35,10 @@ class WordnikService:
             try:
                 word_api = self.get_word_api()
                 pronunciations = word_api.getTextPronunciations(word, limit=limit)
+                logger.debug(pronunciations)
                 return pronunciations
             except HTTPError as error:
+                logger.error(error)
                 logger.exception('What?!')
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()

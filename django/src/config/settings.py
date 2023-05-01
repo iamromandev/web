@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 import environ
@@ -183,3 +184,13 @@ TAGGIT_CASE_INSENSITIVE = True
 
 # custom auth user model
 AUTH_USER_MODEL = 'core.User'
+
+# loguru
+logger.remove()
+
+logger.add(
+    sys.stdout,
+    format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{"
+    "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    diagnose=True,
+)

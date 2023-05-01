@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.utils import dateparse
 
+from loguru import logger
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -91,7 +92,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 'state': State.SYNCED.name
             }
         )
-        print(f'{store} [created : {created}]')
+        logger.debug(f'{store} [created : {created}]')
 
     def store_synced(self, ref, type, subtype):
         store, created = Store.objects.update_or_create(
@@ -102,7 +103,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 'state': State.SYNCED.name
             }
         )
-        print(f'{store} [created : {created}]')
+        logger.debug(f'{store} [created : {created}]')
 
     def get_remote_word(self, request, kwargs, word_ref=None):
         source = request.GET.get('source')
@@ -160,7 +161,7 @@ class WordViewSet(viewsets.ModelViewSet):
                                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.TRANSLATION.name,
                                                   source.code + target.code)
                         except Http404 as error:
-                            print(error)
+                            logger.error(error)
 
             if pronunciations:
                 self.build_or_create_pronunciations(word_ref, pronunciations)
@@ -190,7 +191,7 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=subtype,
             source=source
         )
-        print(f'{source} [created : {created}]')
+        logger.debug(f'{source} [created : {created}]')
         return source
 
     def has_language(self, code=None, name=None):
@@ -207,7 +208,7 @@ class WordViewSet(viewsets.ModelViewSet):
             code=code,
             name=name
         )
-        print(f'{language} [created : {created}]')
+        logger.debug(f'{language} [created : {created}]')
         return language
 
     def get_language(self, code):
@@ -218,17 +219,17 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_or_create_part_of_speech(self, part_of_speech):
         part_of_speech, created = PartOfSpeech.objects.get_or_create(part_of_speech=part_of_speech)
-        print(f'{part_of_speech} [created : {created}]')
+        logger.debug(f'{part_of_speech} [created : {created}]')
         return part_of_speech
 
     def get_or_create_relation_type(self, relation_type):
         relation_type, created = RelationType.objects.get_or_create(relation_type=relation_type)
-        print(f'{relation_type} [created : {created}]')
+        logger.debug(f'{relation_type} [created : {created}]')
         return relation_type
 
     def get_or_create_word(self, language, word):
         word, created = Word.objects.get_or_create(language=language, word=word)
-        print(f'{word} [created : {created}]')
+        logger.debug(f'{word} [created : {created}]')
         return word
 
     def build_or_create_translation(self, source, target, word, translation):
@@ -241,7 +242,7 @@ class WordViewSet(viewsets.ModelViewSet):
             source_word=word,
             target_word=translation,
         )
-        print(f'{translation} [created : {created}]')
+        logger.debug(f'{translation} [created : {created}]')
 
     def build_or_create_pronunciations(self, word, pronunciations):
         pers = {}
@@ -262,7 +263,7 @@ class WordViewSet(viewsets.ModelViewSet):
             word=word,
             pronunciation=pronunciation.raw
         )
-        print(f'{pronunciation} [created : {created}]')
+        logger.debug(f'{pronunciation} [created : {created}]')
 
     def build_or_create_audios(self, word, audios):
         pers = {}
@@ -287,7 +288,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 'url': audio.fileUrl
             }
         )
-        print(f'{pronunciation} [created : {created}]')
+        logger.debug(f'{pronunciation} [created : {created}]')
 
     def build_or_create_definitions(self, word, definitions):
         pers = {}
@@ -313,7 +314,7 @@ class WordViewSet(viewsets.ModelViewSet):
             word=word,
             definition=definition.text
         )
-        print(f'{definition} [created : {created}]')
+        logger.debug(f'{definition} [created : {created}]')
         self.build_or_create_examples(word, definition, examples)
 
     def build_or_create_examples(self, word, definition=None, examples=None):
@@ -339,7 +340,7 @@ class WordViewSet(viewsets.ModelViewSet):
                     'year': dateparse.parse_date(year) if year else None
                 }
             )
-        print(f'{example} [created : {created}]')
+        logger.debug(f'{example} [created : {created}]')
 
     def build_or_create_relations(self, word, relations):
         for relation in relations:
@@ -372,7 +373,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 left_word=left_word,
                 right_word=right_word
             )
-            print(f'{relation} [created : {created}]')
+            logger.debug(f'{relation} [created : {created}]')
 
 
 class DefinitionViewSet(viewsets.ModelViewSet):

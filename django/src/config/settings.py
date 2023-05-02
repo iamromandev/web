@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'apps.auths',
     'apps.home',
     'apps.bio',
+    'apps.dashboard',
     'apps.dictionary',
 ]
 

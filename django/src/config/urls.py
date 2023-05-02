@@ -24,6 +24,7 @@ urlpatterns = [
     path('__reload__/', include('django_browser_reload.urls')),
     path('auths/', include('apps.auths.urls')),
     path('', include('apps.bio.urls')),
+    path('dashboard/', include('apps.dashboard.urls')),
     path('dictionary/', include('apps.dictionary.urls')),
     #path('', TemplateView.as_view(template_name='base.html')),
 ]

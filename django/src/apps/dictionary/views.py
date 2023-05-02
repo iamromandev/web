@@ -48,7 +48,7 @@ class WordViewSet(viewsets.ModelViewSet):
     limit_example = 50  # max 50
     limit_relation = 1000  # max 1000
 
-    delay = 100 * 24 * 60 * 60  # 10 days
+    delay = 100 * 24 * 60 * 60  # 100 days
     delay_audio = 6 * 60 * 60  # 6 hours
 
     limit_enabled = False

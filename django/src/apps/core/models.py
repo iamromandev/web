@@ -34,7 +34,7 @@ class Source(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'[Source : {self.type}, {self.subtype}, {self.source}]'
+        return f'[Source: {self.type}, {self.subtype}, {self.source}]'
 
     class Meta:
         ordering = ['source']
@@ -51,7 +51,7 @@ class Store(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'[Store : {self.type}, {self.subtype}, {self.state}]'
+        return f'[Store: {self.type}, {self.subtype}, {self.state}]'
 
     class Meta:
         ordering = ['type', 'subtype']

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 import environ
@@ -63,7 +64,8 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.auths',
     'apps.home',
-    'apps.bio'
+    'apps.bio',
+    'apps.dictionary',
 ]
 
 MIDDLEWARE = [
@@ -182,3 +184,33 @@ TAGGIT_CASE_INSENSITIVE = True
 
 # custom auth user model
 AUTH_USER_MODEL = 'core.User'
+
+# loguru
+logger.remove()
+
+logger.add(
+    sys.stdout,
+    format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{"
+    "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    backtrace=True,
+    diagnose=True,
+)
+
+# rest framework
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (),
+    'DEFAULT_PERMISSION_CLASSES': (),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'EXCEPTION_HANDLER': 'django.src.apps.core.libs.custom_exception_handler',
+    'PAGE_SIZE': 10,
+}
+
+# authentication
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]

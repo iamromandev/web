@@ -111,6 +111,7 @@ class WordViewSet(viewsets.ModelViewSet):
         source = request.GET.get('source')
         target = request.GET.get('target')
         word = kwargs.get('word')
+        word = word.lower()
 
         logger.debug(f'calling remote word [source: {source}, target: {target}, word: {word}]')
         return self.get_word_by_wordnik(source, target, word, word_ref)
@@ -122,6 +123,20 @@ class WordViewSet(viewsets.ModelViewSet):
         definitions = None
         examples = None
         relations = None
+
+        # for first time check that it has at least definitions
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.name,
+            Subtype.DEFINITION.name,
+            None,
+            self.delay
+        ):
+            logger.debug(f'wordnik.get_definitions')
+            definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
+
+        if not definitions:
+            return word_ref
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -146,16 +161,6 @@ class WordViewSet(viewsets.ModelViewSet):
         if not word_ref or self.is_expired(
             word_ref.id,
             Type.WORD.name,
-            Subtype.DEFINITION.name,
-            None,
-            self.delay
-        ):
-            logger.debug(f'wordnik.get_definitions')
-            definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
-
-        if not word_ref or self.is_expired(
-            word_ref.id,
-            Type.WORD.name,
             Subtype.EXAMPLE.name,
             None,
             self.delay
@@ -173,13 +178,17 @@ class WordViewSet(viewsets.ModelViewSet):
             logger.debug(f'wordnik.get_relations')
             relations = self.wordnik.get_relations(word, limit=self.limit_relation)
 
-        if (not word_ref and definitions) or (
-            word_ref and self.is_expired(
-            word_ref.id,
-            Type.WORD.name,
-            Subtype.DEFAULT.name,
-            None,
-            self.delay)
+        if (
+            (not word_ref and definitions)
+            or
+            (
+                word_ref and self.is_expired(
+                word_ref.id,
+                Type.WORD.name,
+                Subtype.DEFAULT.name,
+                None,
+                self.delay)
+            )
         ):
             logger.debug(f'wordnik.get_relations')
             language = self.get_or_create_language()
@@ -187,11 +196,13 @@ class WordViewSet(viewsets.ModelViewSet):
             self.store_expire(word_ref.id, Type.WORD.name, Subtype.DEFAULT.name, None)
 
             if self.translation_enabled:
-                if source and target and source != target and source == 'en' and self.is_expired(word_ref.id,
-                                                                                                 Type.WORD.name,
-                                                                                                 Subtype.TRANSLATION.name,
-                                                                                                 source + target,
-                                                                                                 self.delay):
+                if source and target and source != target and source == 'en' and self.is_expired(
+                    word_ref.id,
+                    Type.WORD.name,
+                    Subtype.TRANSLATION.name,
+                    source + target,
+                    self.delay
+                ):
                     if not self.has_language(code=source) or not self.has_language(code=target):
                         for language in self.translator.languages():
                             self.get_or_create_language(language['code'], language['name'])
@@ -421,6 +432,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 continue
             pers[type] = pers[type] + 1
 
+            relation_word = relation_word.lower()
             relation_word = self.get_or_create_word(language, relation_word)
 
             left_word = word if word.id <= relation_word.id else relation_word

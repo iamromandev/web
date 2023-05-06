@@ -112,7 +112,7 @@ DATABASES = {
         'NAME': env.str('MYSQL_DATABASE', default=''),
         'USER': env.str('MYSQL_USER', default=''),
         'PASSWORD': env.str('MYSQL_PASSWORD', default=''),
-        'HOST': env.str('MYSQL_HOST', default=''),  # db for container name; 127.0.0.1 for terminal
+        'HOST': env.str('MYSQL_HOST', default=''),  # db for docker container name; 127.0.0.1 for terminal
         'PORT': env.str('MYSQL_PORT', default=''),
         'OPTIONS': {
             'charset': 'utf8',

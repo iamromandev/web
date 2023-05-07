@@ -52,10 +52,10 @@ class WordViewSet(viewsets.ModelViewSet):
     delay_audio = 6 * 60 * 60  # 6 hours
 
     limit_enabled = False
-    translation_enabled = False
+    translation_enabled = True
 
     wordnik = WordnikService()
-    translator = LibreTranslateAPI('https://translate.astian.org/')
+    translator = LibreTranslateAPI('https://translate.argosopentech.com/')
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -203,22 +203,27 @@ class WordViewSet(viewsets.ModelViewSet):
                     source + target,
                     self.delay
                 ):
+                    logger.debug('producing translations')
                     if not self.has_language(code=source) or not self.has_language(code=target):
                         for language in self.translator.languages():
+                            logger.debug('storing languages')
                             self.get_or_create_language(language['code'], language['name'])
 
                     source = self.get_language(source)
                     target = self.get_language(target)
 
+                    logger.debug(f'Source {source.code}, Target {target.code}')
+
                     if source and target:
                         try:
                             translation = self.translator.translate(word, source.code, target.code)
+                            logger.debug(f'Translation of {word} is {translation}')
                             if translation:
                                 translation = self.get_or_create_word(target, translation)
                                 self.build_or_create_translation(source, target, word_ref, translation)
                                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.TRANSLATION.name,
                                                   source.code + target.code)
-                        except Http404 as error:
+                        except Http404:
                             logger.exception('What?!')
 
             if pronunciations:

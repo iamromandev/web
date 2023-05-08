@@ -9,14 +9,15 @@ from django_softdelete.models import SoftDeleteModel
 
 class Lake(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    ref = models.TextField(blank=False, null=False)
+    source = models.CharField(max_length=256, blank=False, null=False)
+    ref = models.JSONField(null=False)
+    raw = models.JSONField(null=False)
     extra = models.TextField(blank=True, null=True)
-    raw = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['updated_at']
+        ordering = ["updated_at"]
 
     def __str__(self):
-        return f'[Lake: {self.ref}] update_at: {self.updated_at}'
+        return f"[Lake: {self.ref}] updated_at: {self.updated_at}"

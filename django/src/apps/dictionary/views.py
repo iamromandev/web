@@ -19,6 +19,7 @@ from apps.dictionary.models import (
     PartOfSpeech,
     Pronunciation,
     Word,
+    Attribution,
     Definition,
     Example,
     RelationType,
@@ -356,6 +357,16 @@ class WordViewSet(viewsets.ModelViewSet):
         logger.debug(f'{part_of_speech} [created : {created}]')
         return part_of_speech
 
+    def get_or_create_attribution(self, url, text):
+        if url or text:
+            attribution, created = Attribution.objects.get_or_create(
+                url=url,
+                text=text,
+            )
+            logger.debug(f"Attribution: {attribution.url} [created : {created}]")
+            return attribution
+        return None
+
     def get_or_create_relation_type(self, relation_type):
         relation_type, created = RelationType.objects.get_or_create(relation_type=relation_type)
         logger.debug(f'{relation_type} [created : {created}]')
@@ -445,16 +456,20 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def build_or_create_definition(self, word, definition):
         examples = definition.exampleUses
-        source = self.get_or_create_source(type=Type.DICTIONARY.name, subtype=Subtype.WORD.name,
-                                           source=definition.sourceDictionary)
+        source = self.get_or_create_source(
+            type=Type.DICTIONARY.name, subtype=Subtype.WORD.name,
+            source=definition.sourceDictionary
+        )
         part_of_speech = self.get_or_create_part_of_speech(definition.partOfSpeech)
+        attribution = self.get_or_create_attribution(definition.attributionUrl, definition.attributionText)
         definition, created = Definition.objects.get_or_create(
             source=source,
             part_of_speech=part_of_speech,
+            attribution=attribution,
             word=word,
             definition=definition.text
         )
-        logger.debug(f'{definition} [created : {created}]')
+        logger.debug(f"Word: {word.word} Definition: {definition} [created : {created}]")
         self.build_or_create_examples(word, definition, examples)
 
     def build_or_create_examples(self, word, definition=None, examples=None):

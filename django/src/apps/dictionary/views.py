@@ -33,8 +33,9 @@ from apps.dictionary.enums import (
     Type,
     Subtype,
     State,
-    Source,
+    Source as Source_Enum
 )
+
 from apps.dictionary.libs import WordnikService
 
 
@@ -224,7 +225,7 @@ class WordViewSet(viewsets.ModelViewSet):
                             logger.debug(f"Translation of {word} is {translation}")
                             if translation:
                                 store_in_lake(
-                                    source=Source.LIBRE_TRANSLATION.name,
+                                    source=Source_Enum.LIBRE_TRANSLATE.name,
                                     ref=dict(
                                         word=word,
                                         source=source.code,
@@ -244,7 +245,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if pronunciations:
                 # store in data lake
                 store_in_lake(
-                    source=Source.WORDNIK.name,
+                    source=Source_Enum.WORDNIK.name,
                     ref=dict(
                         word=word,
                         type=Type.WORD.name,
@@ -258,7 +259,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if audios:
                 # store in data lake
                 store_in_lake(
-                    source=Source.WORDNIK.name,
+                    source=Source_Enum.WORDNIK.name,
                     ref=dict(
                         word=word,
                         type=Type.WORD.name,
@@ -272,7 +273,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if definitions:
                 # store in data lake
                 store_in_lake(
-                    source=Source.WORDNIK.name,
+                    source=Source_Enum.WORDNIK.name,
                     ref=dict(
                         word=word,
                         type=Type.WORD.name,
@@ -286,7 +287,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if examples:
                 # store in data lake
                 store_in_lake(
-                    source=Source.WORDNIK.name,
+                    source=Source_Enum.WORDNIK.name,
                     ref=dict(
                         word=word,
                         type=Type.WORD.name,
@@ -300,7 +301,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if relations:
                 # store in data lake
                 store_in_lake(
-                    source=Source.WORDNIK.name,
+                    source=Source_Enum.WORDNIK.name,
                     ref=dict(
                         word=word,
                         type=Type.WORD.name,

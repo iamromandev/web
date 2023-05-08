@@ -26,4 +26,4 @@ class State(enum.Enum):
 class Source(enum.Enum):
     DEFAULT = "default"
     WORDNIK = "wordnik"
-    LIBRE_TRANSLATION = "libre_translation"
+    LIBRE_TRANSLATE = "libre_translate"

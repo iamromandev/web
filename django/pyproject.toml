@@ -8,7 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "3.9.16"
 # reserved packages
-requests = "2.29.0"
+requests = "2.29.0" # for namecheap host issue
+# end reserved packages
 loguru = "0.7.0"
 django = "4.1.8"
 django-environ = "0.10.0"
@@ -18,7 +19,7 @@ dj-static = "0.0.6"
 django-bootstrap5 = "23.1"
 django-bootstrap-icons = "0.8.3"
 django-soft-delete = "0.9.21"
-django-taggit = "3.1.0"
+django-taggit = "4.0.0"
 djangorestframework = "3.14.0"
 pymysql = "1.0.3"
 wordnik-py3 = "2.1.2"

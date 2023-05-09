@@ -70,7 +70,6 @@ class WordViewSet(viewsets.ModelViewSet):
                 raise Http404(f"Not matched")
             word = self.get_remote_word(request, kwargs, word_ref=word)
         except Http404:
-            logger.exception("What?!")
             word = self.get_remote_word(request, kwargs)
 
         if not word:
@@ -87,7 +86,6 @@ class WordViewSet(viewsets.ModelViewSet):
             store = Store.objects.get(ref=ref, type=type, subtype=subtype, extra=extra)
             return store.is_expired(delay)
         except Store.DoesNotExist:
-            logger.exception('What?!')
             return True
 
     def store_expire(self, ref, type, subtype, extra):
@@ -97,10 +95,10 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=subtype,
             extra=extra,
             defaults={
-                'state': State.SYNCED.name
+                "state": State.SYNCED.name
             }
         )
-        logger.debug(f'{store} [created : {created}]')
+        logger.debug(f"{store} [created : {created}]")
 
     def store_synced(self, ref, type, subtype):
         store, created = Store.objects.update_or_create(
@@ -108,18 +106,18 @@ class WordViewSet(viewsets.ModelViewSet):
             type=type,
             subtype=subtype,
             defaults={
-                'state': State.SYNCED.name
+                "state": State.SYNCED.name
             }
         )
-        logger.debug(f'{store} [created : {created}]')
+        logger.debug(f"{store} [created : {created}]")
 
     def get_remote_word(self, request, kwargs, word_ref=None):
-        source = request.GET.get('source')
-        target = request.GET.get('target')
-        word = kwargs.get('word')
+        source = request.GET.get("source")
+        target = request.GET.get("target")
+        word = kwargs.get("word")
         word = word.lower()
 
-        logger.debug(f'calling remote word [source: {source}, target: {target}, word: {word}]')
+        logger.debug(f"Calling remote word [source: {source}, target: {target}, word: {word}]")
         return self.get_word_by_wordnik(source, target, word, word_ref)
 
     def get_word_by_wordnik(self, source, target, word, word_ref):
@@ -138,7 +136,7 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            logger.debug(f'wordnik.get_definitions')
+            logger.debug(f"wordnik.get_definitions")
             definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
 
         if not definitions:
@@ -151,7 +149,7 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            logger.debug(f'wordnik.get_pronunciations')
+            logger.debug(f"wordnik.get_pronunciations")
             pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
 
         if not word_ref or self.is_expired(
@@ -161,7 +159,7 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            logger.debug(f'wordnik.get_audios')
+            logger.debug(f"wordnik.get_audios")
             audios = self.wordnik.get_audios(word, limit=self.limit_audio)
 
         if not word_ref or self.is_expired(
@@ -171,7 +169,7 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            logger.debug(f'wordnik.get_examples')
+            logger.debug(f"wordnik.get_examples")
             examples = self.wordnik.get_examples(word, limit=self.limit_example)
 
         if not word_ref or self.is_expired(
@@ -181,7 +179,7 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            logger.debug(f'wordnik.get_relations')
+            logger.debug(f"wordnik.get_relations")
             relations = self.wordnik.get_relations(word, limit=self.limit_relation)
 
         if (
@@ -319,14 +317,14 @@ class WordViewSet(viewsets.ModelViewSet):
         self,
         type=Type.DEFAULT.name,
         subtype=Subtype.DEFAULT.name,
-        source='default'
+        source=Source_Enum.DEFAULT.name,
     ):
         source, created = Source.objects.get_or_create(
             type=type,
             subtype=subtype,
             source=source
         )
-        logger.debug(f'{source} [created : {created}]')
+        logger.debug(f"{source} [created : {created}]")
         return source
 
     def has_language(self, code=None, name=None):
@@ -336,14 +334,14 @@ class WordViewSet(viewsets.ModelViewSet):
         except Language.DoesNotExist:
             return False
 
-    def get_or_create_language(self, code='en', name='English'):
+    def get_or_create_language(self, code="en", name="English"):
         source = self.get_or_create_source(type=Type.DICTIONARY.name)
         language, created = Language.objects.get_or_create(
             source=source,
             code=code,
             name=name
         )
-        logger.debug(f'{language} [created : {created}]')
+        logger.debug(f"{language} [created : {created}]")
         return language
 
     def get_language(self, code):
@@ -354,7 +352,7 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_or_create_part_of_speech(self, part_of_speech):
         part_of_speech, created = PartOfSpeech.objects.get_or_create(part_of_speech=part_of_speech)
-        logger.debug(f'{part_of_speech} [created : {created}]')
+        logger.debug(f"{part_of_speech} [created : {created}]")
         return part_of_speech
 
     def get_or_create_attribution(self, url, text):
@@ -369,12 +367,12 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_or_create_relation_type(self, relation_type):
         relation_type, created = RelationType.objects.get_or_create(relation_type=relation_type)
-        logger.debug(f'{relation_type} [created : {created}]')
+        logger.debug(f"{relation_type} [created : {created}]")
         return relation_type
 
     def get_or_create_word(self, language, word):
         word, created = Word.objects.get_or_create(language=language, word=word)
-        logger.debug(f'{word} [created : {created}]')
+        logger.debug(f"{word} [created : {created}]")
         return word
 
     def build_or_create_translation(self, source, target, word, translation):
@@ -387,10 +385,10 @@ class WordViewSet(viewsets.ModelViewSet):
             source_word=word,
             target_word=translation,
         )
-        logger.debug(f'{translation} [created : {created}]')
+        logger.debug(f"{translation} [created : {created}]")
 
     def build_or_create_pronunciations(self, word, pronunciations):
-        logger.debug(f'[word: {word}][pronunciations: {len(pronunciations)}]')
+        logger.debug(f"[word: {word}][pronunciations: {len(pronunciations)}]")
         pers = {}
         for pronunciation in pronunciations:
             source = pronunciation.rawType
@@ -407,14 +405,14 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=Subtype.WORD.name,
             source=pronunciation.rawType
         )
-        logger.debug(f'Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw}')
+        logger.debug(f"Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw}")
 
         pronunciation, created = Pronunciation.objects.get_or_create(
             source=source,
             word=word,
             pronunciation=pronunciation.raw
         )
-        logger.debug(f'{pronunciation} [created : {created}]')
+        logger.debug(f"{pronunciation} [created : {created}]")
 
     def build_or_create_audios(self, word, audios):
         pers = {}

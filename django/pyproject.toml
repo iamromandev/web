@@ -11,7 +11,7 @@ python = "3.9.16"
 requests = "2.29.0" # for namecheap host issue
 # end reserved packages
 loguru = "0.7.0"
-django = "4.2.1"
+django = "4.1.9"
 django-environ = "0.10.0"
 django-browser-reload = "1.8.0"
 #django-tailwind = "3.5.0"

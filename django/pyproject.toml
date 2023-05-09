@@ -7,6 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.9.16"
+# reserved packages
+requests = "2.29.0"
 loguru = "0.7.0"
 django = "4.1.8"
 django-environ = "0.10.0"

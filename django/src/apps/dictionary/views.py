@@ -1,3 +1,5 @@
+import json
+
 from django.http import Http404
 from django.utils import dateparse
 
@@ -12,10 +14,12 @@ from apps.core.models import (
     Store,
     Language,
 )
+from apps.data.views import store_in_lake
 from apps.dictionary.models import (
     PartOfSpeech,
     Pronunciation,
     Word,
+    Attribution,
     Definition,
     Example,
     RelationType,
@@ -30,16 +34,18 @@ from apps.dictionary.enums import (
     Type,
     Subtype,
     State,
+    Source as Source_Enum
 )
+
 from apps.dictionary.libs import WordnikService
 
 
 # Create your views here.
 
 class WordViewSet(viewsets.ModelViewSet):
-    serializer_class = WordSerializer
     queryset = Word.objects.all()
-    lookup_field = 'word'
+    serializer_class = WordSerializer
+    lookup_field = "word"
 
     limit_per = 10
     limit_audio = 50  # max 50
@@ -52,19 +58,19 @@ class WordViewSet(viewsets.ModelViewSet):
     delay_audio = 6 * 60 * 60  # 6 hours
 
     limit_enabled = False
-    translation_enabled = False
+    translation_enabled = True
 
     wordnik = WordnikService()
-    translator = LibreTranslateAPI('https://translate.astian.org/')
+    translator = LibreTranslateAPI('https://translate.argosopentech.com/')
 
     def retrieve(self, request, *args, **kwargs):
         try:
             word = self.get_object()
-            if word and word.word != kwargs.get('word'):
+            if word and word.word != kwargs.get("word"):
                 raise Http404(f"Not matched")
             word = self.get_remote_word(request, kwargs, word_ref=word)
         except Http404:
-            logger.exception('What?!')
+            logger.exception("What?!")
             word = self.get_remote_word(request, kwargs)
 
         if not word:
@@ -190,54 +196,120 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.delay)
             )
         ):
-            logger.debug(f'wordnik.get_relations')
+            logger.debug(f"wordnik.get_relations")
             language = self.get_or_create_language()
             word_ref = self.get_or_create_word(language, word)
             self.store_expire(word_ref.id, Type.WORD.name, Subtype.DEFAULT.name, None)
 
             if self.translation_enabled:
-                if source and target and source != target and source == 'en' and self.is_expired(
+                if source and target and source != target and source == "en" and self.is_expired(
                     word_ref.id,
                     Type.WORD.name,
                     Subtype.TRANSLATION.name,
                     source + target,
                     self.delay
                 ):
+                    logger.debug("producing translations")
                     if not self.has_language(code=source) or not self.has_language(code=target):
                         for language in self.translator.languages():
-                            self.get_or_create_language(language['code'], language['name'])
+                            logger.debug("storing languages")
+                            self.get_or_create_language(language["code"], language["name"])
 
                     source = self.get_language(source)
                     target = self.get_language(target)
 
+                    logger.debug(f"Source {source.code}, Target {target.code}")
+
                     if source and target:
                         try:
                             translation = self.translator.translate(word, source.code, target.code)
+                            logger.debug(f"Translation of {word} is {translation}")
                             if translation:
+                                store_in_lake(
+                                    source=Source_Enum.LIBRE_TRANSLATE.name,
+                                    ref=dict(
+                                        word=word,
+                                        source=source.code,
+                                        target=target.code,
+                                        type=Type.WORD.name,
+                                        subtype=Subtype.TRANSLATION.name,
+                                    ),
+                                    raw=translation
+                                )
                                 translation = self.get_or_create_word(target, translation)
                                 self.build_or_create_translation(source, target, word_ref, translation)
                                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.TRANSLATION.name,
                                                   source.code + target.code)
-                        except Http404 as error:
+                        except Http404:
                             logger.exception('What?!')
 
             if pronunciations:
+                # store in data lake
+                store_in_lake(
+                    source=Source_Enum.WORDNIK.name,
+                    ref=dict(
+                        word=word,
+                        type=Type.WORD.name,
+                        subtype=Subtype.PRONUNCIATION.name,
+                    ),
+                    raw=pronunciations
+                )
                 self.build_or_create_pronunciations(word_ref, pronunciations)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.PRONUNCIATION.name, None)
 
             if audios:
+                # store in data lake
+                store_in_lake(
+                    source=Source_Enum.WORDNIK.name,
+                    ref=dict(
+                        word=word,
+                        type=Type.WORD.name,
+                        subtype=Subtype.AUDIO.name,
+                    ),
+                    raw=audios
+                )
                 self.build_or_create_audios(word_ref, audios)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.AUDIO.name, None)
 
             if definitions:
+                # store in data lake
+                store_in_lake(
+                    source=Source_Enum.WORDNIK.name,
+                    ref=dict(
+                        word=word,
+                        type=Type.WORD.name,
+                        subtype=Subtype.DEFINITION.name,
+                    ),
+                    raw=definitions
+                )
                 self.build_or_create_definitions(word_ref, definitions)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.DEFINITION.name, None)
 
             if examples:
+                # store in data lake
+                store_in_lake(
+                    source=Source_Enum.WORDNIK.name,
+                    ref=dict(
+                        word=word,
+                        type=Type.WORD.name,
+                        subtype=Subtype.EXAMPLE.name,
+                    ),
+                    raw=examples
+                )
                 self.build_or_create_examples(word_ref, examples=examples.examples)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.EXAMPLE.name, None)
 
             if relations:
+                # store in data lake
+                store_in_lake(
+                    source=Source_Enum.WORDNIK.name,
+                    ref=dict(
+                        word=word,
+                        type=Type.WORD.name,
+                        subtype=Subtype.RELATION.name,
+                    ),
+                    raw=relations
+                )
                 self.build_or_create_relations(word_ref, relations)
                 self.store_expire(word_ref.id, Type.WORD.name, Subtype.RELATION.name, None)
 
@@ -284,6 +356,16 @@ class WordViewSet(viewsets.ModelViewSet):
         part_of_speech, created = PartOfSpeech.objects.get_or_create(part_of_speech=part_of_speech)
         logger.debug(f'{part_of_speech} [created : {created}]')
         return part_of_speech
+
+    def get_or_create_attribution(self, url, text):
+        if url or text:
+            attribution, created = Attribution.objects.get_or_create(
+                url=url,
+                text=text,
+            )
+            logger.debug(f"Attribution: {attribution.url} [created : {created}]")
+            return attribution
+        return None
 
     def get_or_create_relation_type(self, relation_type):
         relation_type, created = RelationType.objects.get_or_create(relation_type=relation_type)
@@ -374,16 +456,20 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def build_or_create_definition(self, word, definition):
         examples = definition.exampleUses
-        source = self.get_or_create_source(type=Type.DICTIONARY.name, subtype=Subtype.WORD.name,
-                                           source=definition.sourceDictionary)
+        source = self.get_or_create_source(
+            type=Type.DICTIONARY.name, subtype=Subtype.WORD.name,
+            source=definition.sourceDictionary
+        )
         part_of_speech = self.get_or_create_part_of_speech(definition.partOfSpeech)
+        attribution = self.get_or_create_attribution(definition.attributionUrl, definition.attributionText)
         definition, created = Definition.objects.get_or_create(
             source=source,
             part_of_speech=part_of_speech,
+            attribution=attribution,
             word=word,
             definition=definition.text
         )
-        logger.debug(f'{definition} [created : {created}]')
+        logger.debug(f"Word: {word.word} Definition: {definition} [created : {created}]")
         self.build_or_create_examples(word, definition, examples)
 
     def build_or_create_examples(self, word, definition=None, examples=None):
@@ -447,5 +533,5 @@ class WordViewSet(viewsets.ModelViewSet):
 
 
 class DefinitionViewSet(viewsets.ModelViewSet):
-    queryset = Definition.objects
+    queryset = Definition.objects.all()
     serializer_class = DefinitionSerializer

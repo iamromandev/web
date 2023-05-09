@@ -32,3 +32,7 @@ restart:
 deploy:
 	python src/manage.py tailwind build
 
+# deploy
+.PHONY: test
+test:
+	poetry run python src/manage.py test apps.dictionary.tests

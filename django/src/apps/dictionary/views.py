@@ -310,6 +310,8 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.build_or_create_relations(word_ref, relations)
                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.RELATION.value, None)
 
+            logger.debug(f"Completed {word_ref.word}")
+
         return word_ref
 
     def get_or_create_source(

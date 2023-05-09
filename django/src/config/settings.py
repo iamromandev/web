@@ -191,7 +191,7 @@ AUTH_USER_MODEL = 'core.User'
 logger.remove()
 
 logger.add(
-    sys.stdout,
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace"),
     format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{"
     "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
     backtrace=True,

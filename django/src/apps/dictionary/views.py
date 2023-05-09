@@ -170,7 +170,7 @@ class WordViewSet(viewsets.ModelViewSet):
             self.delay
         ):
             examples = self.wordnik.get_examples(word, limit=self.limit_example)
-            logger.debug(f"wordnik.get_examples {len(examples.examples)}")
+            logger.debug(f"wordnik.get_examples {len(examples.examples) if hasattr(examples, 'examples') else 0}")
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -215,7 +215,7 @@ class WordViewSet(viewsets.ModelViewSet):
                     source = self.get_language(source)
                     target = self.get_language(target)
 
-                    logger.debug(f"Source {source.code}, Target {target.code}")
+                    logger.debug(f"Word {word} Source {source.code}, Target {target.code}")
 
                     if source and target:
                         try:

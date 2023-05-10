@@ -180,7 +180,7 @@ class WordViewSet(viewsets.ModelViewSet):
             self.delay
         ):
             relations = self.wordnik.get_relations(word, limit=self.limit_relation)
-            logger.debug(f"wordnik.get_relations {len(relations)}")
+            logger.debug(f"wordnik.get_relations {len(relations) if relations else 0}")
 
         if (
             (not word_ref and definitions)

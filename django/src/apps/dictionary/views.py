@@ -238,7 +238,7 @@ class WordViewSet(viewsets.ModelViewSet):
                                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.TRANSLATION.value,
                                                   source.code + target.code)
                         except Http404:
-                            logger.exception('What?!')
+                            logger.exception("What?!")
 
             if pronunciations:
                 # store in data lake
@@ -330,9 +330,16 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def has_language(self, code=None, name=None):
         try:
-            Language.objects.get(code=code, name=name)
-            return True
+            if code:
+                if name:
+                    Language.objects.get(code=code, name=name)
+                    return True
+                else:
+                    Language.objects.get(code=code)
+                    return True
+            return False
         except Language.DoesNotExist:
+            logger.exception("What?!")
             return False
 
     def get_or_create_language(self, code="en", name="English"):

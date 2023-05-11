@@ -22,6 +22,7 @@ class WordnikService:
         self.error_code_unauthorized = 401
         self.error_code_rate_limit = 429
         self.error_code_not_found = 404
+        self.error_code_server = 500
 
         for index in range(self.api_key_length):
             self.api_key_queue.enqueue(index)

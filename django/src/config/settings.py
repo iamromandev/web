@@ -191,7 +191,7 @@ AUTH_USER_MODEL = 'core.User'
 logger.remove()
 
 logger.add(
-    sys.stdout,
+    sys.stderr,
     format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{"
     "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
     backtrace=True,
@@ -216,3 +216,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+# wordnik api keys
+WORDNIK_API_KEYS=env.list('WORDNIK_API_KEYS', default=[])
+logger.debug(f'WORDNIK_API_KEYS: {WORDNIK_API_KEYS}')

@@ -371,7 +371,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 error_languages, languages = self.translator.languages()
 
                 if not error_languages and languages:
-                    for language in self.translator.languages():
+                    for language in languages:
                         self.get_or_create_language(language["code"], language["name"])
 
             source = self.get_language(source)

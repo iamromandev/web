@@ -12,12 +12,18 @@ from libretranslatepy import LibreTranslateAPI
 
 class WordnikService:
     def __init__(self):
-        self.base_url = 'http://api.wordnik.com/v4'
-        self.api_key_roman_bjit = '5c9a53f4c0e012d4cf5a66115420c073d7da523b9081dff1f'
-        self.api_key_dreampany = '464b0c5a35f469103f3610840dc061f1c768aa1c223ffa447'
-        self.api_key_iftenet = 'a6714f04f26b9f14e29a920702e0f03dde4b84e98f94fe6fe'
+        self.base_url = "http://api.wordnik.com/v4"
+        self.api_key_roman_bjit = "5c9a53f4c0e012d4cf5a66115420c073d7da523b9081dff1f"
+        self.api_key_dreampany = "464b0c5a35f469103f3610840dc061f1c768aa1c223ffa447"
+        self.api_key_iftenet = "a6714f04f26b9f14e29a920702e0f03dde4b84e98f94fe6fe"
+        self.api_key_iamromandev = "q3k3h3ryv47vvo4xfyye3szuuy0i023042d7uqw7i686m2r8p"
 
-        self.api_keys = [self.api_key_roman_bjit, self.api_key_dreampany, self.api_key_iftenet]
+        self.api_keys = [
+            self.api_key_roman_bjit,
+            self.api_key_dreampany,
+            self.api_key_iftenet,
+            self.api_key_iamromandev,
+        ]
 
         self.api_key_length = len(self.api_keys)
         self.api_key_queue = CircularQueue(self.api_key_length)

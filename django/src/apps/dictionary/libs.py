@@ -45,7 +45,6 @@ class WordnikService:
             try:
                 word_api = self.get_word_api()
                 result = word_api.getTextPronunciations(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -64,7 +63,6 @@ class WordnikService:
             try:
                 word_api = self.get_word_api()
                 result = word_api.getAudio(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -83,7 +81,6 @@ class WordnikService:
             try:
                 word_api = self.get_word_api()
                 result = word_api.getDefinitions(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -102,7 +99,6 @@ class WordnikService:
             try:
                 word_api = self.get_word_api()
                 result = word_api.getExamples(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -121,7 +117,6 @@ class WordnikService:
             try:
                 word_api = self.get_word_api()
                 result = word_api.getRelatedWords(word, limitPerRelationshipType=limit)
-                self.api_key_queue.iterate()
                 is_error = False
             except HTTPError as error:
                 logger.error(error)

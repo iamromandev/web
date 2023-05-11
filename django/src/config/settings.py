@@ -216,3 +216,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+# wordnik api keys
+WORDNIK_API_KEYS=env.list('WORDNIK_API_KEYS', default=[])
+logger.debug(f'WORDNIK_API_KEYS: {WORDNIK_API_KEYS}')

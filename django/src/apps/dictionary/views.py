@@ -1,13 +1,9 @@
-import json
-
 from django.http import Http404
 from django.utils import dateparse
 
 from loguru import logger
 from rest_framework import viewsets
 from rest_framework.response import Response
-
-from libretranslatepy import LibreTranslateAPI
 
 from apps.core.models import (
     Source,
@@ -38,6 +34,7 @@ from apps.dictionary.enums import (
 )
 
 from apps.dictionary.libs import WordnikService
+from apps.dictionary.libs import TranslatorService
 
 
 # Create your views here.
@@ -61,7 +58,7 @@ class WordViewSet(viewsets.ModelViewSet):
     translation_enabled = True
 
     wordnik = WordnikService()
-    translator = LibreTranslateAPI('https://translate.argosopentech.com/')
+    translator = TranslatorService()
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -122,25 +119,11 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_word_by_wordnik(self, source, target, word, word_ref):
 
-        pronunciations = None
-        audios = None
-        definitions = None
-        examples = None
-        relations = None
-
-        # for first time check that it has at least definitions
-        if not word_ref or self.is_expired(
-            word_ref.id,
-            Type.WORD.value,
-            Subtype.DEFINITION.value,
-            None,
-            self.delay
-        ):
-            definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
-            logger.debug(f"wordnik.get_definitions {len(definitions)}")
-
-        if not definitions:
-            return word_ref
+        error_pronunciations, pronunciations = True, None
+        error_audios, audios = True, None
+        error_definitions, definitions = True, None
+        error_examples, examples = True, None
+        error_relations, relations = True, None
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -149,8 +132,11 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
-            logger.debug(f"wordnik.get_pronunciations {len(pronunciations)}")
+            error_pronunciations, pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
+            if error_pronunciations:
+                logger.error(f"api limit on wordnik.get_pronunciations")
+                return word_ref
+            logger.debug(f"wordnik.get_pronunciations: {len(pronunciations)}")
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -159,8 +145,24 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            audios = self.wordnik.get_audios(word, limit=self.limit_audio)
-            logger.debug(f"wordnik.get_audios {len(audios)}")
+            error_audios, audios = self.wordnik.get_audios(word, limit=self.limit_audio)
+            if error_audios:
+                logger.error(f"api limit on wordnik.get_audios")
+                return word_ref
+            logger.debug(f"wordnik.get_audios: {len(audios)}")
+
+        if not word_ref or self.is_expired(
+            word_ref.id,
+            Type.WORD.value,
+            Subtype.DEFINITION.value,
+            None,
+            self.delay
+        ):
+            error_definitions, definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
+            if error_definitions:
+                logger.error(f"api limit on wordnik.get_definitions")
+                return word_ref
+            logger.debug(f"wordnik.get_definitions: {len(definitions)}")
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -169,8 +171,11 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            examples = self.wordnik.get_examples(word, limit=self.limit_example)
-            logger.debug(f"wordnik.get_examples {len(examples.examples) if hasattr(examples, 'examples') else 0}")
+            error_examples, examples = self.wordnik.get_examples(word, limit=self.limit_example)
+            if error_examples:
+                logger.error(f"api limit on wordnik.get_examples")
+                return word_ref
+            logger.debug(f"wordnik.get_examples: {len(examples.examples) if hasattr(examples, 'examples') else 0}")
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -179,11 +184,18 @@ class WordViewSet(viewsets.ModelViewSet):
             None,
             self.delay
         ):
-            relations = self.wordnik.get_relations(word, limit=self.limit_relation)
-            logger.debug(f"wordnik.get_relations {len(relations) if relations else 0}")
+            error_relations, relations = self.wordnik.get_relations(word, limit=self.limit_relation)
+            if error_relations:
+                logger.error(f"api limit on wordnik.get_relations")
+                return word_ref
+            logger.debug(f"wordnik.get_relations: {len(relations) if relations else 0}")
 
+        has_resources = not (
+                error_pronunciations and error_audios and error_definitions and error_examples and error_relations)
         if (
-            (not word_ref and definitions)
+            (
+                not word_ref and has_resources
+            )
             or
             (
                 word_ref and self.is_expired(
@@ -191,56 +203,18 @@ class WordViewSet(viewsets.ModelViewSet):
                 Type.WORD.value,
                 Subtype.DEFAULT.value,
                 None,
-                self.delay)
+                self.delay
+            )
             )
         ):
-            language = self.get_or_create_language()
+            language = self.get_or_create_language(code="en", name="English")
             word_ref = self.get_or_create_word(language, word)
             self.store_expire(word_ref.id, Type.WORD.value, Subtype.DEFAULT.value, None)
 
             if self.translation_enabled:
-                if source and target and source != target and source == "en" and self.is_expired(
-                    word_ref.id,
-                    Type.WORD.value,
-                    Subtype.TRANSLATION.value,
-                    source + target,
-                    self.delay
-                ):
-                    logger.debug("producing translations")
-                    if not self.has_language(code=source) or not self.has_language(code=target):
-                        logger.debug("storing languages for translations support")
-                        for language in self.translator.languages():
-                            self.get_or_create_language(language["code"], language["name"])
+                self.do_translation_job(source, target, word, word_ref)
 
-                    source = self.get_language(source)
-                    target = self.get_language(target)
-
-                    logger.debug(f"Word {word} Source {source.code}, Target {target.code}")
-
-                    if source and target:
-                        try:
-                            translation = self.translator.translate(word, source.code, target.code)
-                            logger.debug(f"Translation of {word} is {translation}")
-                            if translation:
-                                store_in_lake(
-                                    source=Source_Enum.LIBRE_TRANSLATE.value,
-                                    ref=dict(
-                                        word=word,
-                                        source=source.code,
-                                        target=target.code,
-                                        type=Type.WORD.value,
-                                        subtype=Subtype.TRANSLATION.value,
-                                    ),
-                                    raw=translation
-                                )
-                                translation = self.get_or_create_word(target, translation)
-                                self.build_or_create_translation(source, target, word_ref, translation)
-                                self.store_expire(word_ref.id, Type.WORD.value, Subtype.TRANSLATION.value,
-                                                  source.code + target.code)
-                        except Http404:
-                            logger.exception("What?!")
-
-            if pronunciations:
+            if not error_pronunciations and pronunciations:
                 # store in data lake
                 store_in_lake(
                     source=Source_Enum.WORDNIK.value,
@@ -254,7 +228,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.build_or_create_pronunciations(word_ref, pronunciations)
                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.PRONUNCIATION.value, None)
 
-            if audios:
+            if not error_audios and audios:
                 # store in data lake
                 store_in_lake(
                     source=Source_Enum.WORDNIK.value,
@@ -268,7 +242,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.build_or_create_audios(word_ref, audios)
                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.AUDIO.value, None)
 
-            if definitions:
+            if not error_definitions and definitions:
                 # store in data lake
                 store_in_lake(
                     source=Source_Enum.WORDNIK.value,
@@ -282,7 +256,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.build_or_create_definitions(word_ref, definitions)
                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.DEFINITION.value, None)
 
-            if examples:
+            if not error_examples and examples:
                 # store in data lake
                 store_in_lake(
                     source=Source_Enum.WORDNIK.value,
@@ -296,7 +270,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.build_or_create_examples(word_ref, examples=examples.examples)
                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.EXAMPLE.value, None)
 
-            if relations:
+            if not error_relations and relations:
                 # store in data lake
                 store_in_lake(
                     source=Source_Enum.WORDNIK.value,
@@ -338,8 +312,8 @@ class WordViewSet(viewsets.ModelViewSet):
                     Language.objects.get(code=code)
                     return True
             return False
-        except Language.DoesNotExist:
-            logger.exception("What?!")
+        except Language.DoesNotExist as error:
+            logger.error(error)
             return False
 
     def get_or_create_language(self, code="en", name="English"):
@@ -382,6 +356,55 @@ class WordViewSet(viewsets.ModelViewSet):
         word, created = Word.objects.get_or_create(language=language, word=word)
         logger.debug(f"{word} [created : {created}]")
         return word
+
+    def do_translation_job(self, source, target, word, word_ref):
+        if source and target and source != target and source == "en" and self.is_expired(
+            word_ref.id,
+            Type.WORD.value,
+            Subtype.TRANSLATION.value,
+            source + target,
+            self.delay
+        ):
+            logger.debug("producing translations")
+            if not (self.has_language(code=source) and self.has_language(code=target)):
+                logger.debug("storing languages for translations support")
+                error_languages, languages = self.translator.languages()
+
+                if not error_languages and languages:
+                    for language in self.translator.languages():
+                        self.get_or_create_language(language["code"], language["name"])
+
+            source = self.get_language(source)
+            target = self.get_language(target)
+
+            logger.debug(f"word {word} source {source.code}, target {target.code}")
+
+            if source and target:
+                try:
+                    error_translation, translation = self.translator.translate(word, source.code, target.code)
+                    logger.debug(f"translation of {word} is {translation}")
+                    if not error_translation and translation:
+                        store_in_lake(
+                            source=Source_Enum.LIBRE_TRANSLATE.value,
+                            ref=dict(
+                                word=word,
+                                source=source.code,
+                                target=target.code,
+                                type=Type.WORD.value,
+                                subtype=Subtype.TRANSLATION.value,
+                            ),
+                            raw=translation
+                        )
+                        translation = self.get_or_create_word(target, translation)
+                        self.build_or_create_translation(source, target, word_ref, translation)
+                        self.store_expire(
+                            word_ref.id,
+                            Type.WORD.value,
+                            Subtype.TRANSLATION.value,
+                            source.code + target.code
+                        )
+                except Http404 as error:
+                    logger.error(error)
 
     def build_or_create_translation(self, source, target, word, translation):
         if not translation:

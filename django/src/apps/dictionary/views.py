@@ -503,7 +503,6 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def build_or_create_examples(self, word, definition=None, examples=None):
         for example in examples:
-            print(type(example))
             self.build_or_create_example(word, definition, example)
 
     def build_or_create_example(self, word, definition=None, example=None):

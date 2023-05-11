@@ -1,20 +1,24 @@
 import random
-
 from urllib.error import HTTPError
 
 from loguru import logger
 from wordnik import swagger, WordApi
 
 from config.settings import WORDNIK_API_KEYS
-from apps.core.libs import CircularQueue
+from apps.core.libs import (
+    CircularQueue,
+    ApiClient,
+)
 
 from libretranslatepy import LibreTranslateAPI
 
 
 class WordnikService:
     def __init__(self):
-        self.base_url = "http://api.wordnik.com/v4"
+
         self.api_keys = WORDNIK_API_KEYS
+        self.base_url = "http://api.wordnik.com/v4"
+        self._api_client = ApiClient()
 
         self.api_key_length = len(self.api_keys)
         self.api_key_queue = CircularQueue(self.api_key_length)
@@ -34,7 +38,12 @@ class WordnikService:
         for index in range(random.randint(0, self.api_key_length)):
             self.api_key_queue.iterate()
 
-    def get_word_api(self) -> WordApi.WordApi:
+    @property
+    def _api_key(self) -> str:
+        return self.api_keys[self.api_key_queue.peek()]
+
+    @property
+    def _word_api(self) -> WordApi.WordApi:
         return self.word_apis[self.api_key_queue.peek()]
 
     def get_pronunciations(self, word, limit):
@@ -42,8 +51,7 @@ class WordnikService:
         result = None
         for index in range(self.api_key_length):
             try:
-                word_api = self.get_word_api()
-                result = word_api.getTextPronunciations(word, limit=limit)
+                result = self._word_api.getTextPronunciations(word, limit=limit)
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -60,8 +68,7 @@ class WordnikService:
         result = None
         for index in range(self.api_key_length):
             try:
-                word_api = self.get_word_api()
-                result = word_api.getAudio(word, limit=limit)
+                result = self._word_api.getAudio(word, limit=limit)
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -78,8 +85,7 @@ class WordnikService:
         result = None
         for index in range(self.api_key_length):
             try:
-                word_api = self.get_word_api()
-                result = word_api.getDefinitions(word, limit=limit)
+                result = self._word_api.getDefinitions(word, limit=limit)
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -96,8 +102,32 @@ class WordnikService:
         result = None
         for index in range(self.api_key_length):
             try:
-                word_api = self.get_word_api()
-                result = word_api.getExamples(word, limit=limit)
+                result = self._word_api.getExamples(word, limit=limit)
+                is_error = False
+            except HTTPError as error:
+                logger.error(error)
+                if error.code == self.error_code_rate_limit:
+                    self.api_key_queue.iterate()
+                    continue
+                elif error.code == self.error_code_not_found:
+                    is_error = False
+                    break
+        return is_error, result
+
+    def get_examples_rest(self, word, limit):
+        is_error = True
+        result = None
+        for index in range(self.api_key_length):
+            try:
+                url = f'{self.base_url}/word.json/{word}/examples'
+                params = {
+                    'limit':limit,
+                    'api_key':self._api_key,
+                }
+                result = self._api_client.get(
+                    url=url,
+                    params=params
+                )
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -114,8 +144,7 @@ class WordnikService:
         result = None
         for index in range(self.api_key_length):
             try:
-                word_api = self.get_word_api()
-                result = word_api.getRelatedWords(word, limitPerRelationshipType=limit)
+                result = self._word_api.getRelatedWords(word, limitPerRelationshipType=limit)
                 is_error = False
             except HTTPError as error:
                 logger.error(error)
@@ -128,8 +157,7 @@ class WordnikService:
         return is_error, result
 
 
-class TranslatorService:
-
+class TranslationService:
     limit = 3
     error_code_timeout = 504
 

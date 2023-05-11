@@ -1,3 +1,4 @@
+import requests
 from loguru import logger
 from rest_framework.views import exception_handler
 
@@ -46,3 +47,29 @@ def generic_exception_handler(exc, context):
     if response is not None:
         response.data['status_code'] = response.status_code
     return response
+
+
+class ApiClient:
+
+    def __init__(self):
+        self._session = requests.Session()
+        self._session.headers.update(
+            {
+                "content-type": "application/json; charset=utf-8",
+                "accept": "application/json; charset=utf-8",
+            }
+        )
+
+    @property
+    def session(self) -> requests.Session:
+        return self._session
+
+    def get(self, url: str, params: dict = {}) -> dict:
+        response = self.session.get(
+            url,
+            params=params
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        return data

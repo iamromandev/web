@@ -34,7 +34,7 @@ from apps.dictionary.enums import (
 )
 
 from apps.dictionary.libs import WordnikService
-from apps.dictionary.libs import TranslatorService
+from apps.dictionary.libs import TranslationService
 
 
 # Create your views here.
@@ -58,7 +58,7 @@ class WordViewSet(viewsets.ModelViewSet):
     translation_enabled = True
 
     wordnik = WordnikService()
-    translator = TranslatorService()
+    translator = TranslationService()
 
     def retrieve(self, request, *args, **kwargs):
         try:

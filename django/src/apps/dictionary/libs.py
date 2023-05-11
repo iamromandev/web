@@ -112,6 +112,9 @@ class WordnikService:
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+                elif error.code == self.error_code_server:
+                    limit = limit - 10
+                    continue
         return is_error, result
 
     def get_examples_rest(self, word, limit):

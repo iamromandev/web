@@ -147,9 +147,9 @@ class WordViewSet(viewsets.ModelViewSet):
         ):
             error_audios, audios = self.wordnik.get_audios(word, limit=self.limit_audio)
             if error_audios:
-                logger.error(f"api limit on wordnik.get_audios")
+                logger.error(f'api limit on wordnik.get_audios')
                 return word_ref
-            logger.debug(f"wordnik.get_audios: {len(audios if audios else [])}")
+            logger.debug(f'wordnik.get_audios: {len(audios if audios else [])}')
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -160,9 +160,9 @@ class WordViewSet(viewsets.ModelViewSet):
         ):
             error_definitions, definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
             if error_definitions:
-                logger.error(f"api limit on wordnik.get_definitions")
+                logger.error(f'api limit on wordnik.get_definitions')
                 return word_ref
-            logger.debug(f"wordnik.get_definitions: {len(definitions)}")
+            logger.debug(f"wordnik.get_definitions: {len(definitions if definitions else [])}")
 
         if not word_ref or self.is_expired(
             word_ref.id,

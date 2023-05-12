@@ -136,7 +136,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if error_pronunciations:
                 logger.error(f"api limit on wordnik.get_pronunciations")
                 return word_ref
-            logger.debug(f"wordnik.get_pronunciations: {len(pronunciations)}")
+            logger.debug(f'wordnik.get_pronunciations: {len(pronunciations if pronunciations else [])}')
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -149,7 +149,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if error_audios:
                 logger.error(f"api limit on wordnik.get_audios")
                 return word_ref
-            logger.debug(f"wordnik.get_audios: {len(audios)}")
+            logger.debug(f"wordnik.get_audios: {len(audios if audios else [])}")
 
         if not word_ref or self.is_expired(
             word_ref.id,

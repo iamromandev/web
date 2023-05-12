@@ -191,7 +191,7 @@ class WordViewSet(viewsets.ModelViewSet):
             logger.debug(f"wordnik.get_relations: {len(relations) if relations else 0}")
 
         has_resources = not (
-                error_pronunciations and error_audios and error_definitions and error_examples and error_relations)
+            error_pronunciations and error_audios and error_definitions and error_examples and error_relations)
         if (
             (
                 not word_ref and has_resources
@@ -482,11 +482,13 @@ class WordViewSet(viewsets.ModelViewSet):
                 continue
             self.build_or_create_definition(word, definition)
             pers[source] = pers[source] + 1
+        logger.debug(f'created definitions for {word.word}')
 
     def build_or_create_definition(self, word, definition):
         examples = definition.exampleUses
         source = self.get_or_create_source(
-            type=Type.DICTIONARY.value, subtype=Subtype.WORD.value,
+            type=Type.DICTIONARY.value,
+            subtype=Subtype.WORD.value,
             source=definition.sourceDictionary
         )
         part_of_speech = self.get_or_create_part_of_speech(definition.partOfSpeech)
@@ -498,12 +500,13 @@ class WordViewSet(viewsets.ModelViewSet):
             word=word,
             definition=definition.text
         )
-        logger.debug(f"Word: {word.word} Definition: {definition} [created : {created}]")
+        # logger.debug(f"Word: {word.word} Definition: {definition} [created : {created}]")
         self.build_or_create_examples(word, definition, examples)
 
     def build_or_create_examples(self, word, definition=None, examples=None):
         for example in examples:
             self.build_or_create_example(word, definition, example)
+        logger.debug(f'created examples for {word.word}')
 
     def build_or_create_example(self, word, definition=None, example=None):
         if definition:
@@ -524,11 +527,12 @@ class WordViewSet(viewsets.ModelViewSet):
                     "year": dateparse.parse_date(year) if year else None
                 }
             )
-        logger.debug(f"{example} [created : {created}]")
+        # logger.debug(f"{example} [created : {created}]")
 
     def build_or_create_relations(self, word, relations):
         for relation in relations:
             self.build_or_create_relation(word, relation)
+        logger.debug(f'created relations for {word.word}')
 
     def build_or_create_relation(self, word, relation):
         if None in [relation.relationshipType, relation.words]:
@@ -558,7 +562,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 left_word=left_word,
                 right_word=right_word
             )
-            logger.debug(f'{relation} [created : {created}]')
+            # logger.debug(f'{relation} [created : {created}]')
 
 
 class DefinitionViewSet(viewsets.ModelViewSet):

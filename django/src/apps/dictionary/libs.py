@@ -107,6 +107,7 @@ class WordnikService:
         return is_error, result
 
     def get_examples(self, word, limit):
+        main_limit = limit
         is_error = True
         result = None
         index = 0
@@ -120,7 +121,8 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    index = index + 1
+                    if main_limit == limit:
+                        index = index + 1
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False

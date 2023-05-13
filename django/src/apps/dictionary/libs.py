@@ -249,6 +249,10 @@ class TranslationService:
 
     translator = LibreTranslateAPI('https://translate.argosopentech.com/')
 
+    def sleep(self) -> None:
+        time.sleep(5)
+        return None
+
     def languages(self):
         is_error = True
         result = None
@@ -261,7 +265,7 @@ class TranslationService:
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
-                    time.sleep(5)
+                    self.sleep()
                     continue
 
         return is_error, result
@@ -278,7 +282,7 @@ class TranslationService:
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
-                    time.sleep(5)
+                    self.sleep()
                     continue
 
         return is_error, result

@@ -111,7 +111,7 @@ class WordnikService:
         result = None
         index = 0
 
-        while index < self.api_key_length:
+        while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getExamples(word, limit=limit)
                 is_error = False
@@ -204,6 +204,7 @@ class TranslationService:
     def translate(self, text, source, target):
         is_error = True
         result = None
+
         for index in range(self.limit):
             try:
                 result = self.translator.translate(text, source, target)
@@ -213,4 +214,5 @@ class TranslationService:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
                     continue
+
         return is_error, result

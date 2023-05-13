@@ -65,32 +65,43 @@ class Attribution(SoftDeleteModel):
 
 class Definition(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    source = models.ForeignKey(Source, related_name="definitions", on_delete=models.DO_NOTHING)
-    part_of_speech = models.ForeignKey(PartOfSpeech, related_name="definitions", on_delete=models.DO_NOTHING)
-    attribution = models.ForeignKey(Attribution, related_name="definitions", blank=True, null=True,
-                                    on_delete=models.DO_NOTHING)
-    word = models.ForeignKey(Word, related_name="definitions", on_delete=models.DO_NOTHING)
+    source = models.ForeignKey(
+        Source,
+        related_name='definitions',
+        on_delete=models.DO_NOTHING
+    )
+    part_of_speech = models.ForeignKey(
+        PartOfSpeech, related_name='definitions', on_delete=models.DO_NOTHING
+    )
+    attribution = models.ForeignKey(
+        Attribution,
+        related_name='definitions',
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING
+    )
+    word = models.ForeignKey(Word, related_name='definitions', on_delete=models.DO_NOTHING)
     definition = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["definition"]
+        ordering = ['definition']
 
     def __str__(self):
-        return f"[Definition: {self.definition.encode('utf8')}]"
+        return f'[Definition: {self.definition.encode("utf8")}]'
 
 
 class Example(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     word = models.ForeignKey(
         Word,
-        related_name="examples",
+        related_name='examples',
         on_delete=models.DO_NOTHING
     )
     definition = models.ForeignKey(
         Definition,
-        related_name="examples",
+        related_name='examples',
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING
@@ -104,10 +115,10 @@ class Example(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["example"]
+        ordering = ['example']
 
     def __str__(self):
-        return f"[Example: {self.example.encode('utf8')}]"
+        return f'[Example: {self.example.encode("utf8")}]'
 
 
 class RelationType(SoftDeleteModel):
@@ -117,10 +128,10 @@ class RelationType(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["relation_type"]
+        ordering = ['relation_type']
 
     def __str__(self):
-        return f"[RelationType: {self.relation_type.encode('utf8')}]"
+        return f'[RelationType: {self.relation_type.encode("utf8")}]'
 
 
 class Relation(SoftDeleteModel):

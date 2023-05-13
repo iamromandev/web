@@ -39,6 +39,10 @@ class WordnikService:
         for index in range(random.randint(0, self.api_key_length)):
             self.api_key_queue.iterate()
 
+    def sleep(self) -> None:
+        time.sleep(5)
+        return None
+
     @property
     def _api_key(self) -> str:
         return self._api_keys[self.api_key_queue.peek()]
@@ -48,65 +52,95 @@ class WordnikService:
         return self.word_apis[self.api_key_queue.peek()]
 
     def get_pronunciations(self, word, limit):
+        main_limit = limit
         is_error = True
         result = None
+        index = 0
 
-        for index in range(self.api_key_length):
+        while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getTextPronunciations(word, limit=limit)
+                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(5)
+                    if main_limit == limit:
+                        index = index + 1
+                    self.sleep()
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+                elif error.code == self.error_code_server:
+                    self.api_key_queue.iterate()
+                    limit = limit - 1
+                    self.sleep()
+                    continue
 
         return is_error, result
 
     def get_audios(self, word, limit):
+        main_limit = limit
         is_error = True
         result = None
+        index = 0
 
-        for index in range(self.api_key_length):
+        while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getAudio(word, limit=limit)
+                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(5)
+                    if main_limit == limit:
+                        index = index + 1
+                    self.sleep()
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+                elif error.code == self.error_code_server:
+                    self.api_key_queue.iterate()
+                    limit = limit - 1
+                    self.sleep()
+                    continue
 
         return is_error, result
 
     def get_definitions(self, word, limit):
+        main_limit = limit
         is_error = True
         result = None
+        index = 0
 
-        for index in range(self.api_key_length):
+        while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getDefinitions(word, limit=limit)
+                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(5)
+                    if main_limit == limit:
+                        index = index + 1
+                    self.sleep()
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+                elif error.code == self.error_code_server:
+                    self.api_key_queue.iterate()
+                    limit = limit - 1
+                    self.sleep()
+                    continue
 
         return is_error, result
 
@@ -119,6 +153,7 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getExamples(word, limit=limit)
+                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -127,44 +162,53 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    time.sleep(5)
+                    self.sleep()
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
                 elif error.code == self.error_code_server:
+                    self.api_key_queue.iterate()
                     limit = limit - 1
-                    time.sleep(5)
+                    self.sleep()
                     continue
 
         return is_error, result
 
     def get_examples_rest(self, word, limit):
+        main_limit = limit
         is_error = True
         result = None
+        index = 0
 
-        for index in range(self.api_key_length):
+        while index < self.api_key_length and limit > 0:
             try:
                 url = f'{self._base_url}/word.json/{word}/examples'
                 params = {
                     'limit': limit,
                     'api_key': self._api_key,
                 }
-                result = self._api_client.get(
-                    url=url,
-                    params=params
-                )
+                result = self._api_client.get(url=url, params=params)
+                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(5)
+                    if main_limit == limit:
+                        index = index + 1
+                    self.sleep()
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+                elif error.code == self.error_code_server:
+                    self.api_key_queue.iterate()
+                    limit = limit - 1
+                    self.sleep()
+                    continue
+
         return is_error, result
 
     def get_relations(self, word, limit):
@@ -176,6 +220,7 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getRelatedWords(word, limitPerRelationshipType=limit)
+                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -184,14 +229,15 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    time.sleep(5)
+                    self.sleep()
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
                 elif error.code == self.error_code_server:
+                    self.api_key_queue.iterate()
                     limit = limit - 1
-                    time.sleep(5)
+                    self.sleep()
                     continue
 
         return is_error, result

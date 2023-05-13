@@ -95,7 +95,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 "state": State.SYNCED.value
             }
         )
-        logger.debug(f"{store} [created : {created}]")
+        # logger.debug(f"{store} [created : {created}]")
 
     def store_synced(self, ref, type, subtype):
         store, created = Store.objects.update_or_create(
@@ -106,7 +106,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 "state": State.SYNCED.value
             }
         )
-        logger.debug(f"{store} [created : {created}]")
+        # logger.debug(f"{store} [created : {created}]")
 
     def get_remote_word(self, request, kwargs, word_ref=None):
         source = request.GET.get("source")
@@ -114,7 +114,7 @@ class WordViewSet(viewsets.ModelViewSet):
         word = kwargs.get("word")
         word = word.lower()
 
-        logger.debug(f"Calling remote word [source: {source}, target: {target}, word: {word}]")
+        logger.debug(f'calling remote word [source: {source}, target: {target}, word: {word}]')
         return self.get_word_by_wordnik(source, target, word, word_ref)
 
     def get_word_by_wordnik(self, source, target, word, word_ref):
@@ -299,7 +299,7 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=subtype,
             source=source
         )
-        logger.debug(f"{source} [created : {created}]")
+        logger.debug(f'{source} [created : {created}]')
         return source
 
     def has_language(self, code=None, name=None):
@@ -316,14 +316,14 @@ class WordViewSet(viewsets.ModelViewSet):
             logger.error(error)
             return False
 
-    def get_or_create_language(self, code="en", name="English"):
+    def get_or_create_language(self, code='en', name='English'):
         source = self.get_or_create_source(type=Type.DICTIONARY.value)
         language, created = Language.objects.get_or_create(
             source=source,
             code=code,
             name=name
         )
-        logger.debug(f"{language} [created : {created}]")
+        logger.debug(f'{language} [created : {created}]')
         return language
 
     def get_language(self, code):
@@ -334,7 +334,7 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_or_create_part_of_speech(self, part_of_speech):
         part_of_speech, created = PartOfSpeech.objects.get_or_create(part_of_speech=part_of_speech)
-        logger.debug(f"{part_of_speech} [created : {created}]")
+        logger.debug(f'{part_of_speech} [created : {created}]')
         return part_of_speech
 
     def get_or_create_attribution(self, url, text):
@@ -343,7 +343,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 url=url,
                 text=text,
             )
-            logger.debug(f"Attribution: {attribution.url} [created : {created}]")
+            logger.debug(f'Attribution: {attribution.url} [created : {created}]')
             return attribution
         return None
 
@@ -352,9 +352,10 @@ class WordViewSet(viewsets.ModelViewSet):
         logger.debug(f"{relation_type} [created : {created}]")
         return relation_type
 
-    def get_or_create_word(self, language, word):
+    def get_or_create_word(self, language, word, logged: bool = True):
         word, created = Word.objects.get_or_create(language=language, word=word)
-        logger.debug(f"{word} [created : {created}]")
+        if logged:
+            logger.debug(f'{word} [created : {created}]')
         return word
 
     def do_translation_job(self, source, target, word, word_ref):
@@ -552,7 +553,7 @@ class WordViewSet(viewsets.ModelViewSet):
             pers[type] = pers[type] + 1
 
             relation_word = relation_word.lower()
-            relation_word = self.get_or_create_word(language, relation_word)
+            relation_word = self.get_or_create_word(language, relation_word, False)
 
             left_word = word if word.id <= relation_word.id else relation_word
             right_word = relation_word if word.id <= relation_word.id else word

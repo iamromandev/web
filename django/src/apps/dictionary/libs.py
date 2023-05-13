@@ -60,7 +60,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -81,7 +81,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -102,7 +102,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -127,13 +127,14 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
                 elif error.code == self.error_code_server:
                     limit = limit - 1
+                    time.sleep(5)
                     continue
 
         return is_error, result
@@ -159,7 +160,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -167,10 +168,12 @@ class WordnikService:
         return is_error, result
 
     def get_relations(self, word, limit):
+        main_limit = limit
         is_error = True
         result = None
+        index = 0
 
-        for index in range(self.api_key_length):
+        while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getRelatedWords(word, limitPerRelationshipType=limit)
                 is_error = False
@@ -179,11 +182,17 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
-                    time.sleep(3)
+                    if main_limit == limit:
+                        index = index + 1
+                    time.sleep(5)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+                elif error.code == self.error_code_server:
+                    limit = limit - 1
+                    time.sleep(5)
+                    continue
 
         return is_error, result
 
@@ -206,7 +215,7 @@ class TranslationService:
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
 
         return is_error, result
@@ -223,7 +232,7 @@ class TranslationService:
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
-                    time.sleep(3)
+                    time.sleep(5)
                     continue
 
         return is_error, result

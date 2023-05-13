@@ -13,6 +13,8 @@ from apps.core.libs import (
 
 from libretranslatepy import LibreTranslateAPI
 
+SLEEP_TIME = 3  # seconds
+
 
 class WordnikService:
     def __init__(self):
@@ -40,7 +42,7 @@ class WordnikService:
             self.api_key_queue.iterate()
 
     def sleep(self) -> None:
-        time.sleep(5)
+        time.sleep(SLEEP_TIME)
         return None
 
     @property
@@ -250,7 +252,7 @@ class TranslationService:
     translator = LibreTranslateAPI('https://translate.argosopentech.com/')
 
     def sleep(self) -> None:
-        time.sleep(5)
+        time.sleep(SLEEP_TIME)
         return None
 
     def languages(self):

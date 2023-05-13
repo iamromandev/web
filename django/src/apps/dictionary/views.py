@@ -364,31 +364,31 @@ class WordViewSet(viewsets.ModelViewSet):
         return word
 
     def do_translation_job(self, source, target, word, word_ref):
-        if source and target and source != target and source == "en" and self.is_expired(
+        if source and target and source != target and source == 'en' and self.is_expired(
             word_ref.id,
             Type.WORD.value,
             Subtype.TRANSLATION.value,
             source + target,
             self.delay
         ):
-            logger.debug("producing translations")
+            logger.debug('producing translations')
             if not (self.has_language(code=source) and self.has_language(code=target)):
-                logger.debug("storing languages for translations support")
+                logger.debug('storing languages for translations support')
                 error_languages, languages = self.translator.languages()
 
                 if not error_languages and languages:
                     for language in languages:
-                        self.get_or_create_language(language["code"], language["name"])
+                        self.get_or_create_language(language['code'], language['name'])
 
             source = self.get_language(source)
             target = self.get_language(target)
 
-            logger.debug(f"word {word} source {source.code}, target {target.code}")
+            logger.debug(f'word {word} source {source.code}, target {target.code}')
 
             if source and target:
                 try:
                     error_translation, translation = self.translator.translate(word, source.code, target.code)
-                    logger.debug(f"translation of {word} is {translation}")
+                    logger.debug(f'translation: {translation}')
                     if not error_translation and translation:
                         store_in_lake(
                             source=Source_Enum.LIBRE_TRANSLATE.value,
@@ -422,7 +422,8 @@ class WordViewSet(viewsets.ModelViewSet):
             source_word=word,
             target_word=translation,
         )
-        logger.debug(f"{translation} [created : {created}]")
+        if created:
+            logger.debug(f'{translation} [created : {created}]')
 
     def build_or_create_pronunciations(self, word, pronunciations):
         logger.debug(f"[word: {word}][pronunciations: {len(pronunciations)}]")
@@ -449,7 +450,8 @@ class WordViewSet(viewsets.ModelViewSet):
             word=word,
             pronunciation=pronunciation.raw
         )
-        logger.debug(f"{pronunciation} [created : {created}]")
+        if created:
+            logger.debug(f'{pronunciation} [created : {created}]')
 
     def build_or_create_audios(self, word, audios):
         pers = {}
@@ -474,7 +476,8 @@ class WordViewSet(viewsets.ModelViewSet):
                 'url': audio.fileUrl
             }
         )
-        logger.debug(f'{pronunciation} [created : {created}]')
+        if created:
+            logger.debug(f'{pronunciation} [created : {created}]')
 
     def build_or_create_definitions(self, word, definitions):
         pers = {}
@@ -488,7 +491,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 continue
             self.build_or_create_definition(word, definition)
             pers[source] = pers[source] + 1
-        logger.debug(f'created definitions for {word.word}')
+        # logger.debug(f'created definitions for {word.word}')
 
     def build_or_create_definition(self, word, definition):
         examples = definition.exampleUses
@@ -506,13 +509,14 @@ class WordViewSet(viewsets.ModelViewSet):
             word=word,
             definition=definition.text
         )
-        # logger.debug(f"Word: {word.word} Definition: {definition} [created : {created}]")
+        if created:
+            logger.debug(f'{definition} [created : {created}]')
         self.build_or_create_examples(word, definition, examples)
 
     def build_or_create_examples(self, word, definition=None, examples=None):
         for example in examples:
             self.build_or_create_example(word, definition, example)
-        logger.debug(f'created examples for {word.word}')
+        # logger.debug(f'created examples for {word.word}')
 
     def build_or_create_example(self, word, definition=None, example=None):
         if definition:
@@ -533,7 +537,8 @@ class WordViewSet(viewsets.ModelViewSet):
                     "year": dateparse.parse_date(year) if year else None
                 }
             )
-        # logger.debug(f"{example} [created : {created}]")
+        if created:
+            logger.debug(f'{example} [created : {created}]')
 
     def build_or_create_relations(self, word, relations):
         for relation in relations:

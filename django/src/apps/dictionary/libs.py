@@ -16,11 +16,11 @@ from libretranslatepy import LibreTranslateAPI
 class WordnikService:
     def __init__(self):
 
-        self.api_keys = WORDNIK_API_KEYS
-        self.base_url = "http://api.wordnik.com/v4"
+        self._api_keys = WORDNIK_API_KEYS
+        self._base_url = "http://api.wordnik.com/v4"
         self._api_client = ApiClient()
 
-        self.api_key_length = len(self.api_keys)
+        self.api_key_length = len(self._api_keys)
         self.api_key_queue = CircularQueue(self.api_key_length)
         self.word_apis = [None] * self.api_key_length
         self.error_code_unauthorized = 401
@@ -30,7 +30,7 @@ class WordnikService:
 
         for index in range(self.api_key_length):
             self.api_key_queue.enqueue(index)
-            client = swagger.ApiClient(self.api_keys[index], self.base_url)
+            client = swagger.ApiClient(self._api_keys[index], self._base_url)
             word_api = WordApi.WordApi(client)
             self.word_apis[index] = word_api
 
@@ -40,7 +40,7 @@ class WordnikService:
 
     @property
     def _api_key(self) -> str:
-        return self.api_keys[self.api_key_queue.peek()]
+        return self._api_keys[self.api_key_queue.peek()]
 
     @property
     def _word_api(self) -> WordApi.WordApi:
@@ -49,10 +49,12 @@ class WordnikService:
     def get_pronunciations(self, word, limit):
         is_error = True
         result = None
+
         for index in range(self.api_key_length):
             try:
                 result = self._word_api.getTextPronunciations(word, limit=limit)
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
@@ -61,15 +63,18 @@ class WordnikService:
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+
         return is_error, result
 
     def get_audios(self, word, limit):
         is_error = True
         result = None
+
         for index in range(self.api_key_length):
             try:
                 result = self._word_api.getAudio(word, limit=limit)
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
@@ -78,15 +83,18 @@ class WordnikService:
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+
         return is_error, result
 
     def get_definitions(self, word, limit):
         is_error = True
         result = None
+
         for index in range(self.api_key_length):
             try:
                 result = self._word_api.getDefinitions(word, limit=limit)
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
@@ -95,43 +103,51 @@ class WordnikService:
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+
         return is_error, result
 
     def get_examples(self, word, limit):
         is_error = True
         result = None
-        for index in range(self.api_key_length):
+        index = 0
+
+        while index < self.api_key_length:
             try:
                 result = self._word_api.getExamples(word, limit=limit)
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
+                    index = index + 1
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
                 elif error.code == self.error_code_server:
-                    limit = limit - 10
+                    limit = limit - 1
                     continue
+
         return is_error, result
 
     def get_examples_rest(self, word, limit):
         is_error = True
         result = None
+
         for index in range(self.api_key_length):
             try:
-                url = f'{self.base_url}/word.json/{word}/examples'
+                url = f'{self._base_url}/word.json/{word}/examples'
                 params = {
-                    'limit':limit,
-                    'api_key':self._api_key,
+                    'limit': limit,
+                    'api_key': self._api_key,
                 }
                 result = self._api_client.get(
                     url=url,
                     params=params
                 )
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
@@ -145,10 +161,12 @@ class WordnikService:
     def get_relations(self, word, limit):
         is_error = True
         result = None
+
         for index in range(self.api_key_length):
             try:
                 result = self._word_api.getRelatedWords(word, limitPerRelationshipType=limit)
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
@@ -157,6 +175,7 @@ class WordnikService:
                 elif error.code == self.error_code_not_found:
                     is_error = False
                     break
+
         return is_error, result
 
 
@@ -169,14 +188,17 @@ class TranslationService:
     def languages(self):
         is_error = True
         result = None
+
         for index in range(self.limit):
             try:
                 result = self.translator.languages()
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
                     continue
+
         return is_error, result
 
     def translate(self, text, source, target):

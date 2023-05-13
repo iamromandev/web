@@ -1,3 +1,4 @@
+import time
 import random
 from urllib.error import HTTPError
 
@@ -59,6 +60,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
+                    time.sleep(3)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -79,6 +81,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
+                    time.sleep(3)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -99,6 +102,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
+                    time.sleep(3)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -123,6 +127,7 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
+                    time.sleep(3)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -154,6 +159,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
+                    time.sleep(3)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -173,6 +179,7 @@ class WordnikService:
                 logger.error(error)
                 if error.code == self.error_code_rate_limit:
                     self.api_key_queue.iterate()
+                    time.sleep(3)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -199,6 +206,7 @@ class TranslationService:
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
+                    time.sleep(3)
                     continue
 
         return is_error, result
@@ -215,6 +223,7 @@ class TranslationService:
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:
+                    time.sleep(3)
                     continue
 
         return is_error, result

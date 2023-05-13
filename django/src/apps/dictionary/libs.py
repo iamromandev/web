@@ -208,6 +208,7 @@ class TranslationService:
             try:
                 result = self.translator.translate(text, source, target)
                 is_error = False
+                break
             except HTTPError as error:
                 logger.error(error)
                 if error.code == self.error_code_timeout:

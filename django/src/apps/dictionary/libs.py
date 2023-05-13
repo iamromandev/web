@@ -62,7 +62,6 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getTextPronunciations(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -81,6 +80,9 @@ class WordnikService:
                     limit = limit - 1
                     self.sleep()
                     continue
+
+        self.api_key_queue.iterate()
+        self.sleep()
 
         return is_error, result
 
@@ -93,7 +95,6 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getAudio(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -112,6 +113,9 @@ class WordnikService:
                     limit = limit - 1
                     self.sleep()
                     continue
+
+        self.api_key_queue.iterate()
+        self.sleep()
 
         return is_error, result
 
@@ -124,7 +128,6 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getDefinitions(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -143,6 +146,9 @@ class WordnikService:
                     limit = limit - 1
                     self.sleep()
                     continue
+
+        self.api_key_queue.iterate()
+        self.sleep()
 
         return is_error, result
 
@@ -155,7 +161,6 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getExamples(word, limit=limit)
-                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -174,6 +179,9 @@ class WordnikService:
                     limit = limit - 1
                     self.sleep()
                     continue
+
+        self.api_key_queue.iterate()
+        self.sleep()
 
         return is_error, result
 
@@ -191,7 +199,6 @@ class WordnikService:
                     'api_key': self._api_key,
                 }
                 result = self._api_client.get(url=url, params=params)
-                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -210,6 +217,9 @@ class WordnikService:
                     limit = limit - 1
                     self.sleep()
                     continue
+
+        self.api_key_queue.iterate()
+        self.sleep()
 
         return is_error, result
 
@@ -222,7 +232,6 @@ class WordnikService:
         while index < self.api_key_length and limit > 0:
             try:
                 result = self._word_api.getRelatedWords(word, limitPerRelationshipType=limit)
-                self.api_key_queue.iterate()
                 is_error = False
                 break
             except HTTPError as error:
@@ -241,6 +250,9 @@ class WordnikService:
                     limit = limit - 1
                     self.sleep()
                     continue
+
+        self.api_key_queue.iterate()
+        self.sleep()
 
         return is_error, result
 

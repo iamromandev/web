@@ -352,9 +352,9 @@ class WordViewSet(viewsets.ModelViewSet):
         logger.debug(f"{relation_type} [created : {created}]")
         return relation_type
 
-    def get_or_create_word(self, language, word, logged: bool = True):
+    def get_or_create_word(self, language, word):
         word, created = Word.objects.get_or_create(language=language, word=word)
-        if logged:
+        if created:
             logger.debug(f'{word} [created : {created}]')
         return word
 
@@ -553,7 +553,7 @@ class WordViewSet(viewsets.ModelViewSet):
             pers[type] = pers[type] + 1
 
             relation_word = relation_word.lower()
-            relation_word = self.get_or_create_word(language, relation_word, False)
+            relation_word = self.get_or_create_word(language, relation_word)
 
             left_word = word if word.id <= relation_word.id else relation_word
             right_word = relation_word if word.id <= relation_word.id else word

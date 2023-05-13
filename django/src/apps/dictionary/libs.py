@@ -13,7 +13,7 @@ from apps.core.libs import (
 
 from libretranslatepy import LibreTranslateAPI
 
-SLEEP_TIME = 3  # seconds
+SLEEP_TIME = 2  # seconds
 
 
 class WordnikService:

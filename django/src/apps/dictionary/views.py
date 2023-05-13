@@ -38,6 +38,7 @@ from apps.dictionary.libs import TranslationService
 
 from apps.dictionary.utils import join_list_in_sort
 
+
 # Create your views here.
 
 class WordViewSet(viewsets.ModelViewSet):

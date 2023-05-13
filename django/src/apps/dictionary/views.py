@@ -299,7 +299,8 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=subtype,
             source=source
         )
-        logger.debug(f'{source} [created : {created}]')
+        if created:
+            logger.debug(f'{source} [created : {created}]')
         return source
 
     def has_language(self, code=None, name=None):
@@ -323,7 +324,8 @@ class WordViewSet(viewsets.ModelViewSet):
             code=code,
             name=name
         )
-        logger.debug(f'{language} [created : {created}]')
+        if created:
+            logger.debug(f'{language} [created : {created}]')
         return language
 
     def get_language(self, code):
@@ -334,7 +336,8 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_or_create_part_of_speech(self, part_of_speech):
         part_of_speech, created = PartOfSpeech.objects.get_or_create(part_of_speech=part_of_speech)
-        logger.debug(f'{part_of_speech} [created : {created}]')
+        if created:
+            logger.debug(f'{part_of_speech} [created : {created}]')
         return part_of_speech
 
     def get_or_create_attribution(self, url, text):
@@ -343,13 +346,15 @@ class WordViewSet(viewsets.ModelViewSet):
                 url=url,
                 text=text,
             )
-            logger.debug(f'Attribution: {attribution.url} [created : {created}]')
+            if created:
+                logger.debug(f'Attribution: {attribution.url} [created : {created}]')
             return attribution
         return None
 
     def get_or_create_relation_type(self, relation_type):
         relation_type, created = RelationType.objects.get_or_create(relation_type=relation_type)
-        logger.debug(f"{relation_type} [created : {created}]")
+        if created:
+            logger.debug(f'{relation_type} [created : {created}]')
         return relation_type
 
     def get_or_create_word(self, language, word):

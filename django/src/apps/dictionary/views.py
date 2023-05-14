@@ -66,14 +66,14 @@ class WordViewSet(viewsets.ModelViewSet):
         try:
             word = self.get_object()
             if word and word.word != kwargs.get("word"):
-                raise Http404(f"Not matched")
+                raise Http404(f'Not matched')
             word = self.get_remote_word(request, kwargs, word_ref=word)
         except Http404:
             word = self.get_remote_word(request, kwargs)
 
         if not word:
-            word = kwargs.get("word")
-            raise Http404(f"Word {word} does not exist")
+            word = kwargs.get('word')
+            raise Http404(f'Word {word} does not exist')
 
         serializer = self.get_serializer(word)
         data = serializer.data
@@ -94,7 +94,7 @@ class WordViewSet(viewsets.ModelViewSet):
             subtype=subtype,
             extra=extra,
             defaults={
-                "state": State.SYNCED.value
+                'state': State.SYNCED.value
             }
         )
         # logger.debug(f"{store} [created : {created}]")
@@ -105,15 +105,15 @@ class WordViewSet(viewsets.ModelViewSet):
             type=type,
             subtype=subtype,
             defaults={
-                "state": State.SYNCED.value
+                'state': State.SYNCED.value
             }
         )
         # logger.debug(f"{store} [created : {created}]")
 
     def get_remote_word(self, request, kwargs, word_ref=None):
-        source = request.GET.get("source")
-        target = request.GET.get("target")
-        word = kwargs.get("word")
+        source = request.GET.get('source')
+        target = request.GET.get('target')
+        word = kwargs.get('word')
         word = word.lower()
 
         logger.debug(f'calling remote word [source: {source}, target: {target}, word: {word}]')
@@ -135,7 +135,7 @@ class WordViewSet(viewsets.ModelViewSet):
         ):
             error_pronunciations, pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
             if error_pronunciations:
-                logger.error(f"api limit on wordnik.get_pronunciations")
+                logger.error(f'api limit on wordnik.get_pronunciations')
                 return word_ref
             logger.debug(f'wordnik.get_pronunciations: {len(pronunciations if pronunciations else [])}')
 
@@ -189,7 +189,7 @@ class WordViewSet(viewsets.ModelViewSet):
             if error_relations:
                 logger.error(f"api limit on wordnik.get_relations")
                 return word_ref
-            logger.debug(f"wordnik.get_relations: {len(relations) if relations else 0}")
+            logger.debug(f'wordnik.get_relations: {len(relations) if relations else 0}')
 
         has_resources = not (
             error_pronunciations and error_audios and error_definitions and error_examples and error_relations)
@@ -208,7 +208,7 @@ class WordViewSet(viewsets.ModelViewSet):
             )
             )
         ):
-            language = self.get_or_create_language(code="en", name="English")
+            language = self.get_or_create_language(code='en', name='English')
             word_ref = self.get_or_create_word(language, word)
             self.store_expire(word_ref.id, Type.WORD.value, Subtype.DEFAULT.value, None)
 
@@ -285,7 +285,7 @@ class WordViewSet(viewsets.ModelViewSet):
                 self.build_or_create_relations(word_ref, relations)
                 self.store_expire(word_ref.id, Type.WORD.value, Subtype.RELATION.value, None)
 
-            logger.debug(f"Completed {word_ref.word}")
+        logger.debug(f'Completed {word_ref.word}')
 
         return word_ref
 

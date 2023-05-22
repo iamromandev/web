@@ -207,7 +207,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'EXCEPTION_HANDLER': 'django.src.apps.core.libs.custom_exception_handler',
+    # 'EXCEPTION_HANDLER': 'core.libs.custom_exception_handler',
     'PAGE_SIZE': 10,
 }
 

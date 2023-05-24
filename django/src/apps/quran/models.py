@@ -3,14 +3,13 @@ import uuid
 from django.db import models
 
 from django_softdelete.models import SoftDeleteModel
-from polymorphic.models import PolymorphicModel
 
 from apps.core.models import Source, Language
 
 
 # Create your models here.
 
-class Name(SoftDeleteModel, PolymorphicModel):
+class Name(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     simple = models.CharField(max_length=128, blank=True, null=True)
     complex = models.CharField(max_length=128, blank=True, null=True)

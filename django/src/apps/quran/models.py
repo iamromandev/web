@@ -9,6 +9,7 @@ from apps.core.models import Source, Language
 
 # Create your models here.
 
+
 class Name(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     simple = models.CharField(max_length=128, blank=True, null=True)
@@ -18,10 +19,11 @@ class Name(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['simple']
+        ordering = ["simple"]
 
     def __str__(self):
         return f'[Name: {self.simple.encode("utf8") if self.simple else self.complex.encode("utf8")}]'
+
 
 # class Surah(SoftDeleteModel, PolymorphicModel):
 #    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)

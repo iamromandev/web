@@ -7,6 +7,7 @@ from django_softdelete.models import SoftDeleteModel
 
 # Create your models here.
 
+
 class Lake(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     source = models.CharField(max_length=256, blank=False, null=False)

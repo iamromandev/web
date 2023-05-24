@@ -4,7 +4,6 @@ from rest_framework.views import exception_handler
 
 
 class CircularQueue:
-
     def __init__(self, max_size: int):
         self.max_size = max_size
         self.array = [None] * max_size
@@ -14,7 +13,7 @@ class CircularQueue:
 
     def enqueue(self, item):
         if self.size >= self.max_size:
-            raise Exception('Queue is full')
+            raise Exception("Queue is full")
 
         self.array[self.rear] = item
         self.rear = (self.rear + 1) % self.max_size
@@ -23,7 +22,7 @@ class CircularQueue:
 
     def dequeue(self):
         if self.size == 0:
-            raise Exception('Underflow')
+            raise Exception("Underflow")
 
         item = self.array[self.front]
         self.array[self.front] = None
@@ -33,7 +32,7 @@ class CircularQueue:
 
     def peek(self):
         if self.size == 0:
-            raise Exception('Underflow')
+            raise Exception("Underflow")
 
         return self.array[self.front]
 
@@ -45,12 +44,11 @@ def generic_exception_handler(exc, context):
     logger.exception(exc)
     response = exception_handler(exc, context)
     if response is not None:
-        response.data['status_code'] = response.status_code
+        response.data["status_code"] = response.status_code
     return response
 
 
 class ApiClient:
-
     def __init__(self):
         self._session = requests.Session()
         self._session.headers.update(
@@ -65,10 +63,7 @@ class ApiClient:
         return self._session
 
     def get(self, url: str, params: dict = {}) -> dict:
-        response = self.session.get(
-            url,
-            params=params
-        )
+        response = self.session.get(url, params=params)
         response.raise_for_status()
         data = response.json()
 

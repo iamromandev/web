@@ -18,7 +18,6 @@ SLEEP_TIME = 1  # seconds
 
 class WordnikService:
     def __init__(self):
-
         self._api_keys = WORDNIK_API_KEYS
         self._base_url = "http://api.wordnik.com/v4"
         self._api_client = ApiClient()
@@ -193,10 +192,10 @@ class WordnikService:
 
         while index < self.api_key_length and limit > 0:
             try:
-                url = f'{self._base_url}/word.json/{word}/examples'
+                url = f"{self._base_url}/word.json/{word}/examples"
                 params = {
-                    'limit': limit,
-                    'api_key': self._api_key,
+                    "limit": limit,
+                    "api_key": self._api_key,
                 }
                 result = self._api_client.get(url=url, params=params)
                 is_error = False
@@ -261,7 +260,7 @@ class TranslationService:
     limit = 3
     error_code_timeout = 504
 
-    translator = LibreTranslateAPI('https://translate.argosopentech.com/')
+    translator = LibreTranslateAPI("https://translate.argosopentech.com/")
 
     def sleep(self) -> None:
         time.sleep(SLEEP_TIME * 2)

@@ -8,9 +8,7 @@ from apps.dictionary.views import (
 )
 
 router = routers.DefaultRouter()
-router.register('words', WordViewSet)
-router.register('definitions', DefinitionViewSet)
+router.register("words", WordViewSet)
+router.register("definitions", DefinitionViewSet)
 
-urlpatterns = [
-    path('api/', include(router.urls))
-]
+urlpatterns = [path("api/", include(router.urls))]

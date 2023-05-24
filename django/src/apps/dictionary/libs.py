@@ -41,8 +41,8 @@ class WordnikService:
         for index in range(random.randint(0, self.api_key_length)):
             self.api_key_queue.iterate()
 
-    def sleep(self) -> None:
-        time.sleep(SLEEP_TIME)
+    def sleep(self, multiplier: int = 1) -> None:
+        time.sleep(SLEEP_TIME * multiplier)
         return None
 
     @property
@@ -70,7 +70,7 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    self.sleep()
+                    self.sleep(index)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -103,7 +103,7 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    self.sleep()
+                    self.sleep(index)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -136,7 +136,7 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    self.sleep()
+                    self.sleep(index)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -169,7 +169,7 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    self.sleep()
+                    self.sleep(index)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False
@@ -240,7 +240,7 @@ class WordnikService:
                     self.api_key_queue.iterate()
                     if main_limit == limit:
                         index = index + 1
-                    self.sleep()
+                    self.sleep(index)
                     continue
                 elif error.code == self.error_code_not_found:
                     is_error = False

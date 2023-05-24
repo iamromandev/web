@@ -177,9 +177,9 @@ class WordViewSet(viewsets.ModelViewSet):
         ):
             error_examples, examples = self.wordnik.get_examples(word, limit=self.limit_example)
             if error_examples:
-                logger.error(f"api limit on wordnik.get_examples")
+                logger.error(f'api limit on wordnik.get_examples')
                 return word_ref
-            logger.debug(f"wordnik.get_examples: {len(examples.examples) if hasattr(examples, 'examples') else 0}")
+            logger.debug(f'wordnik.get_examples: {len(examples.examples) if hasattr(examples, "examples") else 0}')
 
         if not word_ref or self.is_expired(
             word_ref.id,
@@ -435,7 +435,7 @@ class WordViewSet(viewsets.ModelViewSet):
             logger.debug(f'{translation} [created : {created}]')
 
     def build_or_create_pronunciations(self, word, pronunciations):
-        logger.debug(f"[word: {word}][pronunciations: {len(pronunciations)}]")
+        logger.debug(f'[word: {word}][pronunciations: {len(pronunciations)}]')
         pers = {}
         for pronunciation in pronunciations:
             source = pronunciation.rawType

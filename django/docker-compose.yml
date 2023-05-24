@@ -13,6 +13,8 @@ services:
       - 3306:3306
     volumes:
       - ./data/db:/var/lib/mysql/data
+    networks:
+      - web
     command: [ 'mysqld', '--character-set-server=utf8', '--collation-server=utf8_unicode_ci' ]
     healthcheck:
       test: [ 'CMD', 'mysqladmin', 'ping', '-h', 'localhost' ]
@@ -37,6 +39,8 @@ services:
 #    tty: true
 #    volumes:
 #      - .:/workdir
+#     networks:
+#      - web
 #    command: >
 #      bash -c "python src/manage.py tailwind start"
 #    restart: unless-stopped
@@ -59,6 +63,8 @@ services:
       - db
     volumes:
       - .:/workdir
+    networks:
+      - web
     depends_on:
       db:
         condition: service_healthy
@@ -68,3 +74,8 @@ services:
       && python src/manage.py migrate
       && python src/manage.py runserver 0.0.0.0:8000"
     restart: unless-stopped
+
+networks:
+  web:
+    name: web
+    driver: bridge

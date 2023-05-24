@@ -62,8 +62,8 @@ INSTALLED_APPS = [
     'taggit',
     # apps
     'apps.core',
-    'apps.data',
     'apps.auths',
+    'apps.data',
     'apps.home',
     'apps.bio',
     'apps.dashboard',

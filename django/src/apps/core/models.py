@@ -62,10 +62,23 @@ class Store(models.Model):
 
 
 class Language(SoftDeleteModel):
+
+    class Direction(models.TextChoices):
+        LTR = 'LTR', _('left-to-right')
+        RTL = 'RTL', _('right-to-left')
+
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     source = models.ForeignKey(Source, related_name='languages', on_delete=models.DO_NOTHING)
     code = models.CharField(max_length=8, blank=False, null=False)
-    name = models.CharField(max_length=32, blank=False, null=False)
+    origin = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=32, blank=True, null=True)
+    direction = models.CharField(
+        max_length=8,
+        choices=Direction.choices,
+        default=None,
+        blank=True,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

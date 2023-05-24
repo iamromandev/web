@@ -2,28 +2,28 @@ import enum
 
 
 class Type(enum.Enum):
-    DEFAULT = "default"
-    DICTIONARY = "dictionary"
-    WORD = "word"
+    DEFAULT = 'DEFAULT'
+    DICTIONARY = 'DICTIONARY'
+    WORD = 'WORD'
 
 
 class Subtype(enum.Enum):
-    DEFAULT = "default"
-    WORD = "word"
-    PRONUNCIATION = "pronunciation"
-    AUDIO = "audio"
-    DEFINITION = "definition"
-    EXAMPLE = "example"
-    RELATION = "relation"
-    TRANSLATION = "translation"
+    DEFAULT = 'DEFAULT'
+    WORD = 'WORD'
+    PRONUNCIATION = 'PRONUNCIATION'
+    AUDIO = 'AUDIO'
+    DEFINITION = 'DEFINITION'
+    EXAMPLE = 'EXAMPLE'
+    RELATION = 'RELATION'
+    TRANSLATION = 'TRANSLATION'
 
 
 class State(enum.Enum):
-    DEFAULT = "default"
-    SYNCED = "synced"
+    DEFAULT = 'DEFAULT'
+    SYNCED = 'SYNCED'
 
 
 class Source(enum.Enum):
-    DEFAULT = "default"
-    WORDNIK = "wordnik"
-    LIBRE_TRANSLATE = "libre_translate"
+    DEFAULT = 'DEFAULT'
+    WORDNIK = 'WORDNIK'
+    LIBRE_TRANSLATE = 'LIBRE_TRANSLATE'

@@ -418,6 +418,7 @@ class WordViewSet(viewsets.ModelViewSet):
                                 Subtype.TRANSLATION.value,
                                 extra_condition
                             )
+                            logger.debug('completed translation')
                     except Http404 as error:
                         logger.error(error)
 

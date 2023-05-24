@@ -408,7 +408,7 @@ class WordViewSet(viewsets.ModelViewSet):
                                 ),
                                 raw=translation
                             )
-                            logger.debug('get_or_create_word')
+                            logger.debug(f'get_or_create_word: {target} {translation}')
                             translation = self.get_or_create_word(target, translation)
                             self.build_or_create_translation(source, target, word_ref, translation)
                             extra_condition = join_list_in_sort([source.code, target.code])

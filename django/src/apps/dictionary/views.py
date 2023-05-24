@@ -116,7 +116,10 @@ class WordViewSet(viewsets.ModelViewSet):
         word = kwargs.get('word')
         word = word.lower()
 
-        logger.debug(f'calling remote word [source: {source}, target: {target}, word: {word}]')
+        if word_ref:
+            logger.debug(f'OLD: {word_ref} word [source: {source}, target: {target}')
+        else:
+            logger.debug(f'NEW: {word} [source: {source}, target: {target}')
         return self.get_word_by_wordnik(source, target, word, word_ref)
 
     def get_word_by_wordnik(self, source, target, word, word_ref):

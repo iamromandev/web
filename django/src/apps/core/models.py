@@ -83,7 +83,7 @@ class Language(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['code']
 
     def __str__(self):
         return f'[Language: {self.source}, {self.code}, {self.name}]'

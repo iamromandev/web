@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('source', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='languages', to='core.source')),
             ],
             options={
-                'ordering': ['name'],
+                'ordering': ['code'],
             },
         ),
     ]

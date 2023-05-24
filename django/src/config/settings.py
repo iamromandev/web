@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'django_bootstrap_icons',
     'django_softdelete',
+    'polymorphic',
     'taggit',
     # apps
     'apps.core',
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
     'apps.bio',
     'apps.dashboard',
     'apps.dictionary',
+    'apps.quran',
 ]
 
 MIDDLEWARE = [

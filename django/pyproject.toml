@@ -19,11 +19,15 @@ dj-static = "0.0.6"
 django-bootstrap5 = "23.1"
 django-bootstrap-icons = "0.8.3"
 django-soft-delete = "0.9.21"
-django-taggit = "4.0.0"
+django-polymorphic = "3.1.0"
+django-rest-polymorphic = "0.1.10"
 djangorestframework = "3.14.0"
+django-taggit = "4.0.0"
+
 pymysql = "1.0.3"
 wordnik-py3 = "2.1.2"
 libretranslatepy = "2.1.3"
+
 
 [build-system]
 requires = ["poetry-core"]

@@ -87,4 +87,3 @@ class Language(SoftDeleteModel):
 
     def __str__(self):
         return f'[Language: {self.source}, {self.code}, {self.name}]'
-

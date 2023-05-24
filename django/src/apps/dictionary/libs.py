@@ -264,7 +264,7 @@ class TranslationService:
     translator = LibreTranslateAPI('https://translate.argosopentech.com/')
 
     def sleep(self) -> None:
-        time.sleep(SLEEP_TIME)
+        time.sleep(SLEEP_TIME * 2)
         return None
 
     def languages(self):

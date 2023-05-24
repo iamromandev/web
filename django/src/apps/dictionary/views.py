@@ -368,58 +368,63 @@ class WordViewSet(viewsets.ModelViewSet):
         return word
 
     def do_translation_job(self, source, target, word, word_ref):
-        if source and target and source != target:
-            # source == 'en' and
-            extra_condition = join_list_in_sort([source, target])
-            if self.is_expired(
+        if not (source or target) or source == target:
+            return None
+
+        # source == 'en' and
+        extra_condition = join_list_in_sort([source, target])
+        if not self.is_expired(
+            word_ref.id,
+            Type.WORD.value,
+            Subtype.TRANSLATION.value,
+            extra_condition,
+            self.delay
+        ):
+            return None
+
+        lang_codes = (source, target)
+        for code in lang_codes:
+            if not self.has_language(code=code):
+                logger.debug('producing translations')
+                error_languages, languages = self.translator.languages()
+
+                if not error_languages and languages:
+                    for language in languages:
+                        self.get_or_create_language(language['code'], language['name'])
+
+        source = self.get_language(source)
+        target = self.get_language(target)
+
+        if not (source or target):
+            logger.debug(f'Source and Target not found')
+            return None
+
+        logger.debug(f'translation: {word} | {source.code} - {target.code}')
+
+        error_translation, translation = self.translator.translate(word, source.code, target.code)
+        logger.debug(f'translation: {translation}')
+        if not error_translation and translation:
+            store_in_lake(
+                source=Source_Enum.LIBRE_TRANSLATE.value,
+                ref=dict(
+                    word=word,
+                    source=source.code,
+                    target=target.code,
+                    type=Type.WORD.value,
+                    subtype=Subtype.TRANSLATION.value,
+                ),
+                raw=translation
+            )
+            translation = self.get_or_create_word(target, translation)
+            self.build_or_create_translation(source, target, word_ref, translation)
+            extra_condition = join_list_in_sort([source.code, target.code])
+            self.store_expire(
                 word_ref.id,
                 Type.WORD.value,
                 Subtype.TRANSLATION.value,
-                extra_condition,
-                self.delay
-            ):
-                logger.debug('producing translations')
-                if not (self.has_language(code=source) and self.has_language(code=target)):
-                    logger.debug('storing languages for translations support')
-                    error_languages, languages = self.translator.languages()
-
-                    if not error_languages and languages:
-                        for language in languages:
-                            self.get_or_create_language(language['code'], language['name'])
-
-                source = self.get_language(source)
-                target = self.get_language(target)
-
-                logger.debug(f'word {word} source {source.code}, target {target.code}')
-
-                if source and target:
-                    try:
-                        error_translation, translation = self.translator.translate(word, source.code, target.code)
-                        logger.debug(f'translation: {translation}')
-                        if not error_translation and translation:
-                            store_in_lake(
-                                source=Source_Enum.LIBRE_TRANSLATE.value,
-                                ref=dict(
-                                    word=word,
-                                    source=source.code,
-                                    target=target.code,
-                                    type=Type.WORD.value,
-                                    subtype=Subtype.TRANSLATION.value,
-                                ),
-                                raw=translation
-                            )
-                            translation = self.get_or_create_word(target, translation)
-                            self.build_or_create_translation(source, target, word_ref, translation)
-                            extra_condition = join_list_in_sort([source.code, target.code])
-                            self.store_expire(
-                                word_ref.id,
-                                Type.WORD.value,
-                                Subtype.TRANSLATION.value,
-                                extra_condition
-                            )
-                            logger.debug('completed translation')
-                    except Http404 as error:
-                        logger.error(error)
+                extra_condition
+            )
+            logger.debug('completed translation')
 
     def build_or_create_translation(self, source, target, word, translation):
         if not translation:

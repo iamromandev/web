@@ -29,6 +29,9 @@ logger.debug(f"RootDir: {root}")
 logger.debug(f"BaseDir: {BASE_DIR}")
 logger.debug(f"TemplatesDir: {BASE_DIR.joinpath('src/templates')}")
 
+ENV = env.bool("ENV", default="local")
+logger.debug(f"ENV: {ENV}")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -161,7 +164,7 @@ USE_TZ = True
 # for initial keeping static files
 STATIC_URL = "src/static/"
 # for storing collected static files
-STATIC_ROOT = BASE_DIR.joinpath("src/staticfiles") if DEBUG else "/home/iamromandev/public_html/staticfiles"
+STATIC_ROOT = BASE_DIR.joinpath("src/staticfiles") if ENV == "local" else "/home/iamromandev/public_html/staticfiles"
 # for collecting images also
 STATICFILES_DIRS = [
     BASE_DIR.joinpath("src/static"),

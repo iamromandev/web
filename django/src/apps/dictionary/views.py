@@ -73,7 +73,7 @@ class WordViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(word)
         data = serializer.data
-        logger.debug(f"Serialized {data}")
+        # logger.debug(f"Serialized {data}")
         return Response(data)
 
     def is_expired(self, ref, type, subtype, extra, delay) -> bool:

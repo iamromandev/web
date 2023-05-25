@@ -94,6 +94,9 @@ django-bootstrap5==23.1 ; python_full_version == "3.9.16" \
 django-browser-reload==1.8.0 ; python_full_version == "3.9.16" \
     --hash=sha256:054ef5ce8b80f46e0beda1a3c847becdff51272cad6f2bda607e201a7afe7425 \
     --hash=sha256:6db7e6c5807fff87e421b53926c50cfa3de0115e438f3c2de6103d3069557adb
+django-cors-headers==4.0.0 ; python_full_version == "3.9.16" \
+    --hash=sha256:a971cd4c75b29974068cc36b5c595698822f1e0edd5f1b32ea42ea37326ad4aa \
+    --hash=sha256:e3cbd247a1a835da4cf71a70d4214378813ea7e08337778b82cb2c1bc19d28d6
 django-environ==0.10.0 ; python_full_version == "3.9.16" \
     --hash=sha256:510f8c9c1d0a38b0815f91504270c29440a0cf44fab07f55942fa8d31bbb9be6 \
     --hash=sha256:b3559a91439c9d774a9e0c1ced872364772c612cdf6dc919506a2b13f7a77225
@@ -132,9 +135,9 @@ sqlparse==0.4.4 ; python_full_version == "3.9.16" \
     --hash=sha256:d446183e84b8349fa3061f0fe7f06ca94ba65b426946ffebe6e3e8295332420c
 static3==0.7.0 ; python_full_version == "3.9.16" \
     --hash=sha256:674641c64bc75507af2eb20bef7e7e3593dca993dec6674be108fa15b42f47c8
-typing-extensions==4.6.1 ; python_full_version == "3.9.16" \
-    --hash=sha256:558bc0c4145f01e6405f4a5fdbd82050bd221b119f4bf72a961a1cfd471349d6 \
-    --hash=sha256:6bac751f4789b135c43228e72de18637e9a6c29d12777023a703fd1a6858469f
+typing-extensions==4.6.2 ; python_full_version == "3.9.16" \
+    --hash=sha256:06006244c70ac8ee83fa8282cb188f697b8db25bc8b4df07be1873c43897060c \
+    --hash=sha256:3a8b36f13dd5fdc5d1b16fe317f5668545de77fa0b8e02006381fd49d731ab98
 tzdata==2023.3 ; sys_platform == "win32" and python_full_version == "3.9.16" \
     --hash=sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a \
     --hash=sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda

@@ -71,10 +71,8 @@ class WordViewSet(viewsets.ModelViewSet):
             word = kwargs.get("word")
             raise Http404(f"Word {word} does not exist")
 
-        logger.debug(f"Serializing: {word}")
         serializer = self.get_serializer(word)
         data = serializer.data
-        logger.debug(f"Serialized: {data}")
         return Response(data)
 
     def is_expired(self, ref, type, subtype, extra, delay) -> bool:

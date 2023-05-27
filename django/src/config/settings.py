@@ -59,11 +59,14 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_browser_reload",
     "django_softdelete",
-    "django_bootstrap5",
-    "django_bootstrap_icons",
+    "taggit",
     "rest_framework",
     "rest_framework.authtoken",
-    "taggit",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    # ui
+    "django_bootstrap5",
+    "django_bootstrap_icons",
     # 'tailwind',
     # 'theme',
     # apps

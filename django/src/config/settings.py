@@ -56,14 +56,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # features
-    "django_browser_reload",
     "corsheaders",
-    # 'tailwind',
-    # 'theme',
+    "django_browser_reload",
+    "django_softdelete",
     "django_bootstrap5",
     "django_bootstrap_icons",
-    "django_softdelete",
+    "rest_framework",
     "taggit",
+    # 'tailwind',
+    # 'theme',
     # apps
     "apps.core",
     "apps.auths",
@@ -207,8 +208,13 @@ logger.add(
 # rest framework
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
-    "DEFAULT_AUTHENTICATION_CLASSES": (),
-    "DEFAULT_PERMISSION_CLASSES": (),
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    ],
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     # 'EXCEPTION_HANDLER': 'core.libs.custom_exception_handler',
@@ -216,10 +222,10 @@ REST_FRAMEWORK = {
 }
 
 # authentication
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-]
+# AUTHENTICATION_BACKENDS = [
+# "django.contrib.auth.backends.ModelBackend",
+# "allauth.account.auth_backends.AuthenticationBackend",
+# ]
 
 # wordnik api keys
 WORDNIK_API_KEYS = env.list("WORDNIK_API_KEYS", default=[])

@@ -22,6 +22,7 @@ django-soft-delete = "0.9.21"
 django-bootstrap5 = "23.1"
 django-bootstrap-icons = "0.8.3"
 djangorestframework = "3.14.0"
+coreapi = "2.3.3" # must be installed for TokenAuthentication
 django-taggit = "4.0.0"
 
 pymysql = "1.0.3"

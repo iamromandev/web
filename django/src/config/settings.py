@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "django_bootstrap_icons",
     "rest_framework",
+    "rest_framework.authtoken",
     "taggit",
     # 'tailwind',
     # 'theme',
@@ -211,6 +212,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
@@ -222,10 +224,10 @@ REST_FRAMEWORK = {
 }
 
 # authentication
-# AUTHENTICATION_BACKENDS = [
-# "django.contrib.auth.backends.ModelBackend",
-# "allauth.account.auth_backends.AuthenticationBackend",
-# ]
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
+]
 
 # wordnik api keys
 WORDNIK_API_KEYS = env.list("WORDNIK_API_KEYS", default=[])

@@ -32,11 +32,11 @@ class Source(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"[Source: {self.type}, {self.subtype}, {self.source}]"
-
     class Meta:
         ordering = ["source"]
+
+    def __str__(self):
+        return f"[Source: {self.type}, {self.subtype}, {self.source}]"
 
 
 class Store(models.Model):
@@ -49,12 +49,12 @@ class Store(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"[Store: {self.type}, {self.subtype}, {self.state}]"
-
     class Meta:
         ordering = ["type", "subtype"]
         unique_together = [["ref", "type", "subtype"]]
+
+    def __str__(self):
+        return f"[Store: {self.type}, {self.subtype}, {self.state}]"
 
     def is_expired(self, delay):
         return int(timezone.now().timestamp()) - int(self.updated_at.timestamp()) > delay

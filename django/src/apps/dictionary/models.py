@@ -60,7 +60,7 @@ class Attribution(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'[Attribution: {self.source.code}, {self.target.code}, {self.source_word.word.encode("utf8")}, {self.target_word.word.encode("utf8")}]'
+        return f"[Attribution: {self.source.code}, {self.target.code}, {self.source_word.word.encode('utf8')}, {self.target_word.word.encode('utf8')}]"
 
 
 class Definition(SoftDeleteModel):
@@ -79,7 +79,7 @@ class Definition(SoftDeleteModel):
         ordering = ["definition"]
 
     def __str__(self):
-        return f'[Definition: {self.definition.encode("utf8")}]'
+        return f"[Definition: {self.definition.encode('utf8')}]"
 
 
 class Example(SoftDeleteModel):

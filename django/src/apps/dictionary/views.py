@@ -53,7 +53,7 @@ class WordViewSet(viewsets.ModelViewSet):
     delay_audio = 6 * 60 * 60  # 6 hours
 
     limit_enabled = False
-    translation_enabled = True
+    translation_enabled = False
 
     wordnik = WordnikService()
     translator = TranslationService()

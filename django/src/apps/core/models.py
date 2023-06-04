@@ -41,7 +41,7 @@ class Source(models.Model):
 
 class Store(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    ref = models.UUIDField(editable=False, default=uuid.uuid4)
+    ref = models.UUIDField(blank=False, null=False, editable=True)
     type = models.CharField(max_length=32, blank=False, null=False)
     subtype = models.CharField(max_length=32, blank=False, null=False)
     state = models.CharField(max_length=32, blank=False, null=False)
@@ -51,7 +51,7 @@ class Store(models.Model):
 
     class Meta:
         ordering = ["type", "subtype"]
-        unique_together = [["ref", "type", "subtype"]]
+        unique_together = [("ref", "type", "subtype")]
 
     def __str__(self):
         return f"[Store: {self.type}, {self.subtype}, {self.state}]"

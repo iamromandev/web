@@ -33,7 +33,7 @@ class Word(SoftDeleteModel):
         ordering = ["word"]
 
     def __str__(self):
-        return f'[Word: {self.word.encode("utf8")}]'
+        return f"[Word: {self.word.encode('utf8')}]"
 
 
 class Pronunciation(SoftDeleteModel):
@@ -49,7 +49,7 @@ class Pronunciation(SoftDeleteModel):
         ordering = ["pronunciation"]
 
     def __str__(self):
-        return f'[Pronunciation: {self.pronunciation.encode("utf8")}]'
+        return f"[Pronunciation: {self.pronunciation.encode('utf8')}]"
 
 
 class Attribution(SoftDeleteModel):
@@ -100,7 +100,7 @@ class Example(SoftDeleteModel):
         ordering = ["example"]
 
     def __str__(self):
-        return f'[Example: {self.example.encode("utf8")}]'
+        return f"[Example: {self.example.encode('utf8')}]"
 
 
 class RelationType(SoftDeleteModel):
@@ -113,7 +113,7 @@ class RelationType(SoftDeleteModel):
         ordering = ["relation_type"]
 
     def __str__(self):
-        return f'[RelationType: {self.relation_type.encode("utf8")}]'
+        return f"[RelationType: {self.relation_type.encode('utf8')}]"
 
 
 class Relation(SoftDeleteModel):

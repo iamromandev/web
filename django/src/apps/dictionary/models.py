@@ -94,7 +94,7 @@ class Example(SoftDeleteModel):
     definition = models.ForeignKey(
         Definition, related_name="examples", blank=True, null=True, default=None, on_delete=models.DO_NOTHING
     )
-    author = models.CharField(max_length=256, blank=True, null=True)
+    author = models.CharField(max_length=128, blank=True, null=True)
     title = models.CharField(max_length=512, blank=True, null=True)
     example = models.TextField(blank=True, null=True)
     url = models.URLField(max_length=2048, blank=True, null=True)

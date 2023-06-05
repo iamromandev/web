@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('is_deleted', models.BooleanField(default=False)),
                 ('deleted_at', models.DateTimeField(blank=True, null=True)),
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('author', models.CharField(blank=True, max_length=256, null=True)),
+                ('author', models.CharField(blank=True, max_length=128, null=True)),
                 ('title', models.CharField(blank=True, max_length=512, null=True)),
                 ('example', models.TextField(blank=True, null=True)),
                 ('url', models.URLField(blank=True, max_length=2048, null=True)),

@@ -1,8 +1,10 @@
 import json
 
+from typing import Optional
+
 from django.http import HttpResponse
 
-from apps.core.models import State
+from apps.core.models import Source, State
 from apps.dictionary.enums import (
     Type as DictionaryType,
     Subtype as DictionarySubtype,
@@ -19,12 +21,22 @@ from apps.dictionary.models import (
 
 
 # Create your views here.
+def get_source(
+    type: DictionaryType = DictionaryType.DEFAULT,
+    subtype: DictionarySubtype = DictionarySubtype.DEFAULT,
+    origin: DictionaryOrigin = DictionaryOrigin.DEFAULT,
+    source: Optional[str] = None,
+) -> Source:
+    return Source.objects.filter(type=type.value, subtype=subtype.value, origin=origin.value, source=source).first()
 
 
 def dictionary_details(request):
-    synced_words = State.objects.filter(
-        type=DictionaryType.WORD.value, subtype=DictionarySubtype.DEFAULT.value, state=DictionaryState.SYNCED.value
-    ).count()
+    source = get_source(
+        type=DictionaryType.DICTIONARY,
+        subtype=DictionarySubtype.WORD,
+        origin=DictionaryOrigin.WORDNIK_DOT_COM,
+    )
+    synced_words = State.objects.filter(source=source, state=DictionaryState.SYNCED.value).count()
     words = Word.objects.count()
     pronunciations = Pronunciation.objects.count()
     definitions = Definition.objects.count()

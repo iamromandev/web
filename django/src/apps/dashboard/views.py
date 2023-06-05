@@ -23,7 +23,7 @@ from apps.dictionary.models import (
 
 def dictionary_details(request):
     synced_words = State.objects.filter(
-        type=DictionaryType.WORD.value, subtype=DictionarySubtype.DEFAULT.value, state=State.SYNCED.value
+        type=DictionaryType.WORD.value, subtype=DictionarySubtype.DEFAULT.value, state=DictionaryState.SYNCED.value
     ).count()
     words = Word.objects.count()
     pronunciations = Pronunciation.objects.count()

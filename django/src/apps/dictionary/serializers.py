@@ -1,8 +1,16 @@
+from typing import Optional
+
 from django.db.models import Q
 
 from rest_framework import serializers
 
-from apps.core.models import Language
+from apps.core.models import Source, Language
+from apps.dictionary.enums import (
+    Type as DictionaryType,
+    Subtype as DictionarySubtype,
+    Origin as DictionaryOrigin,
+    State as DictionaryState,
+)
 from apps.dictionary.models import (
     Pronunciation,
     Example,
@@ -16,11 +24,12 @@ from apps.dictionary.models import (
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = [
+        fields = (
             "id",
             "code",
             "name",
-        ]
+            "direction",
+        )
 
 
 class PronunciationSerializer(serializers.ModelSerializer):
@@ -28,25 +37,25 @@ class PronunciationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pronunciation
-        fields = [
+        fields = (
             "id",
             "source",
             "pronunciation",
             "url",
-        ]
+        )
 
 
 class ExampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Example
-        fields = [
+        fields = (
             "id",
             "author",
             "title",
             "example",
             "url",
             "year",
-        ]
+        )
 
 
 class DefinitionSerializer(serializers.ModelSerializer):
@@ -56,13 +65,13 @@ class DefinitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Definition
-        fields = [
+        fields = (
             "id",
             "source",
             "part_of_speech",
             "definition",
             "examples",
-        ]
+        )
 
 
 class WordSerializer(serializers.ModelSerializer):
@@ -77,17 +86,34 @@ class WordSerializer(serializers.ModelSerializer):
     examples = serializers.SerializerMethodField("get_examples")
     relations = serializers.SerializerMethodField("get_relations")
 
+    def get_source(
+        self,
+        type: DictionaryType = DictionaryType.DEFAULT,
+        subtype: DictionarySubtype = DictionarySubtype.DEFAULT,
+        origin: DictionaryOrigin = DictionaryOrigin.DEFAULT,
+        source: Optional[str] = None,
+    ) -> Source:
+        return Source.objects.filter(type=type.value, subtype=subtype.value, origin=origin.value, source=source).first()
+
     def get_translation(self, word):
         request = self.context.get("request")
-        source = request.GET.get("source")
-        target = request.GET.get("target")
-        source = Language.objects.filter(code=source).first()
-        target = Language.objects.filter(code=target).first()
-        translation = Translation.objects.filter(source=source, target=target, source_word=word).first()
+        source_language_code = request.GET.get("source")
+        target_language_code = request.GET.get("target")
+
+        source = self.get_source(
+            type=DictionaryType.WORD,
+            subtype=DictionarySubtype.TRANSLATION,
+            origin=DictionaryOrigin.LIBRE_TRANSLATE_DOT_COM,
+        )
+        source_language = Language.objects.filter(code=source_language_code).first()
+        target_language = Language.objects.filter(code=target_language_code).first()
+        translation = Translation.objects.filter(
+            source=source, source_language=source_language, target_language=target_language, source_word=word
+        ).first()
         return (
             {
-                "source": translation.source.code,
-                "target": translation.target.code,
+                "source": translation.source_language.code,
+                "target": translation.target_language.code,
                 "translation": translation.target_word.word,
             }
             if translation
@@ -115,14 +141,13 @@ class WordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Word
-        fields = [
+        fields = (
             "id",
             "language",
             "word",
-            "origin",
             "translation",
             "pronunciations",
             "definitions",
             "examples",
             "relations",
-        ]
+        )

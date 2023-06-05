@@ -10,7 +10,7 @@ from django_softdelete.models import SoftDeleteModel
 
 class Lake(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    source = models.CharField(max_length=256, blank=False, null=False)
+    origin = models.CharField(max_length=128, blank=False, null=False)
     ref = models.JSONField(null=False)
     raw = models.JSONField(null=False)
     extra = models.TextField(blank=True, null=True)

@@ -5,6 +5,7 @@ class Type(enum.Enum):
     DEFAULT = "DEFAULT"
     DICTIONARY = "DICTIONARY"
     WORD = "WORD"
+    DEFINITION = "DEFINITION"
 
 
 class Subtype(enum.Enum):
@@ -13,17 +14,19 @@ class Subtype(enum.Enum):
     PRONUNCIATION = "PRONUNCIATION"
     AUDIO = "AUDIO"
     DEFINITION = "DEFINITION"
+    PART_OF_SPEECH = "PART_OF_SPEECH"
+    ATTRIBUTION = "ATTRIBUTION"
     EXAMPLE = "EXAMPLE"
     RELATION = "RELATION"
     TRANSLATION = "TRANSLATION"
 
 
+class Origin(enum.Enum):
+    DEFAULT = "DEFAULT"
+    WORDNIK_DOT_COM = "WORDNIK_DOT_COM"
+    LIBRE_TRANSLATE_DOT_COM = "LIBRE_TRANSLATE_DOT_COM"
+
+
 class State(enum.Enum):
     DEFAULT = "DEFAULT"
     SYNCED = "SYNCED"
-
-
-class Source(enum.Enum):
-    DEFAULT = "DEFAULT"
-    WORDNIK = "WORDNIK"
-    LIBRE_TRANSLATE = "LIBRE_TRANSLATE"

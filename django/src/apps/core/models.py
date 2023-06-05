@@ -23,12 +23,19 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["username"]
+
+    def __str__(self):
+        return f"[User: {self.username} {self.email}]"
+
 
 class Source(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     type = models.CharField(max_length=32, blank=False, null=False)
     subtype = models.CharField(max_length=32, blank=False, null=False)
-    source = models.CharField(max_length=256, blank=False, null=False)
+    origin = models.CharField(max_length=32, blank=False, null=False)
+    source = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -37,27 +44,6 @@ class Source(models.Model):
 
     def __str__(self):
         return f"[Source: {self.type}, {self.subtype}, {self.source}]"
-
-
-class Store(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    ref = models.UUIDField(blank=False, null=False, editable=True)
-    type = models.CharField(max_length=32, blank=False, null=False)
-    subtype = models.CharField(max_length=32, blank=False, null=False)
-    state = models.CharField(max_length=32, blank=False, null=False)
-    extra = models.CharField(max_length=32, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["type", "subtype"]
-        unique_together = [("ref", "type", "subtype")]
-
-    def __str__(self):
-        return f"[Store: {self.type}, {self.subtype}, {self.state}]"
-
-    def is_expired(self, delay):
-        return int(timezone.now().timestamp()) - int(self.updated_at.timestamp()) > delay
 
 
 class Language(SoftDeleteModel):
@@ -79,3 +65,23 @@ class Language(SoftDeleteModel):
 
     def __str__(self):
         return f"[Language: {self.source}, {self.code}, {self.name}]"
+
+
+class State(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    ref = models.UUIDField(editable=True, blank=False, null=False)
+    source = models.ForeignKey(Source, related_name="states", on_delete=models.DO_NOTHING)
+    state = models.CharField(max_length=32, blank=False, null=False)
+    extra = models.CharField(max_length=32, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["source"]
+        unique_together = [("ref", "source")]
+
+    def __str__(self):
+        return f"[State: {self.source}, {self.state}]"
+
+    def is_expired(self, delay: int):
+        return int(timezone.now().timestamp()) - int(self.updated_at.timestamp()) > delay

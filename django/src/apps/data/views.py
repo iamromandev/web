@@ -16,7 +16,7 @@ def json_default(value):
         return value.__dict__
 
 
-def store_in_lake(source: str, ref: dict, raw: object):
+def store_in_lake(origin: str, ref: dict, raw: object):
     lake = Lake.objects.create(
-        source=source, ref=ref, raw=raw if isinstance(raw, dict) else json.dumps(raw, default=json_default)
+        origin=origin, ref=ref, raw=raw if isinstance(raw, dict) else json.dumps(raw, default=json_default)
     )

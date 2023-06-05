@@ -77,7 +77,7 @@ INSTALLED_APPS = [
     "apps.bio",
     "apps.dashboard",
     "apps.dictionary",
-    "apps.quran",
+    # "apps.quran",
 ]
 
 MIDDLEWARE = [
@@ -169,7 +169,9 @@ USE_TZ = True
 # for initial keeping static files
 STATIC_URL = "src/static/"
 # for storing collected static files
-STATIC_ROOT = BASE_DIR.joinpath("src/staticfiles") if ENV == "local" else "/home/iamromandev/public_html/staticfiles"
+STATIC_ROOT = (
+    BASE_DIR.joinpath("src/staticfiles") if ENV == "local" else "/home/iamromandev/public_html/web/django/staticfiles"
+)
 # for collecting images also
 STATICFILES_DIRS = [
     BASE_DIR.joinpath("src/static"),

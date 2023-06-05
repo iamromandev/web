@@ -1,3 +1,6 @@
+from uuid import UUID
+from typing import Optional
+
 from django.http import Http404
 from django.utils import dateparse
 
@@ -7,10 +10,16 @@ from rest_framework.response import Response
 
 from apps.core.models import (
     Source,
-    Store,
     Language,
+    State,
 )
 from apps.data.views import store_in_lake
+from apps.dictionary.enums import (
+    Type as DictionaryType,
+    Subtype as DictionarySubtype,
+    Origin as DictionaryOrigin,
+    State as DictionaryState,
+)
 from apps.dictionary.models import (
     PartOfSpeech,
     Pronunciation,
@@ -26,7 +35,6 @@ from apps.dictionary.serializers import (
     WordSerializer,
     DefinitionSerializer,
 )
-from apps.dictionary.enums import Type, Subtype, State, Source as Source_Enum
 
 from apps.dictionary.libs import WordnikService
 from apps.dictionary.libs import TranslationService
@@ -53,7 +61,7 @@ class WordViewSet(viewsets.ModelViewSet):
     delay_audio = 6 * 60 * 60  # 6 hours
 
     limit_enabled = False
-    translation_enabled = False
+    translation_enabled = True
 
     wordnik = WordnikService()
     translator = TranslationService()
@@ -76,73 +84,115 @@ class WordViewSet(viewsets.ModelViewSet):
         # logger.debug(f"Serialized {data}")
         return Response(data)
 
-    def is_expired(self, ref, type, subtype, extra, delay) -> bool:
+    def is_expired(self, ref: UUID, source: Source, extra: Optional[str], delay: int) -> bool:
         try:
-            store = Store.objects.get(ref=ref, type=type, subtype=subtype, extra=extra)
-            return store.is_expired(delay)
-        except Store.DoesNotExist:
+            state = State.objects.get(ref=ref, source=source, extra=extra)
+            return state.is_expired(delay)
+        except State.DoesNotExist:
             return True
 
-    def store_expire(self, ref, type, subtype, extra):
-        store, created = Store.objects.update_or_create(
-            ref=ref, type=type, subtype=subtype, extra=extra, defaults={"state": State.SYNCED.value}
+    def update_sync_state(self, ref: UUID, source: Source, extra: Optional[str] = None):
+        state, created = State.objects.get_or_create(
+            ref=ref, source=source, defaults={"state": DictionaryState.SYNCED.value, "extra": extra}
         )
-        # logger.debug(f"{store} [created : {created}]")
-
-    def store_synced(self, ref, type, subtype):
-        store, created = Store.objects.update_or_create(
-            ref=ref, type=type, subtype=subtype, defaults={"state": State.SYNCED.value}
-        )
-        # logger.debug(f"{store} [created : {created}]")
+        if created:
+            logger.debug(f"{state} [created : {created}]")
 
     def get_remote_word(self, request, kwargs, word_ref=None):
-        source = request.GET.get("source")
-        target = request.GET.get("target")
+        source_language_code = request.GET.get("source")
+        target_language_code = request.GET.get("target")
         word = kwargs.get("word")
         word = word.lower()
 
         if word_ref:
-            logger.debug(f"OLD: {word_ref} word [source: {source}, target: {target}")
+            logger.debug(f"OLD: {word_ref} word [source: {source_language_code}, target: {target_language_code}")
         else:
-            logger.debug(f"NEW: {word} [source: {source}, target: {target}")
-        return self.get_word_by_wordnik(source, target, word, word_ref)
+            logger.debug(f"NEW: {word} [source: {source_language_code}, target: {target_language_code}")
 
-    def get_word_by_wordnik(self, source, target, word, word_ref):
+        # using wordnik
+        return self.get_word_by_wordnik(source_language_code, target_language_code, word, word_ref)
+
+    def get_word_by_wordnik(self, source_language_code, target_language_code, word, word_ref):
         error_pronunciations, pronunciations = True, None
         error_audios, audios = True, None
         error_definitions, definitions = True, None
         error_examples, examples = True, None
         error_relations, relations = True, None
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.value, Subtype.PRONUNCIATION.value, None, self.delay):
+        if not word_ref or self.is_expired(
+            ref=word_ref.id,
+            source=self.get_or_create_source(
+                type=DictionaryType.WORD,
+                subtype=DictionarySubtype.PRONUNCIATION,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            ),
+            extra=None,
+            delay=self.delay,
+        ):
             error_pronunciations, pronunciations = self.wordnik.get_pronunciations(word, limit=self.limit_pronunciation)
             if error_pronunciations:
-                logger.error(f"api limit on wordnik.get_pronunciations")
+                logger.error(f"limit on wordnik.get_pronunciations api")
                 return word_ref
             logger.debug(f"wordnik.get_pronunciations: {len(pronunciations if pronunciations else [])}")
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.value, Subtype.AUDIO.value, None, self.delay):
+        if not word_ref or self.is_expired(
+            ref=word_ref.id,
+            source=self.get_or_create_source(
+                type=DictionaryType.WORD,
+                subtype=DictionarySubtype.AUDIO,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            ),
+            extra=None,
+            delay=self.delay,
+        ):
             error_audios, audios = self.wordnik.get_audios(word, limit=self.limit_audio)
             if error_audios:
-                logger.error(f"api limit on wordnik.get_audios")
+                logger.error(f"limit on wordnik.get_audios api")
                 return word_ref
             logger.debug(f"wordnik.get_audios: {len(audios if audios else [])}")
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.value, Subtype.DEFINITION.value, None, self.delay):
+        if not word_ref or self.is_expired(
+            ref=word_ref.id,
+            source=self.get_or_create_source(
+                type=DictionaryType.WORD,
+                subtype=DictionarySubtype.DEFINITION,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            ),
+            extra=None,
+            delay=self.delay,
+        ):
             error_definitions, definitions = self.wordnik.get_definitions(word, limit=self.limit_definition)
             if error_definitions:
-                logger.error(f"api limit on wordnik.get_definitions")
+                logger.error(f"limit on wordnik.get_definitions api")
                 return word_ref
             logger.debug(f"wordnik.get_definitions: {len(definitions if definitions else [])}")
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.value, Subtype.EXAMPLE.value, None, self.delay):
+        if not word_ref or self.is_expired(
+            ref=word_ref.id,
+            source=self.get_or_create_source(
+                type=DictionaryType.WORD,
+                subtype=DictionarySubtype.EXAMPLE,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            ),
+            extra=None,
+            delay=self.delay,
+        ):
             error_examples, examples = self.wordnik.get_examples(word, limit=self.limit_example)
             if error_examples:
-                logger.error(f"api limit on wordnik.get_examples")
+                logger.error(f"limit on wordnik.get_examples api")
                 return word_ref
             logger.debug(f'wordnik.get_examples: {len(examples.examples) if hasattr(examples, "examples") else 0}')
 
-        if not word_ref or self.is_expired(word_ref.id, Type.WORD.value, Subtype.RELATION.value, None, self.delay):
+        if not word_ref or self.is_expired(
+            ref=word_ref.id,
+            source=self.get_or_create_source(
+                type=DictionaryType.WORD,
+                subtype=DictionarySubtype.RELATION,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            ),
+            extra=None,
+            delay=self.delay,
+        ):
             error_relations, relations = self.wordnik.get_relations(word, limit=self.limit_relation)
             if error_relations:
                 logger.error(f"api limit on wordnik.get_relations")
@@ -153,84 +203,132 @@ class WordViewSet(viewsets.ModelViewSet):
             error_pronunciations and error_audios and error_definitions and error_examples and error_relations
         )
         if (not word_ref and has_resources) or (
-            word_ref and self.is_expired(word_ref.id, Type.WORD.value, Subtype.DEFAULT.value, None, self.delay)
+            word_ref
+            and self.is_expired(
+                ref=word_ref.id,
+                source=self.get_or_create_source(
+                    type=DictionaryType.WORD,
+                    subtype=DictionarySubtype.DEFAULT,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM,
+                ),
+                extra=None,
+                delay=self.delay,
+            )
         ):
-            language = self.get_or_create_language(code="en", name="English")
-            word_ref = self.get_or_create_word(language, word)
-            self.store_expire(word_ref.id, Type.WORD.value, Subtype.DEFAULT.value, None)
+            source = self.get_or_create_source(
+                type=DictionaryType.DICTIONARY,
+                subtype=DictionarySubtype.WORD,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            )
+            language = self.get_or_create_language(source=source, code="en", name="English")
+            word_ref = self.get_or_create_word(source=source, language=language, word=word)
+            self.update_sync_state(
+                ref=word_ref.id,
+                source=source,
+            )
 
             if self.translation_enabled:
-                self.do_translation_job(source, target, word, word_ref)
+                self.do_translation_job(source, source_language_code, target_language_code, word, word_ref)
 
             if not error_pronunciations and pronunciations:
                 # store in data lake
                 store_in_lake(
-                    source=Source_Enum.WORDNIK.value,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
                     ref=dict(
                         word=word,
-                        type=Type.WORD.value,
-                        subtype=Subtype.PRONUNCIATION.value,
+                        type=DictionaryType.WORD.value,
+                        subtype=DictionarySubtype.PRONUNCIATION.value,
                     ),
                     raw=pronunciations,
                 )
-                self.build_or_create_pronunciations(word_ref, pronunciations)
-                self.store_expire(word_ref.id, Type.WORD.value, Subtype.PRONUNCIATION.value, None)
+
+                source = self.get_or_create_source(
+                    type=DictionaryType.WORD,
+                    subtype=DictionarySubtype.PRONUNCIATION,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM,
+                )
+                self.build_or_create_pronunciations(source, word_ref, pronunciations)
+                self.update_sync_state(ref=word_ref.id, source=source)
 
             if not error_audios and audios:
                 # store in data lake
                 store_in_lake(
-                    source=Source_Enum.WORDNIK.value,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
                     ref=dict(
                         word=word,
-                        type=Type.WORD.value,
-                        subtype=Subtype.AUDIO.value,
+                        type=DictionaryType.WORD.value,
+                        subtype=DictionarySubtype.AUDIO.value,
                     ),
                     raw=audios,
                 )
-                self.build_or_create_audios(word_ref, audios)
-                self.store_expire(word_ref.id, Type.WORD.value, Subtype.AUDIO.value, None)
+
+                source = self.get_or_create_source(
+                    type=DictionaryType.WORD,
+                    subtype=DictionarySubtype.AUDIO,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM,
+                )
+                self.build_or_create_audios(source, word_ref, audios)
+                self.update_sync_state(ref=word_ref.id, source=source)
 
             if not error_definitions and definitions:
                 # store in data lake
                 store_in_lake(
-                    source=Source_Enum.WORDNIK.value,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
                     ref=dict(
                         word=word,
-                        type=Type.WORD.value,
-                        subtype=Subtype.DEFINITION.value,
+                        type=DictionaryType.WORD.value,
+                        subtype=DictionarySubtype.DEFINITION.value,
                     ),
                     raw=definitions,
                 )
-                self.build_or_create_definitions(word_ref, definitions)
-                self.store_expire(word_ref.id, Type.WORD.value, Subtype.DEFINITION.value, None)
+
+                source = self.get_or_create_source(
+                    type=DictionaryType.WORD,
+                    subtype=DictionarySubtype.DEFINITION,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM,
+                )
+                self.build_or_create_definitions(source, word_ref, definitions)
+                self.update_sync_state(ref=word_ref.id, source=source)
 
             if not error_examples and examples:
                 # store in data lake
                 store_in_lake(
-                    source=Source_Enum.WORDNIK.value,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
                     ref=dict(
                         word=word,
-                        type=Type.WORD.value,
-                        subtype=Subtype.EXAMPLE.value,
+                        type=DictionaryType.WORD.value,
+                        subtype=DictionarySubtype.EXAMPLE.value,
                     ),
                     raw=examples,
                 )
-                self.build_or_create_examples(word_ref, examples=examples.examples)
-                self.store_expire(word_ref.id, Type.WORD.value, Subtype.EXAMPLE.value, None)
+
+                source = self.get_or_create_source(
+                    type=DictionaryType.WORD,
+                    subtype=DictionarySubtype.EXAMPLE,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM,
+                )
+                self.build_or_create_examples(source, word_ref, examples=examples.examples)
+                self.update_sync_state(ref=word_ref.id, source=source)
 
             if not error_relations and relations:
                 # store in data lake
                 store_in_lake(
-                    source=Source_Enum.WORDNIK.value,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
                     ref=dict(
                         word=word,
-                        type=Type.WORD.value,
-                        subtype=Subtype.RELATION.value,
+                        type=DictionaryType.WORD.value,
+                        subtype=DictionarySubtype.RELATION.value,
                     ),
                     raw=relations,
                 )
-                self.build_or_create_relations(word_ref, relations)
-                self.store_expire(word_ref.id, Type.WORD.value, Subtype.RELATION.value, None)
+
+                source = self.get_or_create_source(
+                    type=DictionaryType.WORD,
+                    subtype=DictionarySubtype.RELATION,
+                    origin=DictionaryOrigin.WORDNIK_DOT_COM,
+                )
+                self.build_or_create_relations(source, word_ref, relations)
+                self.update_sync_state(ref=word_ref.id, source=source)
 
         logger.debug(f"Completed {word_ref.word}")
 
@@ -238,16 +336,19 @@ class WordViewSet(viewsets.ModelViewSet):
 
     def get_or_create_source(
         self,
-        type=Type.DEFAULT.value,
-        subtype=Subtype.DEFAULT.value,
-        source=Source_Enum.DEFAULT.value,
-    ):
-        source, created = Source.objects.get_or_create(type=type, subtype=subtype, source=source)
+        type: DictionaryType = DictionaryType.DEFAULT,
+        subtype: DictionarySubtype = DictionarySubtype.DEFAULT,
+        origin: DictionaryOrigin = DictionaryOrigin.DEFAULT,
+        source: Optional[str] = None,
+    ) -> Source:
+        source, created = Source.objects.get_or_create(
+            type=type.value, subtype=subtype.value, origin=origin.value, source=source
+        )
         if created:
             logger.debug(f"{source} [created : {created}]")
         return source
 
-    def has_language(self, code=None, name=None):
+    def has_language(self, source: Source, code=None, name=None):
         try:
             if code:
                 if name:
@@ -261,28 +362,38 @@ class WordViewSet(viewsets.ModelViewSet):
             logger.error(error)
             return False
 
-    def get_or_create_language(self, code="en", name="English"):
-        source = self.get_or_create_source(type=Type.DICTIONARY.value)
+    def get_or_create_language(self, source: Source, code="en", name="English"):
         language, created = Language.objects.get_or_create(source=source, code=code, name=name)
         if created:
             logger.debug(f"{language} [created : {created}]")
         return language
 
-    def get_language(self, code):
+    def get_language(self, source: Source, code):
         try:
-            return Language.objects.get(code=code)
+            return Language.objects.get(source=source, code=code)
         except Language.DoesNotExist:
             return None
 
     def get_or_create_part_of_speech(self, part_of_speech):
-        part_of_speech, created = PartOfSpeech.objects.get_or_create(part_of_speech=part_of_speech)
+        source = self.get_or_create_source(
+            type=DictionaryType.DEFINITION,
+            subtype=DictionarySubtype.PART_OF_SPEECH,
+            origin=DictionaryOrigin.WORDNIK_DOT_COM,
+        )
+        part_of_speech, created = PartOfSpeech.objects.get_or_create(source=source, part_of_speech=part_of_speech)
         if created:
             logger.debug(f"{part_of_speech} [created : {created}]")
         return part_of_speech
 
     def get_or_create_attribution(self, url, text):
         if url or text:
+            source = self.get_or_create_source(
+                type=DictionaryType.DEFINITION,
+                subtype=DictionarySubtype.ATTRIBUTION,
+                origin=DictionaryOrigin.WORDNIK_DOT_COM,
+            )
             attribution, created = Attribution.objects.get_or_create(
+                source=source,
                 url=url,
                 text=text,
             )
@@ -291,95 +402,109 @@ class WordViewSet(viewsets.ModelViewSet):
             return attribution
         return None
 
-    def get_or_create_relation_type(self, relation_type):
-        relation_type, created = RelationType.objects.get_or_create(relation_type=relation_type)
+    def get_or_create_relation_type(self, source: Source, relation_type):
+        relation_type, created = RelationType.objects.get_or_create(source=source, relation_type=relation_type)
         if created:
             logger.debug(f"{relation_type} [created : {created}]")
         return relation_type
 
-    def get_or_create_word(self, language, word):
-        word, created = Word.objects.get_or_create(language=language, word=word)
+    def get_or_create_word(self, source: Source, language: Language, word: str) -> Word:
+        word, created = Word.objects.get_or_create(source=source, language=language, word=word)
         if created:
             logger.debug(f"{word} [created : {created}]")
         return word
 
-    def do_translation_job(self, source, target, word, word_ref):
-        if not (source or target) or source == target:
+    def do_translation_job(self, source: Source, source_language_code, target_language_code, word, word_ref):
+        if not (source_language_code or target_language_code) or source_language_code == target_language_code:
             return None
 
         # source == 'en' and
-        extra_condition = join_list_in_sort([source, target])
-        if not self.is_expired(word_ref.id, Type.WORD.value, Subtype.TRANSLATION.value, extra_condition, self.delay):
+        translation_source = self.get_or_create_source(
+            type=DictionaryType.WORD,
+            subtype=DictionarySubtype.TRANSLATION,
+            origin=DictionaryOrigin.LIBRE_TRANSLATE_DOT_COM,
+        )
+        extra_condition = join_list_in_sort([source_language_code, target_language_code])
+        if not self.is_expired(ref=word_ref.id, source=translation_source, extra=extra_condition, delay=self.delay):
             return None
 
-        lang_codes = (source, target)
+        lang_codes = (source_language_code, target_language_code)
         for code in lang_codes:
-            if not self.has_language(code=code):
+            if not self.has_language(source=source, code=code):
                 logger.debug("producing translations")
                 error_languages, languages = self.translator.languages()
 
                 if not error_languages and languages:
                     for language in languages:
-                        self.get_or_create_language(language["code"], language["name"])
+                        self.get_or_create_language(source, language["code"], language["name"])
 
-        source = self.get_language(source)
-        target = self.get_language(target)
+        source_language = self.get_language(source, source_language_code)
+        target_language = self.get_language(source, target_language_code)
 
-        if not (source or target):
+        if not (source_language or target_language):
             logger.debug(f"Source and Target not found")
             return None
 
-        logger.debug(f"translation: {word} | {source.code} - {target.code}")
+        logger.debug(f"translation: {word} | {source_language.code} - {target_language.code}")
 
-        error_translation, translation = self.translator.translate(word, source.code, target.code)
+        error_translation, translation = self.translator.translate(word, source_language.code, target_language.code)
         logger.debug(f"translation: {translation}")
         if not error_translation and translation:
             store_in_lake(
-                source=Source_Enum.LIBRE_TRANSLATE.value,
+                origin=DictionaryOrigin.LIBRE_TRANSLATE_DOT_COM.value,
                 ref=dict(
                     word=word,
-                    source=source.code,
-                    target=target.code,
-                    type=Type.WORD.value,
-                    subtype=Subtype.TRANSLATION.value,
+                    source=source_language.code,
+                    target=target_language.code,
+                    type=DictionaryType.WORD.value,
+                    subtype=DictionarySubtype.TRANSLATION.value,
                 ),
                 raw=translation,
             )
-            translation = self.get_or_create_word(target, translation)
-            self.build_or_create_translation(source, target, word_ref, translation)
-            extra_condition = join_list_in_sort([source.code, target.code])
-            self.store_expire(word_ref.id, Type.WORD.value, Subtype.TRANSLATION.value, extra_condition)
+            translation = self.get_or_create_word(source, target_language, translation)
+
+            source = self.get_or_create_source(
+                type=DictionaryType.WORD,
+                subtype=DictionarySubtype.TRANSLATION,
+                origin=DictionaryOrigin.LIBRE_TRANSLATE_DOT_COM,
+            )
+            self.build_or_create_translation(
+                translation_source, source_language, target_language, word_ref, translation
+            )
+            extra_condition = join_list_in_sort([source_language.code, target_language.code])
+            self.update_sync_state(ref=word_ref.id, source=translation_source, extra=extra_condition)
             logger.debug("completed translation")
 
-    def build_or_create_translation(self, source, target, word, translation):
-        if not translation:
+    def build_or_create_translation(
+        self, source: Source, source_language: Language, target_language: Language, source_word: Word, target_word: Word
+    ):
+        if not target_word:
             return
 
         translation, created = Translation.objects.get_or_create(
             source=source,
-            target=target,
-            source_word=word,
-            target_word=translation,
+            source_language=source_language,
+            target_language=target_language,
+            source_word=source_word,
+            target_word=target_word,
         )
         if created:
             logger.debug(f"{translation} [created : {created}]")
 
-    def build_or_create_pronunciations(self, word, pronunciations):
+    def build_or_create_pronunciations(self, source: Source, word: Word, pronunciations):
         logger.debug(f"[word: {word}][pronunciations: {len(pronunciations)}]")
         pers = {}
         for pronunciation in pronunciations:
-            source = pronunciation.rawType
-            if source not in pers:
-                pers[source] = 0
-            if self.limit_enabled and pers[source] >= self.limit_per:
+            type = pronunciation.rawType
+            if type not in pers:
+                pers[type] = 0
+            if self.limit_enabled and pers[type] >= self.limit_per:
                 continue
-            self.build_or_create_pronunciation(word, pronunciation)
-            pers[source] = pers[source] + 1
+            self.build_or_create_pronunciation(source, word, pronunciation)
+            pers[type] = pers[type] + 1
 
-    def build_or_create_pronunciation(self, word, pronunciation):
-        source = self.get_or_create_source(
-            type=Type.DICTIONARY.value, subtype=Subtype.WORD.value, source=pronunciation.rawType
-        )
+    def build_or_create_pronunciation(self, source: Source, word: Word, pronunciation):
+        source.source = pronunciation.rawType
         logger.debug(f"Pronunciation.objects.get_or_create {source.source} {word.word} {pronunciation.raw}")
 
         pronunciation, created = Pronunciation.objects.get_or_create(
@@ -388,48 +513,43 @@ class WordViewSet(viewsets.ModelViewSet):
         if created:
             logger.debug(f"{pronunciation} [created : {created}]")
 
-    def build_or_create_audios(self, word, audios):
+    def build_or_create_audios(self, source: Source, word: Word, audios):
         pers = {}
         for audio in audios:
-            source = audio.createdBy
-            if source not in pers:
-                pers[source] = 0
-            if self.limit_enabled and pers[source] >= self.limit_per:
+            created_by = audio.createdBy
+            if created_by not in pers:
+                pers[created_by] = 0
+            if self.limit_enabled and pers[created_by] >= self.limit_per:
                 continue
-            self.build_or_create_audio(word, audio)
-            pers[source] = pers[source] + 1
+            self.build_or_create_audio(source, word, audio)
+            pers[created_by] = pers[created_by] + 1
 
-    def build_or_create_audio(self, word, audio):
+    def build_or_create_audio(self, source: Source, word: Word, audio):
         if not audio.createdBy:
             return
-        source = self.get_or_create_source(
-            type=Type.DICTIONARY.value, subtype=Subtype.WORD.value, source=audio.createdBy
-        )
+        source.source = audio.createdBy
         pronunciation, created = Pronunciation.objects.update_or_create(
             source=source, word=word, defaults={"url": audio.fileUrl}
         )
         if created:
             logger.debug(f"{pronunciation} [created : {created}]")
 
-    def build_or_create_definitions(self, word, definitions):
+    def build_or_create_definitions(self, source: Source, word: Word, definitions):
         pers = {}
         for definition in definitions:
             if None in [definition.sourceDictionary, definition.partOfSpeech, definition.text]:
                 continue
-            source = definition.sourceDictionary
-            if source not in pers:
-                pers[source] = 0
-            if self.limit_enabled and pers[source] >= self.limit_per:
+            index = definition.sourceDictionary
+            if index not in pers:
+                pers[index] = 0
+            if self.limit_enabled and pers[index] >= self.limit_per:
                 continue
-            self.build_or_create_definition(word, definition)
-            pers[source] = pers[source] + 1
-        # logger.debug(f'created definitions for {word.word}')
+            self.build_or_create_definition(source, word, definition)
+            pers[index] = pers[index] + 1
 
-    def build_or_create_definition(self, word, definition):
+    def build_or_create_definition(self, source: Source, word: Word, definition):
         examples = definition.exampleUses
-        source = self.get_or_create_source(
-            type=Type.DICTIONARY.value, subtype=Subtype.WORD.value, source=definition.sourceDictionary
-        )
+        source.source = definition.sourceDictionary
         part_of_speech = self.get_or_create_part_of_speech(definition.partOfSpeech)
         attribution = self.get_or_create_attribution(definition.attributionUrl, definition.attributionText)
         definition, created = Definition.objects.get_or_create(
@@ -437,19 +557,29 @@ class WordViewSet(viewsets.ModelViewSet):
         )
         if created:
             logger.debug(f"{definition} [created : {created}]")
-        self.build_or_create_examples(word, definition, examples)
 
-    def build_or_create_examples(self, word, definition=None, examples=None):
+        source = self.get_or_create_source(
+            type=DictionaryType.DEFINITION,
+            subtype=DictionarySubtype.EXAMPLE,
+            origin=DictionaryOrigin.WORDNIK_DOT_COM,
+        )
+        self.build_or_create_examples(source, word, definition, examples)
+
+    def build_or_create_examples(self, source: Source, word, definition=None, examples=None):
+        if not examples:
+            return None
         for example in examples:
-            self.build_or_create_example(word, definition, example)
-        # logger.debug(f'created examples for {word.word}')
+            self.build_or_create_example(source, word, definition, example)
 
-    def build_or_create_example(self, word, definition=None, example=None):
+    def build_or_create_example(self, source: Source, word: Word, definition=None, example=None):
         if definition:
-            example, created = Example.objects.get_or_create(word=word, definition=definition, example=example.text)
+            example, created = Example.objects.get_or_create(
+                source=source, word=word, definition=definition, example=example.text
+            )
         else:
             year = f"{example.year}-01-01" if isinstance(example.year, int) else example.year
             example, created = Example.objects.update_or_create(
+                source=source,
                 word=word,
                 example=example.text,
                 defaults={
@@ -462,20 +592,24 @@ class WordViewSet(viewsets.ModelViewSet):
         if created:
             logger.debug(f"{example} [created : {created}]")
 
-    def build_or_create_relations(self, word, relations):
+    def build_or_create_relations(self, source: Source, word: Word, relations):
         for relation in relations:
-            self.build_or_create_relation(word, relation)
-        logger.debug(f"created relations for {word.word}")
+            self.build_or_create_relation(source, word, relation)
 
-    def build_or_create_relation(self, word, relation):
+    def build_or_create_relation(self, source: Source, word: Word, relation):
         if None in [relation.relationshipType, relation.words]:
             return
 
         pers = {}
         type = relation.relationshipType
 
-        language = self.get_or_create_language()
-        relation_type = self.get_or_create_relation_type(type)
+        word_source = self.get_or_create_source(
+            type=DictionaryType.DICTIONARY,
+            subtype=DictionarySubtype.WORD,
+            origin=DictionaryOrigin.WORDNIK_DOT_COM,
+        )
+        language = self.get_or_create_language(source=word_source, code="en", name="English")
+        relation_type = self.get_or_create_relation_type(source, type)
 
         for relation_word in relation.words:
             if type not in pers:
@@ -485,15 +619,16 @@ class WordViewSet(viewsets.ModelViewSet):
             pers[type] = pers[type] + 1
 
             relation_word = relation_word.lower()
-            relation_word = self.get_or_create_word(language, relation_word)
+            relation_word = self.get_or_create_word(word_source, language, relation_word)
 
             left_word = word if word.id <= relation_word.id else relation_word
             right_word = relation_word if word.id <= relation_word.id else word
 
             relation, created = Relation.objects.get_or_create(
-                relation_type=relation_type, left_word=left_word, right_word=right_word
+                source=source, relation_type=relation_type, left_word=left_word, right_word=right_word
             )
-            # logger.debug(f'{relation} [created : {created}]')
+            if created:
+                logger.debug(f"{relation} [created : {created}]")
 
 
 class DefinitionViewSet(viewsets.ModelViewSet):

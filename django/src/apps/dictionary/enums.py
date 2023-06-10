@@ -3,14 +3,12 @@ import enum
 
 class Type(enum.Enum):
     DEFAULT = "DEFAULT"
-    DICTIONARY = "DICTIONARY"
     WORD = "WORD"
     DEFINITION = "DEFINITION"
 
 
 class Subtype(enum.Enum):
     DEFAULT = "DEFAULT"
-    WORD = "WORD"
     PRONUNCIATION = "PRONUNCIATION"
     AUDIO = "AUDIO"
     DEFINITION = "DEFINITION"

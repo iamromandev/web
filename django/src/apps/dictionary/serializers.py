@@ -137,7 +137,13 @@ class WordSerializer(serializers.ModelSerializer):
                 relations[relation_type] = {}
             relations[relation_type][str(relation_word.id)] = relation_word.word
 
-        return relations
+        result = {}
+
+        for type, type_words in relations.items():
+            result[type] = list(type_words.values())
+            result[type].sort()
+
+        return result
 
     class Meta:
         model = Word

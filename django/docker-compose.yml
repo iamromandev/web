@@ -1,7 +1,7 @@
 services:
   db:
     platform: linux/arm64
-    image: mariadb
+    image: mariadb:10.5
     hostname: db
     container_name: db
     environment:

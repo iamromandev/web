@@ -9,6 +9,7 @@ from config.settings import WORDNIK_API_KEYS
 from apps.core.libs import (
     CircularQueue,
     ApiClient,
+    SingletonMeta,
 )
 
 from libretranslatepy import LibreTranslateAPI
@@ -16,7 +17,7 @@ from libretranslatepy import LibreTranslateAPI
 SLEEP_TIME = 1  # seconds
 
 
-class WordnikService:
+class WordnikService(metaclass=SingletonMeta):
     def __init__(self):
         self._api_keys = WORDNIK_API_KEYS
         self._base_url = "http://api.wordnik.com/v4"
@@ -256,7 +257,7 @@ class WordnikService:
         return is_error, result
 
 
-class TranslationService:
+class Translator:
     limit = 3
     error_code_timeout = 504
 

@@ -32,8 +32,8 @@ def get_source(
 
 def dictionary_details(request):
     source = get_source(
-        type=DictionaryType.DICTIONARY,
-        subtype=DictionarySubtype.WORD,
+        type=DictionaryType.WORD,
+        subtype=DictionarySubtype.DEFAULT,
         origin=DictionaryOrigin.WORDNIK_DOT_COM,
     )
     synced_words = State.objects.filter(source=source, state=DictionaryState.SYNCED.value).count()

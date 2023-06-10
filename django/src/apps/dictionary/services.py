@@ -170,11 +170,6 @@ class WordService(Service):
         for service in self.services:
             service.load()
 
-        if self.translation_enabled:
-            self.translation_service.load(
-                source_language_code=source_language_code, target_language_code=target_language_code
-            )
-
         if self.has_resources and self.is_expired():
             language = self.language_service.get_or_create_language(source=self.source)
             self.ref = self.get_or_create_word(source=self.source, language=language, word=self.word)
@@ -185,6 +180,9 @@ class WordService(Service):
                 service.sync()
 
             if self.translation_enabled:
+                self.translation_service.load(
+                    source_language_code=source_language_code, target_language_code=target_language_code
+                )
                 self.translation_service.ref = self.ref
                 self.translation_service.sync()
 

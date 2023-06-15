@@ -83,5 +83,5 @@ class State(models.Model):
     def __str__(self):
         return f"[State: {self.source}, {self.state}]"
 
-    def is_expired(self, delay: int):
-        return int(timezone.now().timestamp()) - int(self.updated_at.timestamp()) > delay
+    def is_expired(self, delay_s: int):
+        return int(timezone.now().timestamp()) - int(self.updated_at.timestamp()) > delay_s

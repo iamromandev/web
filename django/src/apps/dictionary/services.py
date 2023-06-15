@@ -65,7 +65,7 @@ class Service:
             return True
         try:
             state = State.objects.get(ref=self.ref.id, source=self.source, extra=extra)
-            return state.is_expired(self.delay_s)
+            return DictionaryState.SYNCED.value == state.state and state.is_expired(self.delay_s)
         except State.DoesNotExist:
             return True
 
@@ -127,10 +127,16 @@ class Service:
     def has_result(self) -> True:
         return not self.error and self.result
 
+    @property
+    def build_state(self) -> DictionaryState:
+        if DictionaryType.WORD.is_equal(self.source.type) and DictionarySubtype.DEFAULT.is_equal(self.source.subtype):
+            return DictionaryState.SYNCED
+
+        return DictionaryState.SYNCED if self.has_result else DictionaryState.NOT_FOUND
+
     def update_state(self, extra: Optional[str] = None):
-        self.state_service.update_state(
-            ref=self.ref.id, source=self.source, state=DictionaryState.SYNCED.value, extra=extra
-        )
+        state = self.build_state
+        self.state_service.update_state(ref=self.ref.id, source=self.source, state=state.value, extra=extra)
 
 
 class WordService(Service):
@@ -177,14 +183,14 @@ class WordService(Service):
 
             for service in self.services:
                 service.ref = self.ref
-                service.sync()
+                service.store()
 
             if self.translation_enabled:
                 self.translation_service.load(
                     source_language_code=source_language_code, target_language_code=target_language_code
                 )
                 self.translation_service.ref = self.ref
-                self.translation_service.sync()
+                self.translation_service.store()
 
         return self.ref
 
@@ -207,7 +213,7 @@ class PronunciationService(Service):
             else:
                 logger.debug(f"wordnik.get_pronunciations: {len(self.result if self.result else [])}")
 
-    def sync(self):
+    def store(self):
         if self.has_result:
             store_in_lake(
                 origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
@@ -219,7 +225,7 @@ class PronunciationService(Service):
                 raw=self.raw if self.raw else self.result,
             )
             self.build_or_create_pronunciations()
-            self.update_state()
+        self.update_state()
 
     def build_or_create_pronunciations(self):
         logger.debug(f"[word: {self.ref}][pronunciations: {len(self.result)}]")
@@ -262,7 +268,7 @@ class AudioService(Service):
             else:
                 logger.debug(f"wordnik.get_audios: {len(self.result if self.result else [])}")
 
-    def sync(self):
+    def store(self):
         if self.has_result:
             store_in_lake(
                 origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
@@ -274,7 +280,7 @@ class AudioService(Service):
                 raw=self.raw if self.raw else self.result,
             )
             self.build_or_create_audios()
-            self.update_state()
+        self.update_state()
 
     def build_or_create_audios(self):
         pers = {}
@@ -316,7 +322,7 @@ class DefinitionService(Service):
             else:
                 logger.debug(f"wordnik.get_definitions: {len(self.result if self.result else [])}")
 
-    def sync(self):
+    def store(self):
         if self.has_result:
             store_in_lake(
                 origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
@@ -328,7 +334,7 @@ class DefinitionService(Service):
                 raw=self.raw if self.raw else self.result,
             )
             self.build_or_create_definitions()
-            self.update_state()
+        self.update_state()
 
     def build_or_create_definitions(self):
         pers = {}
@@ -397,7 +403,7 @@ class ExampleService(Service):
             else:
                 logger.debug(f"wordnik.get_examples: {len(self.result if self.result else [])}")
 
-    def sync(self):
+    def store(self):
         if self.has_result:
             store_in_lake(
                 origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
@@ -409,7 +415,7 @@ class ExampleService(Service):
                 raw=self.raw if self.raw else self.result,
             )
             self.build_or_create_examples()
-            self.update_state()
+        self.update_state()
 
     def build_or_create_examples(self):
         for example in self.result:
@@ -450,7 +456,7 @@ class RelationService(Service):
             else:
                 logger.debug(f"wordnik.get_relations: {len(self.result if self.result else [])}")
 
-    def sync(self):
+    def store(self):
         if self.has_result:
             store_in_lake(
                 origin=DictionaryOrigin.WORDNIK_DOT_COM.value,
@@ -462,7 +468,7 @@ class RelationService(Service):
                 raw=self.raw if self.raw else self.result,
             )
             self.build_or_create_relations()
-            self.update_state()
+        self.update_state()
 
     def build_or_create_relations(self):
         for relation in self.result:
@@ -551,7 +557,7 @@ class TranslationService(Service):
             else:
                 logger.debug(f"libretranslate.translate: {self.result}")
 
-    def sync(self):
+    def store(self):
         if self.has_result:
             store_in_lake(
                 origin=DictionaryOrigin.LIBRE_TRANSLATE_DOT_COM.value,
@@ -573,8 +579,9 @@ class TranslationService(Service):
             translation = self.get_or_create_word(source=word_source, language=self.target_language, word=self.result)
 
             self.build_or_create_translation(translation=translation)
-            extra_condition = join_list_in_sort([self.source_language.code, self.target_language.code])
-            self.update_state(extra=extra_condition)
+
+        extra_condition = join_list_in_sort([self.source_language.code, self.target_language.code])
+        self.update_state(extra=extra_condition)
 
     def build_or_create_translation(self, translation: Word):
         translation, created = Translation.objects.get_or_create(

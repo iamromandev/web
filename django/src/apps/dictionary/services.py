@@ -4,6 +4,7 @@ from django.utils import dateparse
 
 from loguru import logger
 
+from config.settings import TRANSLATION_ENABLED
 from apps.core.models import (
     Source,
     Language,
@@ -49,7 +50,7 @@ class Service:
         self.delay_s = 100 * 24 * 60 * 60  # 100 days
         self.limit_enabled = False
         self.limit_per = 10
-        self.translation_enabled = True
+        self.translation_enabled = TRANSLATION_ENABLED
 
         self.error = True
         self.raw = None

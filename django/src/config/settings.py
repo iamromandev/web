@@ -29,7 +29,7 @@ logger.debug(f"RootDir: {root}")
 logger.debug(f"BaseDir: {BASE_DIR}")
 logger.debug(f"TemplatesDir: {BASE_DIR.joinpath('src/templates')}")
 
-ENV = env.bool("ENV", default="local")
+ENV = env.str("ENV", default="local")
 logger.debug(f"ENV: {ENV}")
 
 # Quick-start development settings - unsuitable for production
@@ -243,6 +243,9 @@ REST_AUTH = {
 SITE_ID = 1
 CORS_ORIGIN_ALLOW_ALL = True
 
-# wordnik api keys
+# dictionary
 WORDNIK_API_KEYS = env.list("WORDNIK_API_KEYS", default=[])
 logger.debug(f"WORDNIK_API_KEYS: {WORDNIK_API_KEYS}")
+
+TRANSLATION_ENABLED = env.bool("TRANSLATION_ENABLED", default=False)
+logger.debug(f"TRANSLATION_ENABLED: {TRANSLATION_ENABLED}")

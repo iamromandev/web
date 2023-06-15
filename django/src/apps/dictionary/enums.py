@@ -6,6 +6,9 @@ class Type(enum.Enum):
     WORD = "WORD"
     DEFINITION = "DEFINITION"
 
+    def is_equal(self, value: str) -> bool:
+        return value == self.value
+
 
 class Subtype(enum.Enum):
     DEFAULT = "DEFAULT"
@@ -18,6 +21,9 @@ class Subtype(enum.Enum):
     RELATION = "RELATION"
     TRANSLATION = "TRANSLATION"
 
+    def is_equal(self, value: str) -> bool:
+        return value == self.value
+
 
 class Origin(enum.Enum):
     DEFAULT = "DEFAULT"
@@ -28,3 +34,4 @@ class Origin(enum.Enum):
 class State(enum.Enum):
     DEFAULT = "DEFAULT"
     SYNCED = "SYNCED"
+    NOT_FOUND = "NOT_FOUND"

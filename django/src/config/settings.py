@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     # 'theme',
     # apps
     "apps.core",
+    "apps.users",
     "apps.auths",
     "apps.data",
     "apps.home",

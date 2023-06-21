@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from django_softdelete.models import SoftDeleteModel
 
@@ -71,6 +72,10 @@ class Coordinate(SoftDeleteModel):
 
 
 class Address(SoftDeleteModel):
+    class Type(models.TextChoices):
+        HOME = "HOME", _("home")
+        WORK = "WORK", _("work")
+
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     source = models.ForeignKey(Source, related_name="users_addresses", on_delete=models.DO_NOTHING)
     street = models.ForeignKey(Street, related_name="addresses", on_delete=models.DO_NOTHING)
@@ -78,6 +83,7 @@ class Address(SoftDeleteModel):
     raw = models.CharField(max_length=256, blank=True, null=True)
     formatted = models.CharField(max_length=256, blank=True, null=True)
     coordinate = models.ForeignKey(Coordinate, related_name="addresses", on_delete=models.DO_NOTHING)
+    type = models.CharField(max_length=16, choices=Type.choices, default=None, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -86,8 +92,18 @@ class Address(SoftDeleteModel):
 
 
 # class Profile(SoftDeleteModel):
+#     class Gender(models.TextChoices):
+#         MALE = "MALE", _("male")
+#         FEMALE = "FEMALE", _("female")
+#         OTHER = "OTHER", _("other")
+#
 #     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
 #     source = models.ForeignKey(Source, related_name="users_profiles", on_delete=models.DO_NOTHING)
 #     user = models.ForeignKey(User, related_name="profiles", on_delete=models.DO_NOTHING)
-#     name = models.CharField(max_length=128, blank=True, null=True)
-#     birthdate = models.DateField(blank=True, null=True)
+#     gender = models.CharField(max_length=16, choices=Gender.choices, default=None, blank=True, null=True)
+#     birthday = models.DateField(blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#
+#     class Meta:
+#         ordering = ("locality", "street")

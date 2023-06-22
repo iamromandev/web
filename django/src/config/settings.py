@@ -178,6 +178,11 @@ STATIC_ROOT = (
 STATICFILES_DIRS = [
     BASE_DIR.joinpath("src/static"),
 ]
+MEDIA_URL = "src/media/"
+MEDIA_ROOT = (
+    BASE_DIR.joinpath("src/mediafiles") if ENV == "local" else "/home/iamromandev/public_html/web/django/mediafiles"
+)
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

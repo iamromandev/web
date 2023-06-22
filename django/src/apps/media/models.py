@@ -21,8 +21,7 @@ class File(SoftDeleteModel):
 
 
 class Image(SoftDeleteModel):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    file = models.OneToOneField(File, on_delete=models.CASCADE)
+    file = models.OneToOneField(File, primary_key=True, on_delete=models.CASCADE)
     width = models.PositiveSmallIntegerField(default=0, blank=False, null=False)
     height = models.PositiveSmallIntegerField(default=0, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)

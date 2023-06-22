@@ -69,9 +69,10 @@ INSTALLED_APPS = [
     "django_bootstrap_icons",
     # 'tailwind',
     # 'theme',
+    "imagekit",
+    "phonenumber_field",
     # apps
     "apps.core",
-    "apps.media",
     "apps.users",
     "apps.auths",
     "apps.data",

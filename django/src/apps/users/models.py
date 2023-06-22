@@ -4,9 +4,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_softdelete.models import SoftDeleteModel
+from phonenumber_field.modelfields import PhoneNumberField
 
 from apps.core.models import Source, User
-from apps.media.models import Image
 
 
 # Create your models here.
@@ -92,21 +92,23 @@ class Address(SoftDeleteModel):
         ordering = ("locality", "street")
 
 
-# class Profile(SoftDeleteModel):
-#     class Gender(models.TextChoices):
-#         MALE = "MALE", _("male")
-#         FEMALE = "FEMALE", _("female")
-#         OTHER = "OTHER", _("other")
-#
-#     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-#     source = models.ForeignKey(Source, related_name="users_profiles", on_delete=models.DO_NOTHING)
-#     user = models.ForeignKey(User, related_name="profiles", on_delete=models.DO_NOTHING)
-#     #photo = models.OneToOneField(Image, on_delete=models.CASCADE)
-#     photo = models.ImageField(upload_to ='uploads/')
-#     gender = models.CharField(max_length=16, choices=Gender.choices, default=None, blank=True, null=True)
-#     birthday = models.DateField(blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-#     class Meta:
-#         ordering = ("user",)
+class Profile(SoftDeleteModel):
+    class Gender(models.TextChoices):
+        MALE = "MALE", _("male")
+        FEMALE = "FEMALE", _("female")
+        OTHER = "OTHER", _("other")
+
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    source = models.ForeignKey(Source, related_name="users_profiles", on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, related_name="profiles", on_delete=models.DO_NOTHING)
+    address = models.ForeignKey(Address, related_name="profiles", on_delete=models.DO_NOTHING, blank=True, null=True)
+    photo = models.ImageField(upload_to="users/profile/photo/", blank=True, null=True)
+    gender = models.CharField(max_length=16, choices=Gender.choices, default=None, blank=True, null=True)
+    birthday = models.DateField(blank=True, null=True)
+    phone = PhoneNumberField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("user",)

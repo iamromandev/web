@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # features
+    ## features
     "corsheaders",
     "django_browser_reload",
     "django_softdelete",
@@ -64,14 +64,14 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "dj_rest_auth",
     # "dj_rest_auth.registration",
-    # ui
+    ## ui
     "django_bootstrap5",
     "django_bootstrap_icons",
     # 'tailwind',
     # 'theme',
-    "imagekit",
+    # "imagekit",
     "phonenumber_field",
-    # apps
+    ## apps
     "apps.core",
     "apps.users",
     "apps.auths",

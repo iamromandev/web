@@ -60,7 +60,7 @@ class ExampleSerializer(serializers.ModelSerializer):
 
 class DefinitionSerializer(serializers.ModelSerializer):
     source = serializers.CharField(source="source.source")
-    part_of_speech = serializers.CharField(source="part_of_speech.part_of_speech")
+    part_of_speech = serializers.CharField(source="part_of_speech.part_of_speech", allow_blank=True, allow_null=True)
     examples = ExampleSerializer(many=True)
 
     class Meta:

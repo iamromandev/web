@@ -71,7 +71,9 @@ class Attribution(SoftDeleteModel):
 class Definition(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     source = models.ForeignKey(Source, related_name="dictionary_definitions", on_delete=models.DO_NOTHING)
-    part_of_speech = models.ForeignKey(PartOfSpeech, related_name="definitions", on_delete=models.DO_NOTHING)
+    part_of_speech = models.ForeignKey(
+        PartOfSpeech, related_name="definitions", blank=True, null=True, default=None, on_delete=models.DO_NOTHING
+    )
     attribution = models.ForeignKey(
         Attribution, related_name="definitions", blank=True, null=True, default=None, on_delete=models.DO_NOTHING
     )

@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('attribution', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='definitions', to='dictionary.attribution')),
-                ('part_of_speech', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='definitions', to='dictionary.partofspeech')),
+                ('part_of_speech', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='definitions', to='dictionary.partofspeech')),
                 ('source', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='dictionary_definitions', to='core.source')),
                 ('word', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='definitions', to='dictionary.word')),
             ],

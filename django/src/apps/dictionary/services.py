@@ -340,7 +340,7 @@ class DefinitionService(Service):
     def build_or_create_definitions(self):
         pers = {}
         for definition in self.result:
-            if None in [definition.sourceDictionary, definition.partOfSpeech, definition.text]:
+            if None in (definition.sourceDictionary, definition.text):
                 continue
             index = definition.sourceDictionary
             if index not in pers:
@@ -353,7 +353,7 @@ class DefinitionService(Service):
     def build_or_create_definition(self, definition):
         examples = definition.exampleUses
         self.source.source = definition.sourceDictionary
-        part_of_speech = self.get_or_create_part_of_speech(definition.partOfSpeech)
+        part_of_speech = self.get_or_create_part_of_speech(definition.partOfSpeech) if definition.partOfSpeech else None
         attribution = self.get_or_create_attribution(definition.attributionUrl, definition.attributionText)
         definition, created = Definition.objects.get_or_create(
             source=self.source,

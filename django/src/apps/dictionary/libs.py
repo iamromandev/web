@@ -11,10 +11,47 @@ from apps.core.libs import (
     ApiClient,
     SingletonMeta,
 )
+from apps.core.utils import (
+    get_current_seconds,
+)
 
 from libretranslatepy import LibreTranslateAPI
 
 SLEEP_TIME = 1  # seconds
+
+
+class Common:
+    def sleep(self, multiplier: int = 1) -> None:
+        time.sleep(SLEEP_TIME * multiplier)
+        return None
+
+
+class WordnikApiProvider(Common):
+    def __init__(self):
+        self._base_url = "http://api.wordnik.com/v4"
+        self._api_rate_limit_per_hour = 100  # per hour
+        self._api_rate_limit = (60 * 60) / self._api_rate_limit_per_hour
+        self._api_keys = WORDNIK_API_KEYS
+        self._word_api_usage = dict()
+        self._word_apis = dict()
+
+        for api_key in self._api_keys:
+            self._word_api_usage[api_key] = 0
+            self._word_apis[api_key] = WordApi.WordApi(swagger.ApiClient(api_key, self._base_url))
+
+    def next_word_api(self) -> WordApi.WordApi:
+        while True:
+            current = get_current_seconds()
+            for api_key in self._api_keys:
+                diff = current - self._word_api_usage[api_key]
+                logger.debug(f"Finding Next WordApi: {api_key} > {diff} >= {self._api_rate_limit}")
+
+                if current - self._word_api_usage[api_key] >= self._api_rate_limit:
+                    self._word_api_usage[api_key] = current
+                    logger.debug(f"Found Next WordApi: {api_key}")
+                    return self._word_apis[api_key]
+
+                self.sleep()
 
 
 class WordnikService(metaclass=SingletonMeta):
@@ -26,6 +63,9 @@ class WordnikService(metaclass=SingletonMeta):
         self.api_key_length = len(self._api_keys)
         self.api_key_queue = CircularQueue(self.api_key_length)
         self.word_apis = [None] * self.api_key_length
+
+        self._api_provider = WordnikApiProvider()
+
         self.error_code_unauthorized = 401
         self.error_code_rate_limit = 429
         self.error_code_not_found = 404
@@ -51,7 +91,8 @@ class WordnikService(metaclass=SingletonMeta):
 
     @property
     def _word_api(self) -> WordApi.WordApi:
-        return self.word_apis[self.api_key_queue.peek()]
+        # return self.word_apis[self.api_key_queue.peek()]
+        return self._api_provider.next_word_api()
 
     def get_pronunciations(self, word, limit):
         main_limit = limit

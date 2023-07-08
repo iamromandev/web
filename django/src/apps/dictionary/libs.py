@@ -91,8 +91,8 @@ class WordnikService(metaclass=SingletonMeta):
 
     @property
     def _word_api(self) -> WordApi.WordApi:
-        # return self.word_apis[self.api_key_queue.peek()]
-        return self._api_provider.next_word_api()
+        return self.word_apis[self.api_key_queue.peek()]
+        # return self._api_provider.next_word_api()
 
     def get_pronunciations(self, word, limit):
         main_limit = limit

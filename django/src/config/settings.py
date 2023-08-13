@@ -61,8 +61,10 @@ INSTALLED_APPS = [
     "django_softdelete",
     "taggit",
     "rest_framework",
-    "rest_framework.authtoken",
-    "dj_rest_auth",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    # "rest_framework.authtoken",
+    # "dj_rest_auth",
     # "dj_rest_auth.registration",
     ## ui
     "django_bootstrap5",
@@ -223,10 +225,11 @@ logger.add(
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        # "rest_framework.authentication.BasicAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.TokenAuthentication",
+        # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
@@ -242,14 +245,16 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # dj_rest_auth
-REST_AUTH = {
-    "USE_JWT": True,
-    "JWT_AUTH_COOKIE": "auth-cookie",
-    "JWT_AUTH_REFRESH_COOKIE": "auth-refresh-cookie",
-}
+# REST_AUTH = {
+#    "USE_JWT": True,
+#   "JWT_AUTH_COOKIE": "auth-cookie",
+#   "JWT_AUTH_REFRESH_COOKIE": "auth-refresh-cookie",
+# }
 
 SITE_ID = 1
 CORS_ORIGIN_ALLOW_ALL = True
+
+# simple_jwt
 
 # dictionary
 WORDNIK_API_KEYS = env.list("WORDNIK_API_KEYS", default=[])

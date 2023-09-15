@@ -20,12 +20,13 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("__reload__/", include("django_browser_reload.urls")),
+    # path("admin/", admin.site.urls),
     path("auths/", include("apps.auths.urls")),
     path("", include("apps.bio.urls")),
     path("dashboard/", include("apps.dashboard.urls")),
     path("dictionary/", include("apps.dictionary.urls")),
+    path("todo/", include("apps.todo.urls")),
     # path('', TemplateView.as_view(template_name='base.html')),
 ]
 if settings.DEBUG:

@@ -1,5 +1,4 @@
 ### ignore ###
-.env
 __pycache__
 poetry.lock
 #**/static/*
@@ -14,4 +13,3 @@ poetry.lock
 
 ### allow ###
 !.env.example
-#!**/static/.gitkeep

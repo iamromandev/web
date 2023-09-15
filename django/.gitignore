@@ -1,16 +1,17 @@
-### Ignore ###
+### ignore ###
 .env
 __pycache__
 poetry.lock
-**/node_modules
 #**/static/*
 #**/media/*
 **/staticfiles
 **/mediafiles
+**/node_modules
+**/static_files/*
 
-# Ignore generated files
+# ignore generated files
 **/*.pyc
 
-### Allow ###
+### allow ###
 !.env.example
 #!**/static/.gitkeep

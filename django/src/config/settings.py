@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "apps.dashboard",
     "apps.dictionary",
     # "apps.quran",
+    "apps.todo",
 ]
 
 MIDDLEWARE = [

@@ -25,16 +25,10 @@
 
 <body data-bs-spy="scroll" data-bs-target="navbar" data-bs-offset="50">
 
-{% block header %}
-{% include 'header.html' %}
-{% endblock header %}
-
-{% block content %}
-<p>Placeholder text in base template. Replace with page content.</p>
-{% endblock content %}
-
-{% block footer %}
-{% endblock footer %}
+<div class="container mt-5">
+    {% block content %}
+    {% endblock content %}
+</div>
 
 </body>
 

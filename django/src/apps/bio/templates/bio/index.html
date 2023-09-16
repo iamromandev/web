@@ -1,15 +1,30 @@
-{% extends 'bio/_base.html' %}
+{% extends 'bio/base.html' %}
+
+{% block title %} Roman | Software Engineer {% endblock title %}
+
 {% block content %}
 {% load bootstrap_icons %}
+{% include 'bio/header.html' %}
+
 <div id="home" class="container-fluid" style="padding:100px 20px;">
     <div class="row">
         <div class="col-sm d-flex justify-content-center">
             <div>
-                <h1 class="text-dark">Hi, I am Roman</h1>
-                <h4 class="text-primary">Software Engineer | </h4>
-                <p>I am a Backend / Full Stack Developer. I am currently working at
-                    <br> Skipper Hospitality as a Backend Developer</p>
-                <br>
+                <h2 class="text-dark">Hi, I am Roman</h2>
+                <h5 class="text-dark">
+                    Software Engineer | Android | Spring | FastAPI | Django | gRPC | Terraform | AWS
+                </h5>
+                <p>
+                    Software Engineer with 10+ years of experience in building mobile and web application.
+                    Dedicated to continuously developing, researching, and adopting new technology to maximize
+                    development efficiency and produce innovative applications.
+                </p>
+
+                I am currently working at
+                <span class="fw-bold">Skipper Hospitality</span> as a <span
+                    class="fw-bold">Senior Software Engineer</span>
+                <br/>
+                <br/>
                 <a href="https://www.linkedin.com/in/iamromandev/">
                     {% bs_icon 'linkedin' size='2em' %}
                 </a>
@@ -26,22 +41,20 @@
         </div>
     </div>
 </div>
-<div id="about" class="container-fluid" style="padding:100px 20px;">
-    <h1 class="text-center">About</h1>
-    <h4 class="text-primary">About me</h4>
+<div id="about" class="container-fluid" style="padding:80px 20px;">
+    <h1 class="text-center text-dark">About</h1>
+    <h4 class="text-secondary">About me</h4>
     <p>
         I am a self-taught developer with experience in designing, developing and maintaining software applications.
         I take into consideration the user experience while writing reusable and efficient code.
         I passionately combine good design, technology, and innovation in all my projects.
-        Currently, I am focused on the backend development.
+    </p>
+    <p>
+        Currently, I am focused on the Backend development and DevOps + AI practicing.
     </p>
     <br>
-    <h4 class="text-primary">Technologies and Tools</h4>
-    <br>
-    <div class="row">
-        <div class="col-sm bg-green">
-            {% custom_icon 'c' size='3em' %}
-        </div>
+    <h4 class="text-secondary">Technologies and Tools</h4>
+    <div class="row mt-4">
         <div class="col-sm bg-green">
             {% custom_icon 'python' size='3em' %}
         </div>
@@ -52,17 +65,10 @@
             {% custom_icon 'kotlin' size='3em' %}
         </div>
         <div class="col-sm bg-green">
-            {% custom_icon 'js' size='3em' %}
+            {% custom_icon 'spring' size='3em' %}
         </div>
     </div>
-    <br>
-    <div class="row">
-        <div class="col-sm bg-green">
-            {% custom_icon 'html' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'css' size='3em' %}
-        </div>
+    <div class="row mt-5">
         <div class="col-sm bg-green">
             {% bs_icon 'git' size='3em' %}
         </div>
@@ -72,23 +78,8 @@
         <div class="col-sm bg-green">
             {% custom_icon 'postman' size='3em' %}
         </div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-sm bg-green">
+                <div class="col-sm bg-green">
             {% custom_icon 'aws' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% bs_icon 'bootstrap-fill' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'mysql' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'postgresql' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'spring' size='3em' %}
         </div>
     </div>
 </div>

@@ -70,6 +70,8 @@ INSTALLED_APPS = [
     ## ui
     "django_bootstrap5",
     "django_bootstrap_icons",
+    "crispy_forms",
+    "crispy_bootstrap5",
     # 'tailwind',
     # 'theme',
     # "imagekit",
@@ -253,8 +255,12 @@ AUTHENTICATION_BACKENDS = [
 #   "JWT_AUTH_REFRESH_COOKIE": "auth-refresh-cookie",
 # }
 
-SITE_ID = 1
-CORS_ORIGIN_ALLOW_ALL = True
+SITE_ID = env.int("SITE_ID", default=1)
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=True)
+
+# ui
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # simple_jwt
 

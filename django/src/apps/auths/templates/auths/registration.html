@@ -1,9 +1,9 @@
-{% extends 'auths/_base.html' %}
+{% extends 'auths/base.html' %}
 
 {% block title %}Sign Page{% endblock title %}
 
 {% block content %}
-<h2>Sign Page</h2>
+<h2>User Registration Page</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}

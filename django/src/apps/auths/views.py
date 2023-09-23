@@ -1,11 +1,11 @@
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 
-from .forms import SignUpForm
+from .forms import RegistrationForm
 
 
 # Create your views here.
-class SignUpView(CreateView):
-    form_class = SignUpForm
+class RegistrationView(CreateView):
+    form_class = RegistrationForm
     success_url = reverse_lazy("login")
-    template_name = "signup.html"
+    template_name = "auths/registration.html"

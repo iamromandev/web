@@ -103,6 +103,9 @@ django-browser-reload==1.11.0 ; python_full_version == "3.9.16" \
 django-cors-headers==4.2.0 ; python_full_version == "3.9.16" \
     --hash=sha256:9ada212b0e2efd4a5e339360ffc869cb21ac5605e810afe69f7308e577ea5bde \
     --hash=sha256:f9749c6410fe738278bc2b6ef17f05195bc7b251693c035752d8257026af024f
+django-crispy-forms==2.0 ; python_full_version == "3.9.16" \
+    --hash=sha256:90193b068bf948d9c68449bc8260afed1a8e2afe11ee0bac8c4ebfaeb175b322 \
+    --hash=sha256:d1d4e585929058a9ab3b797666ea5b69320b9ba7937f9d146d32173246a6fd13
 django-environ==0.11.2 ; python_full_version == "3.9.16" \
     --hash=sha256:0ff95ab4344bfeff693836aa978e6840abef2e2f1145adff7735892711590c05 \
     --hash=sha256:f32a87aa0899894c27d4e1776fa6b477e8164ed7f6b3e410a62a6d72caaf64be

@@ -31,6 +31,7 @@ django-bootstrap5 = "23.3"
 django-bootstrap-icons = "0.8.4"
 # django-tailwind = "3.5.0"
 django-crispy-forms = "2.0"
+crispy-bootstrap5 = "0.7"
 ## db
 pymysql = "1.0.3"
 ## misc

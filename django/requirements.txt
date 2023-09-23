@@ -89,6 +89,9 @@ coreapi==2.3.3 ; python_full_version == "3.9.16" \
 coreschema==0.0.4 ; python_full_version == "3.9.16" \
     --hash=sha256:5e6ef7bf38c1525d5e55a895934ab4273548629f16aed5c0a6caa74ebf45551f \
     --hash=sha256:9503506007d482ab0867ba14724b93c18a33b22b6d19fb419ef2d239dd4a1607
+crispy-bootstrap5==0.7 ; python_full_version == "3.9.16" \
+    --hash=sha256:0745a67199619149b7feca87dab7a45664876ed50fb582b38fd2aeb3f8a8d869 \
+    --hash=sha256:f3ff1ef5cb379fe80b1b02e245008f276444098a4bdb8d855bed84c623798a85
 dj-static==0.0.6 ; python_full_version == "3.9.16" \
     --hash=sha256:032ec1c532617922e6e3e956d504a6fb1acce4fc1c7c94612d0fda21828ce8ef
 django-bootstrap-icons==0.8.4 ; python_full_version == "3.9.16" \

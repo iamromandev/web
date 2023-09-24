@@ -6,7 +6,10 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from .views import RegistrationView
+from .views import (
+    RegistrationView,
+    LoginView,
+)
 
 urlpatterns = [
     # path("", include("django.contrib.auth.urls")),
@@ -17,4 +20,5 @@ urlpatterns = [
     # path("", include("dj_rest_auth.urls")),
     # path("registration/", include("dj_rest_auth.registration.urls")),
     path("registration/", RegistrationView.as_view(), name="registration"),
+    path("login/", LoginView.as_view(), name="login"),
 ]

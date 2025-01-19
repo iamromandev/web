@@ -4,6 +4,7 @@ services:
     image: mariadb:10.5
     hostname: db
     container_name: db
+    restart: on-failure
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -12,9 +13,9 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./data/db:/var/lib/mysql/data
+      - db:/var/lib/mysql/data
     networks:
-      - web
+      - db
     command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
@@ -22,7 +23,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-    restart: on-failure
 
 #  theme:
 #    platform: linux/arm64
@@ -45,10 +45,11 @@ services:
 #      bash -c "python src/manage.py tailwind start"
 #    restart: unless-stopped
 
-  web:
+  server:
     platform: linux/arm64
-    hostname: web
-    container_name: web
+    hostname: server
+    container_name: server
+    restart: unless-stopped
     build:
       context: .
       dockerfile: dockerfile
@@ -56,7 +57,8 @@ services:
       args:
         ENV: local
         WORK_DIR: /workdir
-        PYTHON_VERSION: 3.9.16
+        PYTHON_VERSION: 3.9.20
+        POETRY_VERSION: 1.8.4
     ports:
       - 8000:8000
     links:
@@ -64,7 +66,8 @@ services:
     volumes:
       - .:/workdir
     networks:
-      - web
+      - db
+      - server
     depends_on:
       db:
         condition: service_healthy
@@ -76,9 +79,14 @@ services:
       && python src/manage.py runserver 0.0.0.0:8000"
     # after createcachetable && python src/manage.py createsuperuser --no-input --username ${DJANGO_SUPERUSER_USERNAME} --email ${DJANGO_SUPERUSER_EMAIL}
 
-    restart: unless-stopped
-
 networks:
-  web:
-    name: web
+  db:
+    name: db
     driver: bridge
+  server:
+    name: server
+    driver: bridge
+
+volumes:
+  db:
+    name: django-db

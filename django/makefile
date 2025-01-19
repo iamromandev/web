@@ -2,7 +2,7 @@
 .PHONY: clean
 clean:
 	docker system prune -a --force
-	docker volume prune --force
+	docker volume prune --all --force
 
 .PHONY: ps
 ps:
@@ -11,19 +11,19 @@ ps:
 # local
 .PHONY: build
 build:
-	docker-compose -f docker-compose.yml build
+	docker compose -f docker-compose.yml build
 
 .PHONY: up
 up:
-	docker-compose -f docker-compose.yml up -d
+	docker compose -f docker-compose.yml up -d
 
 .PHONY: stop
 stop:
-	docker-compose -f docker-compose.yml stop
+	docker compose -f docker-compose.yml stop
 
 .PHONY: down
 down:
-	docker-compose -f docker-compose.yml down
+	docker compose -f docker-compose.yml down
 
 .PHONY: restart
 restart:

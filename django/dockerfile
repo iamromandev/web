@@ -1,5 +1,5 @@
 ### base image ###
-ARG PYTHON_VERSION=3.9.16
+ARG PYTHON_VERSION=3.9.20
 
 FROM python:$PYTHON_VERSION AS base
 
@@ -10,7 +10,7 @@ ARG ENV
 ARG WORK_DIR
 # poetry
 ARG POETRY_HOME="/opt/poetry"
-ARG POETRY_VERSION=1.5.1
+ARG POETRY_VERSION
 # node
 #ARG NODE_VERSION=14.20.1
 # path
@@ -22,9 +22,13 @@ ENV ENV=$ENV
 # workdir
 ENV WORK_DIR=$WORK_DIR
 # python
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONFAULTHANDLER=1
-ENV PYTHONDONTWRITEBYTECODE=1
+# If this is set to a non-empty string it is equivalent to specifying the -u option.
+ENV PYTHONUNBUFFERED=true
+# If this environment variable is set to a non-empty string
+ENV PYTHONFAULTHANDLER=true
+# If this is set to a non-empty string, Python won’t try to write .pyc files on the import of source modules.
+ENV PYTHONDONTWRITEBYTECODE=true
+# If this variable is not set or set to random, a random value is used to seed the hashes of str and bytes objects.
 ENV PYTHONHASHSEED=random
 # pip
 #ENV PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -52,9 +56,11 @@ FROM base AS builder
 
 ARG ENV
 ARG WORK_DIR
+ARG POETRY_VERSION
 
 ENV ENV=$ENV
 ENV WORK_DIR=$WORK_DIR
+ENV POETRY_VERSION=$POETRY_VERSION
 
 # install required packages
 #RUN apt-get update
@@ -85,9 +91,11 @@ FROM base AS local
 
 ARG ENV
 ARG WORK_DIR
+ARG POETRY_VERSION
 
 ENV ENV=$ENV
 ENV WORK_DIR=$WORK_DIR
+ENV POETRY_VERSION=$POETRY_VERSION
 
 WORKDIR $WORK_DIR
 

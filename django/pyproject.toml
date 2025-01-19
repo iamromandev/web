@@ -43,7 +43,7 @@ django-phonenumber-field = {extras = ["phonenumbers"], version = "7.1.0"}
 
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "3.3.2"
+pre-commit = "4.0.1"
 
 [tool.black]
 line-length = 120

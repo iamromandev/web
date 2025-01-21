@@ -1,0 +1,70 @@
+networks:
+  db:
+    name: db
+    driver: bridge
+  server:
+    name: server
+    driver: bridge
+
+volumes:
+  db:
+    name: db-page
+
+services:
+  db:
+    platform: linux/arm64
+    image: mariadb:10.5.27
+    hostname: db
+    container_name: db
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - 3306:3306
+    networks:
+      - db
+    volumes:
+      - db:/var/lib/mysql/data
+    command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      start_period: 3s
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  server:
+    platform: linux/arm64
+    hostname: server
+    container_name: server
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: dockerfile
+      target: local
+      args:
+        ENV: local
+        WORK_DIR: /workdir
+        POETRY_VERSION: 2.0.1
+    ports:
+      - 8000:8000
+    networks:
+      - db
+      - server
+    volumes:
+      - .:/workdir
+    links:
+      - db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      bash -c "python src/manage.py collectstatic --no-input
+      && python src/manage.py makemigrations
+      && python src/manage.py migrate
+      && python src/manage.py createcachetable
+      && python src/manage.py runserver 0.0.0.0:8000"
+    # after createcachetable && python src/manage.py createsuperuser --no-input --username ${DJANGO_SUPERUSER_USERNAME} --email ${DJANGO_SUPERUSER_EMAIL}

@@ -1,19 +1,7 @@
-networks:
-  db:
-    name: db
-    driver: bridge
-  server:
-    name: server
-    driver: bridge
-
-volumes:
-  db:
-    name: db-page
-
 services:
   db:
     platform: linux/arm64
-    image: mariadb:10.5.27
+    image: mariadb:10.6.20
     hostname: db
     container_name: db
     restart: on-failure
@@ -24,10 +12,10 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - 3306:3306
-    networks:
-      - db
     volumes:
       - db:/var/lib/mysql/data
+    networks:
+      - db
     command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
@@ -48,16 +36,14 @@ services:
       args:
         ENV: local
         WORK_DIR: /workdir
-        POETRY_VERSION: 2.0.1
+        POETRY_VERSION: 2.1.1
     ports:
       - 8000:8000
+    volumes:
+      - .:/workdir
     networks:
       - db
       - server
-    volumes:
-      - .:/workdir
-    links:
-      - db
     depends_on:
       db:
         condition: service_healthy
@@ -68,3 +54,15 @@ services:
       && python src/manage.py createcachetable
       && python src/manage.py runserver 0.0.0.0:8000"
     # after createcachetable && python src/manage.py createsuperuser --no-input --username ${DJANGO_SUPERUSER_USERNAME} --email ${DJANGO_SUPERUSER_EMAIL}
+
+networks:
+  db:
+    name: db
+    driver: bridge
+  server:
+    name: server
+    driver: bridge
+
+volumes:
+  db:
+    name: db-page

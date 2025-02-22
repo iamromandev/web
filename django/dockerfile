@@ -84,7 +84,8 @@ COPY pyproject.toml $SETUP_PATH
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 # RUN poetry install $(test $ENV != prod && echo "--with dev,tests,docs -vvv") --sync
-RUN poetry install --sync
+RUN poetry sync
+RUN poetry install
 
 ### local image ###
 FROM base AS local

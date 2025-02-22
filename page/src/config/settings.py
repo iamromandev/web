@@ -10,22 +10,41 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
+import sys
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+import environ
+from loguru import logger
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+root = environ.Path(__file__) - 3  # get root of the project
+
+env = environ.Env()
+env.read_env(BASE_DIR.joinpath(".env"))  # reading .env file
+
+logger.debug(f"ProcessId {os.getpid()}")
+logger.debug(f"RootDir: {root}")
+logger.debug(f"BaseDir: {BASE_DIR}")
+logger.debug(f"TemplatesDir: {BASE_DIR.joinpath('src/templates')}")
+
+ENV = env.str("ENV", default="local")
+logger.debug(f"ENV: {ENV}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-z&8n+iijm85m!qj63xh@o3)5*z9zl6s_cu$bk3-=+!ve+ez@vt"
+SECRET_KEY = env.str("SECRET_KEY", default="")
+logger.debug(f"SECRET_KEY: {SECRET_KEY}")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
+logger.debug(f"DEBUG: {DEBUG}")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+logger.debug(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 
 # Application definition
@@ -37,11 +56,34 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    ## features
+    "corsheaders",
+    "django_browser_reload",
+    "django_softdelete",
+    "taggit",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    # "drf_yasg",
+    # "rest_framework.authtoken",
+    # "dj_rest_auth",
+    # "dj_rest_auth.registration",
+    ## ui
+    "django_bootstrap5",
+    "django_bootstrap_icons",
+    "crispy_forms",
+    "crispy_bootstrap5",
+    # 'tailwind',
+    # 'theme',
+    # "imagekit",
+    "phonenumber_field",
+    ## apps
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # higher stack
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -54,7 +96,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR.joinpath("src/templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -75,8 +117,25 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env.str("MYSQL_DATABASE", default=""),
+        "USER": env.str("MYSQL_USER", default=""),
+        "PASSWORD": env.str("MYSQL_PASSWORD", default=""),
+        "HOST": env.str(
+            "MYSQL_HOST", default=""
+        ),  # db for docker container name; 127.0.0.1 for terminal
+        "PORT": env.str("MYSQL_PORT", default=""),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+            "use_unicode": True,
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+        "TEST": {
+            "CHARSET": "utf8mb4",
+            "COLLATION": "utf8mb4_unicode_ci",
+        },
     }
 }
 
@@ -115,9 +174,79 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+# for initial keeping static files
+STATIC_URL = "src/static/"
+# for storing collected static files
+STATIC_ROOT = (
+    BASE_DIR.joinpath("src/staticfiles")
+    if ENV == "local"
+    else "/home/iamromandev/public_html/web/page/staticfiles"
+)
+# for collecting images also
+STATICFILES_DIRS = [
+    BASE_DIR.joinpath("src/static"),
+]
+MEDIA_URL = "src/media/"
+MEDIA_ROOT = (
+    BASE_DIR.joinpath("src/mediafiles")
+    if ENV == "local"
+    else "/home/iamromandev/public_html/web/page/mediafiles"
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# custom auth user model
+# AUTH_USER_MODEL = "core.User"
+
+# authentication
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# rest framework
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        # "rest_framework.authentication.BasicAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.TokenAuthentication",
+        # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    # 'EXCEPTION_HANDLER': 'core.libs.custom_exception_handler',
+    "PAGE_SIZE": 10,
+}
+
+SITE_ID = env.int("SITE_ID", default=1)
+CORS_ORIGIN_ALLOW_ALL = env.bool("CORS_ORIGIN_ALLOW_ALL", default=True)
+
+# loguru
+logger.remove()
+
+logger.add(
+    sys.stderr,
+    format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{"
+    "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    backtrace=True,
+    diagnose=True,
+)
+
+# django taggit
+TAGGIT_CASE_INSENSITIVE = True
+
+# django bootstrap icons
+BS_ICONS_CUSTOM_PATH = "icons"
+BS_ICONS_CACHE = os.path.join(STATIC_ROOT, "cache-icons")
+
+# ui
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

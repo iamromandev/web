@@ -133,9 +133,15 @@ DATABASES = {
         "NAME": env.str("MYSQL_DATABASE", default=""),
         "USER": env.str("MYSQL_USER", default=""),
         "PASSWORD": env.str("MYSQL_PASSWORD", default=""),
-        "HOST": env.str("MYSQL_HOST", default=""),  # db for docker container name; 127.0.0.1 for terminal
+        "HOST": env.str(
+            "MYSQL_HOST", default=""
+        ),  # db for docker container name; 127.0.0.1 for terminal
         "PORT": env.str("MYSQL_PORT", default=""),
-        "OPTIONS": {"charset": "utf8mb4", "use_unicode": True, "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"},
+        "OPTIONS": {
+            "charset": "utf8mb4",
+            "use_unicode": True,
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
         "TEST": {
             "CHARSET": "utf8mb4",
             "COLLATION": "utf8mb4_unicode_ci",
@@ -179,7 +185,9 @@ USE_TZ = True
 STATIC_URL = "src/static/"
 # for storing collected static files
 STATIC_ROOT = (
-    BASE_DIR.joinpath("src/staticfiles") if ENV == "local" else "/home/iamromandev/public_html/web/django/staticfiles"
+    BASE_DIR.joinpath("src/staticfiles")
+    if ENV == "local"
+    else "/home/iamromandev/public_html/web/django/staticfiles"
 )
 # for collecting images also
 STATICFILES_DIRS = [
@@ -187,9 +195,10 @@ STATICFILES_DIRS = [
 ]
 MEDIA_URL = "src/media/"
 MEDIA_ROOT = (
-    BASE_DIR.joinpath("src/mediafiles") if ENV == "local" else "/home/iamromandev/public_html/web/django/mediafiles"
+    BASE_DIR.joinpath("src/mediafiles")
+    if ENV == "local"
+    else "/home/iamromandev/public_html/web/django/mediafiles"
 )
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -235,7 +244,9 @@ REST_FRAMEWORK = {
         # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    ),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     # 'EXCEPTION_HANDLER': 'core.libs.custom_exception_handler',

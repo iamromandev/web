@@ -57,8 +57,7 @@ services:
       args:
         ENV: local
         WORK_DIR: /workdir
-        PYTHON_VERSION: 3.9.20
-        POETRY_VERSION: 1.8.4
+        POETRY_VERSION: 2.1.1
     ports:
       - 8000:8000
     links:

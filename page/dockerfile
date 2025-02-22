@@ -12,7 +12,7 @@ ARG WORK_DIR
 ARG POETRY_HOME="/opt/poetry"
 ARG POETRY_VERSION
 # node
-#ARG node_version=14.20.1
+# ARG NODE_VERSION=14.20.1
 # path
 ARG SETUP_PATH="/opt/setup"
 
@@ -31,9 +31,9 @@ ENV PYTHONDONTWRITEBYTECODE=true
 # If this variable is not set or set to random, a random value is used to seed the hashes of str and bytes objects.
 ENV PYTHONHASHSEED=random
 # pip
-#ENV PIP_DISABLE_PIP_VERSION_CHECK=off
-#ENV PIP_NO_CACHE_DIR=on
-#ENV PIP_DEFAULT_TIMEOUT=100
+# ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+# ENV PIP_NO_CACHE_DIR=1
+# ENV PIP_DEFAULT_TIMEOUT=100
 # poetry
 ENV POETRY_HOME=$POETRY_HOME
 ENV POETRY_VERSION=$POETRY_VERSION
@@ -41,11 +41,11 @@ ENV POETRY_NO_ANSI=1
 ENV POETRY_NO_INTERACTION=1
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 # node
-#ENV NODE_VERSION=$NODE_VERSION
+# ENV NODE_VERSION=$NODE_VERSION
 # path
 ENV SETUP_PATH=$SETUP_PATH
 ENV VENV_PATH="$SETUP_PATH/.venv"
-#ENV NVM_PATH="/root/.nvm"
+# ENV NVM_PATH="/root/.nvm"
 
 # prepend poetry, venv, nvm to path
 # $NVM_PATH/versions/node/v${NODE_VERSION}/bin
@@ -80,7 +80,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $SETUP_PATH
-COPY pyproject.toml ${SETUP_PATH}
+COPY pyproject.toml $SETUP_PATH
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 # RUN poetry install $(test $ENV != prod && echo "--with dev,tests,docs -vvv") --sync

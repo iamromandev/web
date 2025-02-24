@@ -39,7 +39,7 @@ dependencies = [
     ## db
     "pymysql (==1.0.3)",
     ## misc
-    #"django-phonenumber-field (==7.1.0)",
+    "django-phonenumber-field (==7.1.0)",
     # "pillow (==9.5.0)",
     #"wordnik-py3 (==2.1.2)",
     #"libretranslatepy (==2.1.3)",

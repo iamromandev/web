@@ -120,13 +120,13 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         "ENGINE": "django.db.backends.mysql",
-        "NAME": env.str("MYSQL_DATABASE", default=""),
-        "USER": env.str("MYSQL_USER", default=""),
-        "PASSWORD": env.str("MYSQL_PASSWORD", default=""),
+        "NAME": env.str("DB_NAME", default=""),
+        "USER": env.str("DB_USER", default=""),
+        "PASSWORD": env.str("DB_PASSWORD", default=""),
         "HOST": env.str(
-            "MYSQL_HOST", default=""
+            "DB_HOST", default=""
         ),  # db for docker container name; 127.0.0.1 for terminal
-        "PORT": env.str("MYSQL_PORT", default=""),
+        "PORT": env.str("DB_PORT", default=""),
         "OPTIONS": {
             "charset": "utf8mb4",
             "use_unicode": True,

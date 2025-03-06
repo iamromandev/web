@@ -39,8 +39,8 @@ jobs:
 
       - name: Install dependencies
         id: poetry-install
-        run: $POETRY_HOME/bin/poetry install --with=dev --no-cache -n
+        run: $POETRY_HOME/bin/poetry --project=/home/runner/work/web/web/page install --with=dev --no-cache -n
 
       - name: Lint
         id: ruff-lint
-        run: $POETRY_HOME/bin/poetry run ruff check $WORK_DIR
+        run: $POETRY_HOME/bin/poetry --project=/home/runner/work/web/web/page run ruff check $WORK_DIR

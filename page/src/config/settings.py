@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     # "imagekit",
     "phonenumber_field",
     ## apps
+    "apps.core",
 ]
 
 MIDDLEWARE = [
@@ -199,7 +200,7 @@ MEDIA_ROOT = (
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # custom auth user model
-# AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = "core.User"
 
 # authentication
 AUTHENTICATION_BACKENDS = [

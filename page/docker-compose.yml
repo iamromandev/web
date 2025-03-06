@@ -42,6 +42,8 @@ services:
       - 8000:8000
     volumes:
       - .:/workdir
+    links:
+      - db
     networks:
       - db
       - server

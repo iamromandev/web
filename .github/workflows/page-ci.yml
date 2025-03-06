@@ -35,7 +35,7 @@ jobs:
 
       - name: Bump poetry lock
         id: poetry-lock
-        run: $POETRY_HOME/bin/poetry --project=/page lock
+        run: $POETRY_HOME/bin/poetry --project=/home/runner/work/web/page lock
 
       - name: Install dependencies
         id: poetry-install

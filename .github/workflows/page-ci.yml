@@ -1,12 +1,10 @@
 name: Check and Lint
 
 on:
-  push:
-    branches:
-      - feat/page
   pull_request:
-    branches:
-      - dev
+    types: [ opened, synchronize, reopened ]
+  push:
+    branches: [dev, feat/page]
 
 env:
   POETRY_HOME: /opt/poetry
@@ -37,7 +35,7 @@ jobs:
 
       - name: Bump poetry lock
         id: poetry-lock
-        run: $POETRY_HOME/bin/poetry lock
+        run: $POETRY_HOME/bin/poetry --project=/page lock
 
       - name: Install dependencies
         id: poetry-install

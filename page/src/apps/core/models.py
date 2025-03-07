@@ -1,5 +1,6 @@
 import uuid
 
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -41,6 +42,30 @@ class Source(models.Model):
     def __str__(self) -> str:
         """Returns a string representation of the Source instance."""
         return f"[Source: {self.type}, {self.subtype}, {self.source}]"
+
+
+class State(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    ref = models.UUIDField(editable=True, blank=False, null=False)
+    source = models.ForeignKey(
+        Source, related_name="states", on_delete=models.DO_NOTHING
+    )
+    state = models.CharField(max_length=32, blank=False, null=False)
+    extra = models.CharField(max_length=32, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["source"]
+        unique_together = [("ref", "source")]
+
+    def __str__(self):
+        return f"[State: {self.source}, {self.state}]"
+
+    def is_expired(self, delay_s: int):
+        return (
+            int(timezone.now().timestamp()) - int(self.updated_at.timestamp()) > delay_s
+        )
 
 
 class Language(SoftDeleteModel):

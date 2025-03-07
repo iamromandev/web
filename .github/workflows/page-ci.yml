@@ -1,0 +1,46 @@
+name: Check and Lint
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  push:
+    branches: [dev, feat/page]
+
+env:
+  POETRY_HOME: /opt/poetry
+  POETRY_VERSION: 2.1.1
+  WORK_DIR: page/src
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up python 3.9.20
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9.20
+
+      - name: Set up poetry env
+        id: setup-poetry-env
+        run: python3 -m venv $POETRY_HOME
+
+      - name: Set up poetry
+        id: setup-poetry
+        run: $POETRY_HOME/bin/pip install poetry==$POETRY_VERSION
+
+      - name: Bump poetry lock
+        id: poetry-lock
+        run: $POETRY_HOME/bin/poetry --project=/home/runner/work/web/web/page lock
+
+      - name: Install dependencies
+        id: poetry-install
+        run: $POETRY_HOME/bin/poetry --project=/home/runner/work/web/web/page install --with=dev --no-cache -n
+
+      - name: Lint
+        id: ruff-lint
+        run: $POETRY_HOME/bin/poetry --project=/home/runner/work/web/web/page run ruff check $WORK_DIR

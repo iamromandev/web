@@ -1,15 +1,15 @@
 services:
   db:
     platform: linux/arm64
-    image: mariadb:10.5
+    image: mariadb:10.6.20
     hostname: db
     container_name: db
     restart: on-failure
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - 3306:3306
     volumes:
@@ -18,32 +18,12 @@ services:
       - db
     command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      #test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 3s
       interval: 5s
       timeout: 3s
       retries: 3
-
-#  theme:
-#    platform: linux/arm64
-#    hostname: theme
-#    container_name: theme
-#    build:
-#      context: .
-#      dockerfile: dockerfile
-#      target: local
-#      args:
-#        ENV: local
-#        WORK_DIR: /workdir
-#        PYTHON_VERSION: 3.9.16
-#    tty: true
-#    volumes:
-#      - .:/workdir
-#     networks:
-#      - web
-#    command: >
-#      bash -c "python src/manage.py tailwind start"
-#    restart: unless-stopped
 
   server:
     platform: linux/arm64
@@ -60,10 +40,10 @@ services:
         POETRY_VERSION: 2.1.1
     ports:
       - 8000:8000
-    links:
-      - db
     volumes:
       - .:/workdir
+    links:
+      - db
     networks:
       - db
       - server
@@ -88,4 +68,4 @@ networks:
 
 volumes:
   db:
-    name: django-db
+    name: db-page

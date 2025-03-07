@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     ## apps
     "apps.core",
+    "apps.home",
 ]
 
 MIDDLEWARE = [

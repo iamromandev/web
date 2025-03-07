@@ -31,7 +31,7 @@ dependencies = [
     # "drf-yasg (==1.21.7)",
     # "dj-rest-auth (==4.0.1)",
     ## ui
-    "django-bootstrap5 (==23.3)",
+    "django-bootstrap5 (==23.4)",
     "django-bootstrap-icons (==0.8.4)",
     # "django-tailwind (==3.5.0)",
     "django-crispy-forms (==2.0)",

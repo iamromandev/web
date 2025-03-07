@@ -77,7 +77,9 @@ ignore = [
     "C901",  # too complex
     "W191",  # indentation contains tabs
     "D401",  # imperative mood
-    "F401"   # Disable fix for unused imports (`F401`).
+    "F401",   # Disable fix for unused imports (`F401`).
+    "D101",   # Disable fix for unused imports (`D101`).
+    "D105",   # Disable fix for unused imports (`D105`).
 ]
 
 [tool.ruff.lint.pydocstyle]

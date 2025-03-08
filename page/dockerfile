@@ -1,5 +1,5 @@
 ### base image ###
-ARG PYTHON_VERSION=3.9.20
+ARG PYTHON_VERSION=3.9.21
 
 FROM python:$PYTHON_VERSION AS base
 

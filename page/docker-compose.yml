@@ -1,7 +1,7 @@
 services:
   db:
     platform: linux/arm64
-    image: mariadb:10.6.20
+    image: mariadb:10.6.21
     hostname: db
     container_name: db
     restart: on-failure

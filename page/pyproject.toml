@@ -50,7 +50,7 @@ dependencies = [
 package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = ">=4.2.0"
+pre-commit = "4.2.0"
 ruff = "0.11.2"
 mypy = "1.15.0"
 
@@ -65,32 +65,44 @@ line-length = 88
 # Adjust to your Python version
 target-version = "py39"
 
-#[tool.ruff.lint]
-#select = [
-#    "E",  # pycodestyle errors
-#    "W",  # pycodestyle warnings
-#    "F",  # pyflakes
-#    "I",  # isort
-#    "B",  # flake8-bugbear
-#    "C4", # flake8-comprehensions
-#    "N",  # PEP8 naming convetions
-#    "D"   # pydocstyle
-#]
-#ignore = [
-#    "C901",  # too complex
-#    "W191",  # indentation contains tabs
-#    "D401",  # imperative mood
-#    "F401",   # Disable fix for unused imports (`F401`).
-#    "D101",   # Disable fix for unused imports (`D101`).
-#    "D105",   # Disable fix for unused imports (`D105`).
-#]
-#
-#[tool.ruff.lint.pydocstyle]
-#convention = "google"
-#
-#[tool.ruff.format]
-## Configure the formatter (uses ruff format, which is based on Black).
-#line-length = 88
-#indent-style = "space"
-#quote-style = "single"
-#docstring-code-line-length = 88
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors (formatting)
+    "F", # Pyflakes (bug detection)
+    "W", # pycodestyle warnings
+    "I", # isort (import sorting)
+    "D", # pydocstyle (docstring conventions)
+    "DJ", # flake8-django (Django-specific checks)
+    "UP", # pyupgrade (modern syntax suggestions)
+    "N", # pep8-naming (naming conventions)
+    "B", # flake8-bugbear (common pitfalls)
+]
+
+ignore = [
+    "B008",  # Do not perform function calls in argument defaults
+    "C408",  # Unnecessary `dict`/`list`/`tuple` call
+    "D100",  # Ignore missing docstring in public modules
+    "D101",  # Ignore missing docstring in public classes
+    "D102",  # Ignore missing docstring in public methods
+    "D103",  # Ignore missing docstring in public functions
+    "D104",  # Ignore missing docstring in public packages
+    "D105",  # Ignore missing docstring in magic methods
+    "D106",  # Ignore missing docstring in nested classes
+    "D107",  # Ignore missing docstring in __init__ methods
+    "E501",  # Line length (you might prefer to handle this with the formatter)
+    "F401",  # Allow unused imports
+]
+
+# Enable PEP8 naming conventions for Django models
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = ["classmethod", "django.utils.decorators.method_decorator"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"  # or "numpy" if you prefer NumPy-style docstrings
+
+[tool.ruff.format]
+quote-style = "double"  # Use double quotes for strings (Django convention)
+indent-style = "space"  # Use spaces instead of tabs
+line-ending = "auto"  # Auto-detect line endings (LF for Unix, CRLF for Windows)
+docstring-code-format = true  # Format code blocks inside docstrings
+skip-magic-trailing-comma = false  # Enforce trailing commas where appropriate

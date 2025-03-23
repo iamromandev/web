@@ -3,7 +3,7 @@ name = "page"
 version = "0.0.1"
 description = "Webpage for romancse.com"
 authors = [
-    {name = "Roman",email = "iamromandev@gmail.com"}
+    { name = "Roman", email = "iamromandev@gmail.com" }
 ]
 readme = "README.md"
 requires-python = "==3.9.21"
@@ -84,20 +84,26 @@ select = [
     "B", # flake8-bugbear (common pitfalls)
 ]
 
-#ignore = [
-#    "B008",  # Do not perform function calls in argument defaults
-#    "C408",  # Unnecessary `dict`/`list`/`tuple` call
-#    "D100",  # Ignore missing docstring in public modules
-#    "D101",  # Ignore missing docstring in public classes
-#    "D102",  # Ignore missing docstring in public methods
-#    "D103",  # Ignore missing docstring in public functions
-#    "D104",  # Ignore missing docstring in public packages
-#    "D105",  # Ignore missing docstring in magic methods
-#    "D106",  # Ignore missing docstring in nested classes
-#    "D107",  # Ignore missing docstring in __init__ methods
-#    "E501",  # Line length (you might prefer to handle this with the formatter)
-#    "F401",  # Allow unused imports
-#]
+ignore = [
+    "B008", # Do not perform function calls in argument defaults
+    "C408", # Unnecessary `dict`/`list`/`tuple` call
+    "D100", # Ignore missing docstring in public modules
+    "D101", # Ignore missing docstring in public classes
+    "D102", # Ignore missing docstring in public methods
+    "D103", # Ignore missing docstring in public functions
+    "D104", # Ignore missing docstring in public packages
+    "D105", # Ignore missing docstring in magic methods
+    "D106", # Ignore missing docstring in nested classes
+    "D107", # Ignore missing docstring in __init__ methods
+    "DJ001",  # Ignoring DJ001
+    "E501", # Line length (you might prefer to handle this with the formatter)
+    "F401", # Allow unused imports
+]
+
+exclude = [
+    "*/migrations",
+    "*/settings.py", # Add your settings file here
+]
 
 # Enable PEP8 naming conventions for Django models
 [tool.ruff.lint.pep8-naming]

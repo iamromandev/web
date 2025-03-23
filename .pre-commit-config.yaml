@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/egormkn/run-in-subdirectory
+    rev: 1.0.1
+    hooks:
+      - id: run-in-subdirectory
+        alias: lint
+        name: lint
+        args: ["page", "poetry run ruff check --fix"]
+        types: [ python ]
+        files: ^src/
+
+      - id: run-in-subdirectory
+        alias: format
+        name: format
+        args: [ "page", "poetry run ruff format" ]
+        types: [ python ]
+        files: ^src/
+
+#      - id: format
+#        name: format
+#        entry: poetry
+#        args: [ "run", "-C", "./page", "ruff", "format" ]
+#        types: [ python ]
+#        language: system
+#
+#      - id: mypy
+#        name: mypy
+#        entry: poetry
+#        args: [ "run", "-C", "./page", "mypy" ]
+#        exclude: "(__pycache__|.venv|.mypycache)"
+#        # note -- the below may preclude the use of a GUI Git client
+#        language: system
+#        types: [ python ]
+#        require_serial: true

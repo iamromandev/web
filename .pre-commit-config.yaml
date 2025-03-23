@@ -5,7 +5,7 @@ repos:
       - id: run-in-subdirectory
         alias: lint
         name: lint
-        args: ["page", "poetry run ruff check --fix"]
+        args: ["page", "poetry run ruff check"]
         types: [ python ]
         files: ^src/
 

@@ -1,12 +1,12 @@
 import uuid
 from contextlib import nullcontext
 
-from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from taggit.models import GenericUUIDTaggedItemBase, TaggedItemBase
 from django_softdelete.models import SoftDeleteModel
+from taggit.models import GenericUUIDTaggedItemBase, TaggedItemBase
 
 
 # Create your models here.

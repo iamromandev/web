@@ -58,18 +58,10 @@ mypy = "==1.15.0"
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-# ruff configuration
+### ruff configuration ###
 [tool.ruff]
-# Black formatter default (popular in many Django projects)
 line-length = 88
-target-version = "py39" # Or your project's Python version
-#exclude = [
-#   ".git",
-#    "__pycache__",
-#    "migrations",
-#    "venv",
-#    ".venv",
-#]
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [
@@ -105,12 +97,23 @@ exclude = [
     "*/settings.py", # Add your settings file here
 ]
 
-# Enable PEP8 naming conventions for Django models
-[tool.ruff.lint.pep8-naming]
-classmethod-decorators = ["classmethod", "django.utils.decorators.method_decorator"]
-
 [tool.ruff.lint.pydocstyle]
-convention = "google"  # or "numpy" if you prefer NumPy-style docstrings
+convention = "google"
+ignore-decorators = ["typing.overload"]
+ignore-var-parameters = true
+
+# Enable PEP8 naming conventions for Django models
+#[tool.ruff.lint.pep8-naming]
+#classmethod-decorators = ["classmethod", "django.utils.decorators.method_decorator"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+# Also ignore `E402` in all `__init__.py` files.
+"__init__.py" = ["E402"]
+"wsgi.py" = ["I001"]
+
+#[tool.ruff.pydocstyle]
+#convention = "google"  # or "numpy" if you prefer NumPy-style docstrings
+#add-ignore = ["D100", "D101"] # Ignore missing docstring for public module and class
 
 [tool.ruff.format]
 quote-style = "double"  # Use double quotes for strings (Django convention)

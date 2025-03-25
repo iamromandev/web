@@ -16,7 +16,7 @@ class Tag(GenericUUIDTaggedItemBase, TaggedItemBase):
         verbose_name_plural = _("tags")
 
 
-class User(AbstractUser):
+class User(SoftDeleteModel, AbstractUser):
     # Django's AbstractUser already includes the following fields by default:
     # - id (AutoField, primary key)
     # - password
@@ -136,40 +136,31 @@ class Code(SoftDeleteModel):
     def __str__(self):
         return f"[Code: {self.source}, {self.code}]"
 
-
 # class Region(SoftDeleteModel):
 #     class Continent(models.TextChoices):
-#         AFRICA = 'AF', _('Africa')
-#         ASIA = 'AS', _('Asia')
-#         EUROPE = 'EU', _('Europe')
-#         NORTH_AMERICA = 'NA', _('North America')
-#         SOUTH_AMERICA = 'SA', _('South America')
-#         OCEANIA = 'OC', _('Oceania')
-#         ANTARCTICA = 'AN', _('Antarctica')
+#         AFRICA = 'africa', _('Africa')
+#         ANTARCTICA = 'antarctica', _('Antarctica')
+#         ASIA = 'asia', _('Asia')
+#         EUROPE = 'europe', _('Europe')
+#         NORTH_AMERICA = 'north_america', _('North America')
+#         SOUTH_AMERICA = 'south_america', _('South America')
+#         AUSTRALIA_OCEANIA = 'australia_oceania', _('Australia/Oceania')
 #
-# class RegionType(models.TextChoices):
-#     COUNTRY = 'country', _('Country')
-#     STATE_PROVINCE = 'state_province', _('State/Province')
-#     DIVISION = 'division', _('Division')
-#     DISTRICT = 'district', _('District')
-#     CITY = 'city', _('City')
-#     COUNTY = 'county', _('County')
-#     MUNICIPALITY = 'municipality', _('Municipality')
-#     TERRITORY = 'territory', _('Territory')
-#     AUTONOMOUS_REGION = 'autonomous_region', _('Autonomous Region')
-#     UNION_TERRITORY = 'union_territory', _('Union Territory')
-#     PREFECTURE = 'prefecture', _('Prefecture')
-#     ZONE = 'zone', _('Zone')
-#     REGION = 'region', _('Region')
-#     DEPARTMENT = 'department', _('Department')
-#     PARISH = 'parish', _('Parish')
-#     CANTON = 'canton', _('Canton')
-#     COMMUNE = 'commune', _('Commune')
+#     class RegionType(models.TextChoices):
+#         COUNTRY = 'country', _('Country')
+#         STATE_PROVINCE = 'state_province', _('State/Province')
+#         DIVISION = 'division', _('Division')
+#         DISTRICT = 'district', _('District')
+#         CITY = 'city', _('City')
+#         COUNTY = 'county', _('County')  # Upazila, sub-district, etc.
+#         MUNICIPALITY = 'municipality', _('Municipality')  # city corporation
+#         TERRITORY = 'territory', _('Territory')
+#         AUTONOMOUS_REGION = 'autonomous_region', _('Autonomous Region')
+#         UNION_TERRITORY = 'union_territory', _('Union Territory')
+#         PREFECTURE = 'prefecture', _('Prefecture')
+#         ZONE = 'zone', _('Zone')
 #
 #     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     source = models.ForeignKey(
-#         Source, on_delete=models.DO_NOTHING, related_name="regions"
-#     )
 #     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
 #     name = models.CharField(max_length=256, unique=True, blank=False, null=False)
 #

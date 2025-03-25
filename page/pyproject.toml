@@ -39,85 +39,23 @@ dependencies = [
     ## db
     "pymysql (==1.0.3)",
     ## misc
-    "django-phonenumber-field (==7.1.0)",
+    #"django-phonenumber-field (==8.0.0)",
     # "pillow (==9.5.0)",
     #"wordnik-py3 (==2.1.2)",
     #"libretranslatepy (==2.1.3)",
     # "django-imagekit (==4.1.0)",
+    "django-phonenumber-field[phonenumbers] (==8.0.0)"
 ]
 
 [tool.poetry]
 package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "==4.2.0"
-ruff = "==0.11.2"
-mypy = "==1.15.0"
+pre-commit = ">=4.2.0"
+ruff = ">=0.11.2"
+mypy = ">=1.15.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-### ruff configuration ###
-[tool.ruff]
-line-length = 88
-target-version = "py39"
-
-[tool.ruff.lint]
-select = [
-    "E", # pycodestyle errors (formatting)
-    "F", # Pyflakes (bug detection)
-    "W", # pycodestyle warnings
-    "I", # isort (import sorting)
-    "D", # pydocstyle (docstring conventions)
-    "DJ", # flake8-django (Django-specific checks)
-    "UP", # pyupgrade (modern syntax suggestions)
-    "N", # pep8-naming (naming conventions)
-    "B", # flake8-bugbear (common pitfalls)
-]
-
-ignore = [
-    "B008", # Do not perform function calls in argument defaults
-    "C408", # Unnecessary `dict`/`list`/`tuple` call
-    "D100", # Ignore missing docstring in public modules
-    "D101", # Ignore missing docstring in public classes
-    "D102", # Ignore missing docstring in public methods
-    "D103", # Ignore missing docstring in public functions
-    "D104", # Ignore missing docstring in public packages
-    "D105", # Ignore missing docstring in magic methods
-    "D106", # Ignore missing docstring in nested classes
-    "D107", # Ignore missing docstring in __init__ methods
-    "DJ001",  # Ignoring DJ001
-    "E501", # Line length (you might prefer to handle this with the formatter)
-    "F401", # Allow unused imports
-]
-
-exclude = [
-    "*/migrations",
-    "*/settings.py", # Add your settings file here
-]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-ignore-decorators = ["typing.overload"]
-ignore-var-parameters = true
-
-# Enable PEP8 naming conventions for Django models
-#[tool.ruff.lint.pep8-naming]
-#classmethod-decorators = ["classmethod", "django.utils.decorators.method_decorator"]
-
-[tool.ruff.lint.extend-per-file-ignores]
-# Also ignore `E402` in all `__init__.py` files.
-"__init__.py" = ["E402"]
-"wsgi.py" = ["I001"]
-
-#[tool.ruff.pydocstyle]
-#convention = "google"  # or "numpy" if you prefer NumPy-style docstrings
-#add-ignore = ["D100", "D101"] # Ignore missing docstring for public module and class
-
-[tool.ruff.format]
-quote-style = "double"  # Use double quotes for strings (Django convention)
-indent-style = "space"  # Use spaces instead of tabs
-line-ending = "auto"  # Auto-detect line endings (LF for Unix, CRLF for Windows)
-docstring-code-format = true  # Format code blocks inside docstrings
-skip-magic-trailing-comma = false  # Enforce trailing commas where appropriate

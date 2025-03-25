@@ -25,6 +25,10 @@ jobs:
         with:
           python-version: 3.9.21
 
+      - name: Update pip
+        id: update-pip
+        run: python3 -m pip install --upgrade pip
+
       - name: Set up poetry env
         id: setup-poetry-env
         run: python3 -m venv $POETRY_HOME

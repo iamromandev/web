@@ -117,6 +117,7 @@ class Code(SoftDeleteModel):
         ISO_4217 = "iso_4217", _("ISO 4217 Currency")
         ISO_8601 = "iso_8601", "ISO 8601 Date/Time"
         ISO_15924 = "iso_15924", _("ISO 15924 Script")
+        OTHER = "other", _("Other Code")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(

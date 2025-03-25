@@ -1,0 +1,11 @@
+line-length = 88
+
+[lint]
+
+[lint.extend-per-file-ignores]
+"*/passenger_wsgi.py" = ["F401"]
+"src/config/*.py" = ["F401"]
+"*/admin.py" = ["F401"]
+"*/models.py" = ["F401"]
+"*/views.py" = ["F401"]
+"*/tests.py" = ["F401"]

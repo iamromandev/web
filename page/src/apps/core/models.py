@@ -86,6 +86,7 @@ class State(models.Model):
 
 
 class Code(SoftDeleteModel):
+
     class CodeType(models.TextChoices):
         REGION = "region", _("Region Code")
         COUNTRY = "country", _("Country Code")

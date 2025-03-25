@@ -20,4 +20,12 @@ repos:
         language: system
         files: ^page/
 
+#      - id: format
+#        name: format
+#        description: ruff formatting
+#        entry: bash -c "cd page && exec poetry run ruff format"
+#        types: [ python ]
+#        language: system
+#        files: ^page/
+
 

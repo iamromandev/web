@@ -1,25 +1,34 @@
 target-version = "py39"
 line-length = 88
+
 exclude = [
-  ".git",
-  ".hg",
-  ".mypy_cache",
-  ".tox",
-  ".venv",
-  ".vscode",
-  "_build",
-  "buck-out",
-  "build",
-  "dist",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
 ]
 
 [lint]
-
+#select = [
+#    "E", # pycodestyle
+#    "F", # Pyflakes
+#    "UP", # pyupgrade
+#    "B", # flake8-bugbear
+#    "SIM", # flake8-simplify
+#    "I", # isort
+#]
 
 [lint.extend-per-file-ignores]
 "*/passenger_wsgi.py" = ["F401"]
-"src/config/*.py" = ["F401"]
+"src/config/*.py" = ["F401", "I001", "E501"]
+"*/migrations/*.py" = ["E501"]
 "*/admin.py" = ["F401"]
-"*/models.py" = ["F401"]
+"*/models.py" = ["F401", "E501"]
 "*/views.py" = ["F401"]
 "*/tests.py" = ["F401"]

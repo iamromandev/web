@@ -86,7 +86,6 @@ class State(models.Model):
 
 
 class Code(SoftDeleteModel):
-
     class CodeType(models.TextChoices):
         REGION = "region", _("Region Code")
         COUNTRY = "country", _("Country Code")
@@ -136,6 +135,7 @@ class Code(SoftDeleteModel):
 
     def __str__(self):
         return f"[Code: {self.source}, {self.code}]"
+
 
 # class Region(SoftDeleteModel):
 #     class Continent(models.TextChoices):

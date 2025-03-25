@@ -1,6 +1,20 @@
+target-version = "py39"
 line-length = 88
+exclude = [
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+]
 
 [lint]
+
 
 [lint.extend-per-file-ignores]
 "*/passenger_wsgi.py" = ["F401"]

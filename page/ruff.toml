@@ -15,14 +15,14 @@ exclude = [
 ]
 
 [lint]
-#select = [
-#    "E", # pycodestyle
-#    "F", # Pyflakes
-#    "UP", # pyupgrade
-#    "B", # flake8-bugbear
-#    "SIM", # flake8-simplify
-#    "I", # isort
-#]
+select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "UP", # pyupgrade
+    "B", # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I", # isort
+]
 
 [lint.extend-per-file-ignores]
 "*/passenger_wsgi.py" = ["F401"]

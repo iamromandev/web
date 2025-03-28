@@ -30,3 +30,14 @@ restart:
 	make stop
 	make build
 	make up
+
+.PHONY: poetry install
+install:
+	poetry lock
+	poetry update
+	poetry install
+
+.PHONY: ruff
+ruff:
+	make install
+	poetry run ruff format

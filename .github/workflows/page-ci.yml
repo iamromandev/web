@@ -3,8 +3,8 @@ name: Check and Lint
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
-  push:
-    branches: [dev, feat/page]
+  #push:
+  #  branches: [dev]
 
 env:
   POETRY_HOME: /opt/poetry
@@ -19,11 +19,15 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Set up python 3.9.20
+      - name: Set up python 3.9.21
         id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9.20
+          python-version: 3.9.21
+
+      - name: Update pip
+        id: update-pip
+        run: python3 -m pip install --upgrade pip
 
       - name: Set up poetry env
         id: setup-poetry-env

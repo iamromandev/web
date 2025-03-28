@@ -1,5 +1,5 @@
 import uuid
-from contextlib import nullcontext
+from typing import Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -124,7 +124,7 @@ class Code(SoftDeleteModel):
         max_length=32, choices=CodeType.choices, blank=True, null=True
     )
     code = models.CharField(max_length=64, blank=False, null=False, db_index=True)
-    desc = models.TextField(blank=False, null=False)
+    description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -136,6 +136,60 @@ class Code(SoftDeleteModel):
     def __str__(self):
         return f"[Code: {self.source}, {self.code}]"
 
+
+class Location(SoftDeleteModel):
+    class Continent(models.TextChoices):
+        AFRICA = 'africa', _('Africa')
+        ANTARCTICA = 'antarctica', _('Antarctica')
+        ASIA = 'asia', _('Asia')
+        EUROPE = 'europe', _('Europe')
+        NORTH_AMERICA = 'north_america', _('North America')
+        SOUTH_AMERICA = 'south_america', _('South America')
+        AUSTRALIA_OCEANIA = 'australia_oceania', _('Australia/Oceania')
+
+    class LocationType(models.TextChoices):
+        COUNTRY = "country", _("Country")
+        STATE_PROVINCE = "state_province", _("State/Province")
+        DIVISION = 'division', _('Division')
+        DISTRICT = 'district', _('District')
+        CITY = "city", _("City")
+        COUNTY = "county", _("County")
+        MUNICIPALITY = "municipality", _("Municipality")
+        REGION = 'region', 'Region'
+        ADDRESS = 'address', 'Address'
+        TERRITORY = "territory", _("Territory")
+        AUTONOMOUS_REGION = "autonomous_region", _("Autonomous Region")
+        UNION_TERRITORY = "union_territory", _("Union Territory")
+        VILLAGE = 'village', _('Village')
+        PREFECTURE = "prefecture", _("Prefecture")
+        ZONE = "zone", _("Zone")
+        POSTAL = "postal", _("Postal")
+        NEIGHBORHOOD = 'neighborhood', _('Neighborhood')
+        LANDMARK = 'landmark', _('Landmark')
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=256, unique=True, blank=False, null=False)
+    type = models.CharField(
+        max_length=32, choices=LocationType.choices, blank=True, null=True
+    )
+    address = models.CharField(max_length=512, blank=True, null=True)
+    parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"[Location: {self.name}, {self.location}]"
+
+    def get_location_type_display(self) -> Optional[str]:
+        return Location.LocationType.choices.get(self.type, self.type)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("location")
+        verbose_name_plural = _("locations")
 
 # class Region(SoftDeleteModel):
 #     class Continent(models.TextChoices):

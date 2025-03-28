@@ -8,21 +8,29 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from apps.core.models import User
 
+
 # class Profile(SoftDeleteModel):
+#     class Gender(models.TextChoices):
+#         MALE = 'male', _('Male')
+#         FEMALE = 'female', _('Female')
+#         NON_BINARY = 'non_binary', _('Non-binary')
+#         GENDER_FLUID = 'gender_fluid', _('Gender Fluid')
+#         AGENDER = 'agender', _('Agender')
+#         PREFER_NOT_TO_SAY = 'prefer_not_to_say', _('Prefer not to say')
+#
 #     user = models.OneToOneField(
 #         User,
 #         on_delete=models.CASCADE,
-#         related_name='profile',
+#         related_name="profile",
 #         help_text="The associated Django User"
 #     )
-#     code = models.CharField(max_length=2, unique=True)
-#     name = models.CharField(max_length=128, unique=True)
-#     official_name = models.CharField(max_length=128, blank=True, null=True)
-#     iso3 = models.CharField(max_length=3, unique=True, verbose_name=_("ISO3 Code"))
-#     numeric_code = models.CharField(max_length=3, blank=True, null=True)
-#     phone_code = models.CharField(max_length=10, blank=True, null=True)
+#     gender = models.CharField(max_length=32, choices=Gender.choices, blank=True, null=True)
+#     name = models.CharField(max_length=128, blank=True, null=True)
+#     bio = models.TextField(blank=True, null=True)
+#     birthdate = models.DateField(blank=True, null=True)
+#     phone = PhoneNumberField(blank=True, null=True)
 #     created_at = models.DateTimeField(auto_now_add=True)
 #     updated_at = models.DateTimeField(auto_now=True)
 #
 #     class Meta:
-#         ordering = ("name",)
+#         ordering = ["name"]

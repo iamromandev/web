@@ -137,6 +137,52 @@ class Code(SoftDeleteModel):
         return f"[Code: {self.source}, {self.code}]"
 
 
+class Language(SoftDeleteModel):
+    class Direction(models.TextChoices):
+        LTR = "LTR", _("Left to Right")
+        RTL = "RTL", _("Right to Left")
+
+    class Script(models.TextChoices):
+        LATIN = 'latin', _('Latin')
+        CYRILLIC = 'cyrillic', _('Cyrillic')
+        ARABIC = 'arabic', _('Arabic')
+        DEVANAGARI = 'devanagari', _('Devanagari')
+        CHINESE = 'chinese', _('Chinese')
+        GREEK = 'greek', _('Greek')
+        HEBREW = 'hebrew', _('Hebrew')
+        JAPANESE = 'japanese', _('Japanese')
+        KOREAN = 'korean', _('Korean')
+        THAI = 'thai', _('Thai')
+        TAMIL = 'tamil', _('Tamil')
+        BENGALI = 'bengali', _('Bengali')
+        BRAILLE = 'braille', _('Braille')
+        ETHIOPIC = 'ethiopic', _('Ethiopic')
+        GEORGIAN = 'georgian', _('Georgian')
+        MONGOLIAN = 'mongolian', _('Mongolian')
+        SYRIAC = 'syriac', _('Syriac')
+        OTHER = 'other', _('Other')
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=256, blank=False, null=False)
+    native_name = models.CharField(max_length=256, blank=True, null=True)
+    direction = models.CharField(
+        max_length=3, choices=Direction.choices, default=Direction.LTR
+    )
+    codes = models.ManyToManyField(Code, related_name="languages", blank=True, null=True)
+    script = models.CharField(max_length=32, choices=Script.choices, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("language")
+        verbose_name_plural = _("languages")
+
+    def __str__(self):
+        return f"[Language: {self.source}, {self.code}, {self.name}]"
+
+
 class Location(SoftDeleteModel):
     class Continent(models.TextChoices):
         AFRICA = 'africa', _('Africa')
@@ -190,49 +236,3 @@ class Location(SoftDeleteModel):
         ordering = ["name"]
         verbose_name = _("location")
         verbose_name_plural = _("locations")
-
-
-class Language(SoftDeleteModel):
-    class Direction(models.TextChoices):
-        LTR = "LTR", _("Left to Right")
-        RTL = "RTL", _("Right to Left")
-
-    class Script(models.TextChoices):
-        LATIN = 'latin', _('Latin')
-        CYRILLIC = 'cyrillic', _('Cyrillic')
-        ARABIC = 'arabic', _('Arabic')
-        DEVANAGARI = 'devanagari', _('Devanagari')
-        CHINESE = 'chinese', _('Chinese')
-        GREEK = 'greek', _('Greek')
-        HEBREW = 'hebrew', _('Hebrew')
-        JAPANESE = 'japanese', _('Japanese')
-        KOREAN = 'korean', _('Korean')
-        THAI = 'thai', _('Thai')
-        TAMIL = 'tamil', _('Tamil')
-        BENGALI = 'bengali', _('Bengali')
-        BRAILLE = 'braille', _('Braille')
-        ETHIOPIC = 'ethiopic', _('Ethiopic')
-        GEORGIAN = 'georgian', _('Georgian')
-        MONGOLIAN = 'mongolian', _('Mongolian')
-        SYRIAC = 'syriac', _('Syriac')
-        OTHER = 'other', _('Other')
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=256, blank=False, null=False)
-    native_name = models.CharField(max_length=256, blank=True, null=True)
-    direction = models.CharField(
-        max_length=3, choices=Direction.choices, default=Direction.LTR
-    )
-    codes = models.ManyToManyField(Code, related_name="languages", blank=True, null=True)
-    script = models.CharField(max_length=32, choices=Script.choices, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["name"]
-        verbose_name = _("language")
-        verbose_name_plural = _("languages")
-
-    def __str__(self):
-        return f"[Language: {self.source}, {self.code}, {self.name}]"

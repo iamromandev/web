@@ -191,74 +191,48 @@ class Location(SoftDeleteModel):
         verbose_name = _("location")
         verbose_name_plural = _("locations")
 
-# class Region(SoftDeleteModel):
-#     class Continent(models.TextChoices):
-#         AFRICA = 'africa', _('Africa')
-#         ANTARCTICA = 'antarctica', _('Antarctica')
-#         ASIA = 'asia', _('Asia')
-#         EUROPE = 'europe', _('Europe')
-#         NORTH_AMERICA = 'north_america', _('North America')
-#         SOUTH_AMERICA = 'south_america', _('South America')
-#         AUSTRALIA_OCEANIA = 'australia_oceania', _('Australia/Oceania')
-#
-#     class RegionType(models.TextChoices):
-#         COUNTRY = 'country', _('Country')
-#         STATE_PROVINCE = 'state_province', _('State/Province')
-#         DIVISION = 'division', _('Division')
-#         DISTRICT = 'district', _('District')
-#         CITY = 'city', _('City')
-#         COUNTY = 'county', _('County')  # Upazila, sub-district, etc.
-#         MUNICIPALITY = 'municipality', _('Municipality')  # city corporation
-#         TERRITORY = 'territory', _('Territory')
-#         AUTONOMOUS_REGION = 'autonomous_region', _('Autonomous Region')
-#         UNION_TERRITORY = 'union_territory', _('Union Territory')
-#         PREFECTURE = 'prefecture', _('Prefecture')
-#         ZONE = 'zone', _('Zone')
-#
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
-#     name = models.CharField(max_length=256, unique=True, blank=False, null=False)
-#
-#     type = models.CharField(
-#         max_length=32, choices=RegionType.choices, default=RegionType.COUNTRY
-#     )
-#     code = models.CharField(max_length=8, unique=True, blank=False)
-#     continent = models.CharField(
-#         max_length=2, choices=Continent.choices, default=Continent.ASIA
-#     )
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-#     class Meta:
-#         ordering = ["name"]
-#         verbose_name = _("region")
-#         verbose_name_plural = _("regions")
-#
-#     def __str__(self):
-#         return f"[Region: {self.source}, {self.code}, {self.name}]"
 
-#
-# class Language(SoftDeleteModel):
-#     class Direction(models.TextChoices):
-#         LTR = "LTR", _("Left to Right")
-#         RTL = "RTL", _("Right to Left")
-#
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     source = models.ForeignKey(
-#         Source, on_delete=models.DO_NOTHING, related_name="languages"
-#     )
-#     name = models.CharField(max_length=128, blank=False, null=False)
-#     direction = models.CharField(
-#         max_length=3, choices=Direction.choices, default=Direction.LTR
-#     )
-#     code = models.CharField(max_length=8, unique=True, blank=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-#     class Meta:
-#         ordering = ["name"]
-#         verbose_name = _("Language")
-#         verbose_name_plural = _("Languages")
-#
-#     def __str__(self):
-#         return f"[Language: {self.source}, {self.code}, {self.name}]"
+class Language(SoftDeleteModel):
+    class Direction(models.TextChoices):
+        LTR = "LTR", _("Left to Right")
+        RTL = "RTL", _("Right to Left")
+
+    class Script(models.TextChoices):
+        LATIN = 'latin', _('Latin')
+        CYRILLIC = 'cyrillic', _('Cyrillic')
+        ARABIC = 'arabic', _('Arabic')
+        DEVANAGARI = 'devanagari', _('Devanagari')
+        CHINESE = 'chinese', _('Chinese')
+        GREEK = 'greek', _('Greek')
+        HEBREW = 'hebrew', _('Hebrew')
+        JAPANESE = 'japanese', _('Japanese')
+        KOREAN = 'korean', _('Korean')
+        THAI = 'thai', _('Thai')
+        TAMIL = 'tamil', _('Tamil')
+        BENGALI = 'bengali', _('Bengali')
+        BRAILLE = 'braille', _('Braille')
+        ETHIOPIC = 'ethiopic', _('Ethiopic')
+        GEORGIAN = 'georgian', _('Georgian')
+        MONGOLIAN = 'mongolian', _('Mongolian')
+        SYRIAC = 'syriac', _('Syriac')
+        OTHER = 'other', _('Other')
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=256, blank=False, null=False)
+    native_name = models.CharField(max_length=256, blank=True, null=True)
+    direction = models.CharField(
+        max_length=3, choices=Direction.choices, default=Direction.LTR
+    )
+    codes = models.ManyToManyField(Code, related_name="languages", blank=True, null=True)
+    script = models.CharField(max_length=32, choices=Script.choices, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("language")
+        verbose_name_plural = _("languages")
+
+    def __str__(self):
+        return f"[Language: {self.source}, {self.code}, {self.name}]"

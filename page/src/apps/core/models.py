@@ -12,8 +12,8 @@ from taggit.models import GenericUUIDTaggedItemBase, TaggedItemBase
 # Create your models here.
 class Tag(GenericUUIDTaggedItemBase, TaggedItemBase):
     class Meta:
-        verbose_name = _("tag")
-        verbose_name_plural = _("tags")
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
 
 
 class User(SoftDeleteModel, AbstractUser):
@@ -51,8 +51,8 @@ class Source(models.Model):
 
     class Meta:
         ordering = ["source"]
-        verbose_name = _("source")
-        verbose_name_plural = _("sources")
+        verbose_name = _("Source")
+        verbose_name_plural = _("Sources")
 
     def __str__(self) -> str:
         """Returns a string representation of the Source instance."""
@@ -61,11 +61,9 @@ class Source(models.Model):
 
 class State(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    ref = models.UUIDField(editable=True, blank=False, null=False)
+    ref = models.UUIDField(editable=False, blank=False, null=False)
     source = models.ForeignKey(
-        Source,
-        on_delete=models.DO_NOTHING,
-        related_name="states",
+        Source, on_delete=models.DO_NOTHING, related_name="states"
     )
     state = models.CharField(max_length=32, blank=False, null=False)
     extra = models.CharField(max_length=32, blank=True, null=True)
@@ -75,8 +73,8 @@ class State(models.Model):
     class Meta:
         ordering = ["source", "state"]
         unique_together = [("ref", "source")]
-        verbose_name = _("state")
-        verbose_name_plural = _("states")
+        verbose_name = _("State")
+        verbose_name_plural = _("States")
 
     def __str__(self):
         return f"[State: {self.source}, {self.state}]"
@@ -86,7 +84,7 @@ class State(models.Model):
 
 
 class Code(SoftDeleteModel):
-    class CodeType(models.TextChoices):
+    class Type(models.TextChoices):
         REGION = "region", _("Region Code")
         COUNTRY = "country", _("Country Code")
         STATE_PROVINCE = "state_province", _("State/Province Code")
@@ -121,7 +119,7 @@ class Code(SoftDeleteModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     type = models.CharField(
-        max_length=32, choices=CodeType.choices, blank=True, null=True
+        max_length=32, choices=Type.choices, blank=True, null=True
     )
     code = models.CharField(max_length=64, blank=False, null=False, db_index=True)
     description = models.TextField(blank=True, null=True)
@@ -130,8 +128,8 @@ class Code(SoftDeleteModel):
 
     class Meta:
         ordering = ["code"]
-        verbose_name = _("code")
-        verbose_name_plural = _("codes")
+        verbose_name = _("Code")
+        verbose_name_plural = _("Codes")
 
     def __str__(self):
         return f"[Code: {self.source}, {self.code}]"
@@ -176,14 +174,56 @@ class Language(SoftDeleteModel):
 
     class Meta:
         ordering = ["name"]
-        verbose_name = _("language")
-        verbose_name_plural = _("languages")
+        verbose_name = _("Language")
+        verbose_name_plural = _("Languages")
 
     def __str__(self):
         return f"[Language: {self.source}, {self.code}, {self.name}]"
 
 
+class Coordinate(SoftDeleteModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=False, null=False)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("latitude", "longitude")
+        unique_together = ("latitude", "longitude")
+        verbose_name = _("Coordinate")
+        verbose_name_plural = _("Coordinates")
+
+    def __str__(self):
+        return f"[Coordinate: {self.latitude}, {self.longitude}]"
+
+
 class Location(SoftDeleteModel):
+    class Type(models.TextChoices):
+        COUNTRY = "country", _("Country")
+        STATE_PROVINCE = "state_province", _("State/Province")
+        DIVISION = 'division', _('Division')
+        DISTRICT = 'district', _('District')
+        CITY = "city", _("City")
+        COUNTY = "county", _("County")
+        UPAZILA = 'upazila', _('Upazila')
+        UNION = 'union', _('Union')
+        MUNICIPALITY = "municipality", _("Municipality")
+        CITY_CORPORATION = 'city_corporation', _('City Corporation')
+        TOWN = 'town', _('Town')
+        VILLAGE = 'village', _('Village')
+        REGION = 'region', 'Region'
+        ADDRESS = 'address', 'Address'
+        TERRITORY = "territory", _("Territory")
+        AUTONOMOUS_REGION = "autonomous_region", _("Autonomous Region")
+        UNION_TERRITORY = "union_territory", _("Union Territory")
+        PREFECTURE = "prefecture", _("Prefecture")
+        ZONE = "zone", _("Zone")
+        POSTAL = "postal", _("Postal")
+        NEIGHBORHOOD = 'neighborhood', _('Neighborhood')
+        LANDMARK = 'landmark', _('Landmark')
+        OTHER = 'other', _('Other')
+
     class Continent(models.TextChoices):
         AFRICA = 'africa', _('Africa')
         ANTARCTICA = 'antarctica', _('Antarctica')
@@ -192,47 +232,70 @@ class Location(SoftDeleteModel):
         NORTH_AMERICA = 'north_america', _('North America')
         SOUTH_AMERICA = 'south_america', _('South America')
         AUSTRALIA_OCEANIA = 'australia_oceania', _('Australia/Oceania')
-
-    class LocationType(models.TextChoices):
-        COUNTRY = "country", _("Country")
-        STATE_PROVINCE = "state_province", _("State/Province")
-        DIVISION = 'division', _('Division')
-        DISTRICT = 'district', _('District')
-        CITY = "city", _("City")
-        COUNTY = "county", _("County")
-        MUNICIPALITY = "municipality", _("Municipality")
-        REGION = 'region', 'Region'
-        ADDRESS = 'address', 'Address'
-        TERRITORY = "territory", _("Territory")
-        AUTONOMOUS_REGION = "autonomous_region", _("Autonomous Region")
-        UNION_TERRITORY = "union_territory", _("Union Territory")
-        VILLAGE = 'village', _('Village')
-        PREFECTURE = "prefecture", _("Prefecture")
-        ZONE = "zone", _("Zone")
-        POSTAL = "postal", _("Postal")
-        NEIGHBORHOOD = 'neighborhood', _('Neighborhood')
-        LANDMARK = 'landmark', _('Landmark')
+        OTHER = 'other', _('Other')
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
     name = models.CharField(max_length=256, unique=True, blank=False, null=False)
     type = models.CharField(
-        max_length=32, choices=LocationType.choices, blank=True, null=True
+        max_length=32, choices=Type.choices, blank=True, null=True
     )
-    address = models.CharField(max_length=512, blank=True, null=True)
-    parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    continent = models.CharField(
+        max_length=32, choices=Continent.choices, blank=True, null=True
+    )
+    coordinate = models.ForeignKey(
+        Coordinate, blank=True, null=True, on_delete=models.SET_NULL, related_name="locations"
+    )
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def get_location_type_display(self) -> Optional[str]:
+        return Location.LocationType.choices.get(self.type, self.type)
+
+    def __str__(self):
+        return f"[Location: {self.name}, {self.location}]"
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("Location")
+        verbose_name_plural = _("Locations")
+
+
+class Address(SoftDeleteModel):
+    class Type(models.TextChoices):
+        BILLING = "BILLING", _("Billing")
+        SHIPPING = "SHIPPING", _("Shipping")
+        HOME = "HOME", _("Home")
+        WORK = "WORK", _("Work")
+        OFFICE = "OFFICE", _("Office")
+        PO_BOX = "PO_BOX", _("PO Box")
+        DELIVERY = "DELIVERY", _("Delivery")
+        MAILING = "MAILING", _("Mailing")
+        TEMPORARY = "TEMPORARY", _("Temporary")
+        OTHER = "OTHER", _("Other")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, related_name="addresses", blank=True, null=True
+    )
+    type = models.CharField(
+        max_length=32, choices=Type.choices, blank=True, null=True
+    )
+    address_line_1 = models.CharField(max_length=256, blank=False, null=False)
+    address_line_2 = models.CharField(max_length=256, blank=True, null=True)
+    locations = models.ManyToManyField(Location, related_name="addresses", blank=True, null=True)
+    coordinate = models.ForeignKey(
+        Coordinate, blank=True, null=True, on_delete=models.SET_NULL, related_name="addresses"
+    )
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"[Location: {self.name}, {self.location}]"
-
-    def get_location_type_display(self) -> Optional[str]:
-        return Location.LocationType.choices.get(self.type, self.type)
+        return f"[Address: {self.name}, {self.location}]"
 
     class Meta:
         ordering = ["name"]
-        verbose_name = _("location")
-        verbose_name_plural = _("locations")
+        verbose_name = _("Address")
+        verbose_name_plural = _("Addresses")

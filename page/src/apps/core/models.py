@@ -137,8 +137,8 @@ class Code(SoftDeleteModel):
 
 class Language(SoftDeleteModel):
     class Direction(models.TextChoices):
-        LTR = "LTR", _("Left to Right")
-        RTL = "RTL", _("Right to Left")
+        LTR = "ltr", _("Left to Right")
+        RTL = "rtl", _("Right to Left")
 
     class Script(models.TextChoices):
         LATIN = 'latin', _('Latin')
@@ -166,7 +166,7 @@ class Language(SoftDeleteModel):
     direction = models.CharField(
         max_length=3, choices=Direction.choices, default=Direction.LTR
     )
-    codes = models.ManyToManyField(Code, related_name="languages", blank=True, null=True)
+    codes = models.ManyToManyField(Code, related_name="languages", blank=True)
     script = models.CharField(max_length=32, choices=Script.choices, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -264,16 +264,16 @@ class Location(SoftDeleteModel):
 
 class Address(SoftDeleteModel):
     class Type(models.TextChoices):
-        BILLING = "BILLING", _("Billing")
-        SHIPPING = "SHIPPING", _("Shipping")
-        HOME = "HOME", _("Home")
-        WORK = "WORK", _("Work")
-        OFFICE = "OFFICE", _("Office")
-        PO_BOX = "PO_BOX", _("PO Box")
-        DELIVERY = "DELIVERY", _("Delivery")
-        MAILING = "MAILING", _("Mailing")
-        TEMPORARY = "TEMPORARY", _("Temporary")
-        OTHER = "OTHER", _("Other")
+        BILLING = "billing", _("Billing")
+        SHIPPING = "shipping", _("Shipping")
+        HOME = "home", _("Home")
+        WORK = "work", _("Work")
+        OFFICE = "office", _("Office")
+        PO_BOX = "po_box", _("PO Box")
+        DELIVERY = "delivery", _("Delivery")
+        MAILING = "mailing", _("Mailing")
+        TEMPORARY = "temporary", _("Temporary")
+        OTHER = "other", _("Other")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
@@ -284,7 +284,7 @@ class Address(SoftDeleteModel):
     )
     address_line_1 = models.CharField(max_length=256, blank=False, null=False)
     address_line_2 = models.CharField(max_length=256, blank=True, null=True)
-    locations = models.ManyToManyField(Location, related_name="addresses", blank=True, null=True)
+    locations = models.ManyToManyField(Location, related_name="addresses", blank=True)
     coordinate = models.ForeignKey(
         Coordinate, blank=True, null=True, on_delete=models.SET_NULL, related_name="addresses"
     )
@@ -296,6 +296,6 @@ class Address(SoftDeleteModel):
         return f"[Address: {self.name}, {self.location}]"
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["address_line_1"]
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")

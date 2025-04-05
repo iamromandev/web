@@ -161,8 +161,8 @@ class Language(SoftDeleteModel):
         OTHER = 'other', _('Other')
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=256, blank=False, null=False)
-    native_name = models.CharField(max_length=256, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=False, null=False)
+    native_name = models.CharField(max_length=128, blank=True, null=True)
     direction = models.CharField(
         max_length=3, choices=Direction.choices, default=Direction.LTR
     )
@@ -236,7 +236,7 @@ class Location(SoftDeleteModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
-    name = models.CharField(max_length=256, unique=True, blank=False, null=False)
+    name = models.CharField(max_length=128, unique=True, blank=False, null=False)
     type = models.CharField(
         max_length=32, choices=Type.choices, blank=True, null=True
     )
@@ -299,3 +299,4 @@ class Address(SoftDeleteModel):
         ordering = ["address_line_1"]
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
+

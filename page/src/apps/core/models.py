@@ -9,8 +9,7 @@ from django_softdelete.models import SoftDeleteModel
 from taggit.models import GenericUUIDTaggedItemBase, TaggedItemBase
 
 
-# Create your models here.
-class Tag(GenericUUIDTaggedItemBase, TaggedItemBase):
+class Tag(SoftDeleteModel, GenericUUIDTaggedItemBase, TaggedItemBase):
     class Meta:
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
@@ -29,7 +28,7 @@ class User(SoftDeleteModel, AbstractUser):
     # - is_staff
     # - is_active
     # - date_joined
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -40,8 +39,8 @@ class User(SoftDeleteModel, AbstractUser):
         return f"[User: {self.username} {self.email}]"
 
 
-class Source(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class Source(SoftDeleteModel):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     type = models.CharField(max_length=32, blank=False, null=False)
     subtype = models.CharField(max_length=32, blank=False, null=False)
     origin = models.CharField(max_length=32, blank=False, null=False)
@@ -50,7 +49,7 @@ class Source(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["source"]
+        ordering = ["type", "subtype", "origin"]
         verbose_name = _("Source")
         verbose_name_plural = _("Sources")
 
@@ -60,10 +59,10 @@ class Source(models.Model):
 
 
 class State(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     ref = models.UUIDField(editable=False, blank=False, null=False)
     source = models.ForeignKey(
-        Source, on_delete=models.DO_NOTHING, related_name="states"
+        Source, on_delete=models.DO_NOTHING, related_name="states", blank=False, null=False
     )
     state = models.CharField(max_length=32, blank=False, null=False)
     extra = models.CharField(max_length=32, blank=True, null=True)
@@ -117,7 +116,7 @@ class Code(SoftDeleteModel):
         ISO_15924 = "iso_15924", _("ISO 15924 Script")
         OTHER = "other", _("Other Code")
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     type = models.CharField(
         max_length=32, choices=Type.choices, blank=True, null=True
     )
@@ -160,7 +159,7 @@ class Language(SoftDeleteModel):
         SYRIAC = 'syriac', _('Syriac')
         OTHER = 'other', _('Other')
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=128, blank=False, null=False)
     native_name = models.CharField(max_length=128, blank=True, null=True)
     direction = models.CharField(
@@ -182,9 +181,11 @@ class Language(SoftDeleteModel):
 
 
 class Coordinate(SoftDeleteModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=False, null=False)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=False, null=False)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -234,8 +235,10 @@ class Location(SoftDeleteModel):
         AUSTRALIA_OCEANIA = 'australia_oceania', _('Australia/Oceania')
         OTHER = 'other', _('Other')
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL, related_name="children")
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    parent = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, related_name="children", blank=True, null=True
+    )
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
     type = models.CharField(
         max_length=32, choices=Type.choices, blank=True, null=True
@@ -244,7 +247,7 @@ class Location(SoftDeleteModel):
         max_length=32, choices=Continent.choices, blank=True, null=True
     )
     coordinate = models.ForeignKey(
-        Coordinate, blank=True, null=True, on_delete=models.SET_NULL, related_name="locations"
+        Coordinate, on_delete=models.SET_NULL, related_name="locations", blank=True, null=True
     )
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -275,9 +278,9 @@ class Address(SoftDeleteModel):
         TEMPORARY = "temporary", _("Temporary")
         OTHER = "other", _("Other")
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="addresses", blank=True, null=True
+        User, on_delete=models.DO_NOTHING, related_name="addresses", blank=True, null=True
     )
     type = models.CharField(
         max_length=32, choices=Type.choices, blank=True, null=True
@@ -286,7 +289,7 @@ class Address(SoftDeleteModel):
     address_line_2 = models.CharField(max_length=256, blank=True, null=True)
     locations = models.ManyToManyField(Location, related_name="addresses", blank=True)
     coordinate = models.ForeignKey(
-        Coordinate, blank=True, null=True, on_delete=models.SET_NULL, related_name="addresses"
+        Coordinate, on_delete=models.SET_NULL, related_name="addresses", blank=True, null=True
     )
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -300,3 +303,43 @@ class Address(SoftDeleteModel):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
 
+# class Platform(SoftDeleteModel):
+#     class Type(models.TextChoices):
+#         SOCIAL_MEDIA = 'SOCIAL_MEDIA', _('Social Networking (e.g., Facebook, Instagram)')
+#         STREAMING = 'streaming', _('Video/Audio Streaming (e.g., YouTube, Netflix)')
+#         MESSAGING = 'messaging', _('Instant Messaging (e.g., WhatsApp, Telegram)')
+#         BLOGGING = 'blogging', _('Content Publishing (e.g., Medium, WordPress)')
+#         FORUMS = 'forums', _('Community Discussion (e.g., Reddit, Quora)')
+#         GAMING = 'gaming', _('Video Game Platforms (e.g., Steam, PlayStation)')
+#         ECOMMERCE = 'ecommerce', _('Online Shopping (e.g., Amazon, Shopify)')
+#         BUSINESS = 'business', _('Workplace Tools (e.g., Slack, Salesforce)')
+#         EDUCATION = 'education', _('Learning Environments (e.g., Coursera, Moodle)')
+#         ENTERTAINMENT = 'entertainment', _('Media Consumption (e.g., Spotify, Netflix)')
+#         DEVELOPER = 'developer', _('Software Development (e.g., GitHub, AWS)')
+#         HEALTH_FITNESS = 'health_fitness', _('Wellness and Fitness (e.g., Fitbit, Calm)')
+#         FINANCIAL = 'financial', _('Financial Management (e.g., PayPal, Robinhood)')
+#         CROWDFUNDING = 'crowdfunding', _('Fundraising Platforms (e.g., Kickstarter)')
+#         TRAVEL_BOOKING = 'travel_booking', _('Travel Services (e.g., Expedia, Airbnb)')
+#         REAL_ESTATE = 'real_estate', _('Property Listings (e.g., Zillow, Realtor.com)')
+#         DATING = 'dating', _('Online Dating (e.g., Tinder, Bumble)')
+#         NEWS_AGGREGATOR = 'news_aggregator', _('News Collection (e.g., Flipboard, Feedly)')
+#         OTHER = "other", _("Other")
+#
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
+#     slug = models.SlugField(max_length=128, unique=True, blank=False, null=False)
+#     type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
+#     description = models.TextField(blank=True, null=True)
+#     website = models.URLField(blank=True, null=True)
+#     logo = models.ImageField(upload_to="platform_logos/", blank=True, null=True)
+#     founded_date = models.DateField(blank=True, null=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#
+#     def __str__(self):
+#         return f"[Platform: {self.name}, {self.type}]"
+#
+#     class Meta:
+#         ordering = ["name"]
+#         verbose_name = _("Platform")
+#         verbose_name_plural = _("Platforms")

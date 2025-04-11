@@ -303,6 +303,37 @@ class Address(SoftDeleteModel):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
 
+
+class Url(SoftDeleteModel):
+    class Type(models.TextChoices):
+        TERMS_OF_SERVICE = 'terms_of_service', _('Terms of Service')
+        PRIVACY_POLICY = 'privacy_policy', _('Privacy Policy')
+        COOKIE_POLICY = 'cookie_policy', _('Cookie Policy')
+        REFUND_POLICY = 'refund_policy', _('Refund Policy')
+        COMMUNITY_GUIDELINES = 'community_guidelines', _('Community Guidelines')
+        API_TERMS = 'api_terms', _('API Terms')
+        SUPPORT = 'support', _('Support')
+        WEBSITE = 'website', _('Website')
+        SOCIAL_MEDIA = 'social_media', _('Social Media')
+
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    url = models.URLField(unique=True, blank=False, null=False)
+    type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, related_name="urls", blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    slug = models.SlugField(max_length=128, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["url"]
+        verbose_name = _("URL")
+        verbose_name_plural = _("URLs")
+
+    def __str__(self):
+        return f"[URL: {self.url}]"
+
 # class Platform(SoftDeleteModel):
 #     class Type(models.TextChoices):
 #         SOCIAL_MEDIA = 'SOCIAL_MEDIA', _('Social Networking (e.g., Facebook, Instagram)')

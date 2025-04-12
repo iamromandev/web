@@ -8,9 +8,39 @@ from django_softdelete.models import SoftDeleteModel
 from phonenumber_field.modelfields import PhoneNumberField
 from timezone_field import TimeZoneField
 
-#from apps.core.models import Address, Code, Language, User
+from apps.core.models import Address, Code, Language, Platform, Url, User
 from apps.core.time_utils import TimezoneChoices
 
+
+class SocialPlatform(SoftDeleteModel):
+    class Type(models.TextChoices):
+        FACEBOOK = 'facebook', _('Facebook')
+        YOUTUBE = 'youtube', _('YouTube')
+        WHATSAPP = 'whatsapp', _('WhatsApp')
+        INSTAGRAM = 'instagram', _('Instagram')
+        TIKTOK = 'tiktok', _('TikTok')
+        WECHAT = 'wechat', _('WeChat')
+        FACEBOOK_MESSENGER = 'facebook_messenger', _('Facebook Messenger')
+        TELEGRAM = 'telegram', _('Telegram')
+        TWITTER = 'twitter', _('X (formerly Twitter)')
+        SNAPCHAT = 'snapchat', _('Snapchat')
+        PINTEREST = 'pinterest', _('Pinterest')
+        LINKEDIN = 'linkedin', _('LinkedIn')
+        REDDIT = 'reddit', _('Reddit')
+        DISCORD = 'discord', _('Discord')
+        TUMBLR = 'tumblr', _('Tumblr')
+        THREADS = 'threads', _('Threads')
+        BLUESKY = 'bluesky', _('Bluesky')
+        MASTODON = 'mastodon', _('Mastodon')
+        OTHER = "other", _("Other")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    platform = models.OneToOneField(
+        Platform, on_delete=models.SET_NULL, related_name="social_platform", blank=True, null=True
+    )
+    type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 # class Profile(SoftDeleteModel):
 #     class Gender(models.TextChoices):

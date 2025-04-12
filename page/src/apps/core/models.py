@@ -1,4 +1,5 @@
 import uuid
+from enum import unique
 from typing import Optional
 
 from django.contrib.auth.models import AbstractUser
@@ -384,13 +385,13 @@ class Platform(SoftDeleteModel):
         OTHER = "other", _("Other")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
     slug = models.SlugField(max_length=128, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    website_url = models.ForeignKey(Url, on_delete=models.SET_NULL, blank=True, null=True)
+    type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
+    url = models.OneToOneField(Url, on_delete=models.SET_NULL, related_name="platform", blank=True, null=True)
     logo = models.ImageField(upload_to="platform_logos/", blank=True, null=True)
     founded_date = models.DateField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

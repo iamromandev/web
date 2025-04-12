@@ -335,6 +335,7 @@ class Url(SoftDeleteModel):
         BLOG = 'blog', _('Blog')
         WEBSITE = 'website', _('Website')
         SOCIAL_MEDIA = 'social_media', _('Social Media')
+        OTHER = "other", _("Other")
         # FACEBOOK = 'facebook', _('Facebook')
         # TWITTER = 'twitter', _('Twitter')
         # LINKEDIN = 'linkedin', _('LinkedIn')
@@ -359,43 +360,44 @@ class Url(SoftDeleteModel):
     def __str__(self):
         return f"[URL: {self.url}]"
 
-# class Platform(SoftDeleteModel):
-#     class Type(models.TextChoices):
-#         SOCIAL_MEDIA = 'SOCIAL_MEDIA', _('Social Networking (e.g., Facebook, Instagram)')
-#         STREAMING = 'streaming', _('Video/Audio Streaming (e.g., YouTube, Netflix)')
-#         MESSAGING = 'messaging', _('Instant Messaging (e.g., WhatsApp, Telegram)')
-#         BLOGGING = 'blogging', _('Content Publishing (e.g., Medium, WordPress)')
-#         FORUMS = 'forums', _('Community Discussion (e.g., Reddit, Quora)')
-#         GAMING = 'gaming', _('Video Game Platforms (e.g., Steam, PlayStation)')
-#         ECOMMERCE = 'ecommerce', _('Online Shopping (e.g., Amazon, Shopify)')
-#         BUSINESS = 'business', _('Workplace Tools (e.g., Slack, Salesforce)')
-#         EDUCATION = 'education', _('Learning Environments (e.g., Coursera, Moodle)')
-#         ENTERTAINMENT = 'entertainment', _('Media Consumption (e.g., Spotify, Netflix)')
-#         DEVELOPER = 'developer', _('Software Development (e.g., GitHub, AWS)')
-#         HEALTH_FITNESS = 'health_fitness', _('Wellness and Fitness (e.g., Fitbit, Calm)')
-#         FINANCIAL = 'financial', _('Financial Management (e.g., PayPal, Robinhood)')
-#         CROWDFUNDING = 'crowdfunding', _('Fundraising Platforms (e.g., Kickstarter)')
-#         TRAVEL_BOOKING = 'travel_booking', _('Travel Services (e.g., Expedia, Airbnb)')
-#         REAL_ESTATE = 'real_estate', _('Property Listings (e.g., Zillow, Realtor.com)')
-#         DATING = 'dating', _('Online Dating (e.g., Tinder, Bumble)')
-#         NEWS_AGGREGATOR = 'news_aggregator', _('News Collection (e.g., Flipboard, Feedly)')
-#         OTHER = "other", _("Other")
-#
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
-#     slug = models.SlugField(max_length=128, unique=True, blank=False, null=False)
-#     type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
-#     description = models.TextField(blank=True, null=True)
-#     website = models.URLField(blank=True, null=True)
-#     logo = models.ImageField(upload_to="platform_logos/", blank=True, null=True)
-#     founded_date = models.DateField(blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-#     def __str__(self):
-#         return f"[Platform: {self.name}, {self.type}]"
-#
-#     class Meta:
-#         ordering = ["name"]
-#         verbose_name = _("Platform")
-#         verbose_name_plural = _("Platforms")
+
+class Platform(SoftDeleteModel):
+    class Type(models.TextChoices):
+        SOCIAL_MEDIA = 'SOCIAL_MEDIA', _('Social Networking (e.g., Facebook, Instagram)')
+        STREAMING = 'streaming', _('Video/Audio Streaming (e.g., YouTube, Netflix)')
+        MESSAGING = 'messaging', _('Instant Messaging (e.g., WhatsApp, Telegram)')
+        BLOGGING = 'blogging', _('Content Publishing (e.g., Medium, WordPress)')
+        FORUMS = 'forums', _('Community Discussion (e.g., Reddit, Quora)')
+        GAMING = 'gaming', _('Video Game Platforms (e.g., Steam, PlayStation)')
+        ECOMMERCE = 'ecommerce', _('Online Shopping (e.g., Amazon, Shopify)')
+        BUSINESS = 'business', _('Workplace Tools (e.g., Slack, Salesforce)')
+        EDUCATION = 'education', _('Learning Environments (e.g., Coursera, Moodle)')
+        ENTERTAINMENT = 'entertainment', _('Media Consumption (e.g., Spotify, Netflix)')
+        DEVELOPER = 'developer', _('Software Development (e.g., GitHub, AWS)')
+        HEALTH_FITNESS = 'health_fitness', _('Wellness and Fitness (e.g., Fitbit, Calm)')
+        FINANCIAL = 'financial', _('Financial Management (e.g., PayPal, Robinhood)')
+        CROWDFUNDING = 'crowdfunding', _('Fundraising Platforms (e.g., Kickstarter)')
+        TRAVEL_BOOKING = 'travel_booking', _('Travel Services (e.g., Expedia, Airbnb)')
+        REAL_ESTATE = 'real_estate', _('Property Listings (e.g., Zillow, Realtor.com)')
+        DATING = 'dating', _('Online Dating (e.g., Tinder, Bumble)')
+        NEWS_AGGREGATOR = 'news_aggregator', _('News Collection (e.g., Flipboard, Feedly)')
+        OTHER = "other", _("Other")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
+    name = models.CharField(max_length=128, unique=True, blank=False, null=False)
+    slug = models.SlugField(max_length=128, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    website_url = models.ForeignKey(Url, on_delete=models.SET_NULL, blank=True, null=True)
+    logo = models.ImageField(upload_to="platform_logos/", blank=True, null=True)
+    founded_date = models.DateField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"[Platform: {self.name}, {self.type}]"
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("Platform")
+        verbose_name_plural = _("Platforms")

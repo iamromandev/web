@@ -257,13 +257,13 @@ class Location(SoftDeleteModel):
     def get_location_type_display(self) -> Optional[str]:
         return Location.LocationType.choices.get(self.type, self.type)
 
-    def __str__(self):
-        return f"[Location: {self.name}, {self.location}]"
-
     class Meta:
         ordering = ["name"]
         verbose_name = _("Location")
         verbose_name_plural = _("Locations")
+
+    def __str__(self):
+        return f"[Location: {self.name}, {self.location}]"
 
 
 class Address(SoftDeleteModel):
@@ -296,13 +296,13 @@ class Address(SoftDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"[Address: {self.name}, {self.location}]"
-
     class Meta:
         ordering = ["address_line_1"]
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
+
+    def __str__(self):
+        return f"[Address: {self.name}, {self.location}]"
 
 
 class Url(SoftDeleteModel):
@@ -348,13 +348,14 @@ class Url(SoftDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"[URL: {self.url}]"
-
     class Meta:
         ordering = ["url"]
         verbose_name = _("URL")
         verbose_name_plural = _("URLs")
+
+    def __str__(self):
+        return f"[URL: {self.url}]"
+
 
 class Platform(SoftDeleteModel):
     class Type(models.TextChoices):
@@ -394,10 +395,10 @@ class Platform(SoftDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"[Platform: {self.name}, {self.type}]"
-
     class Meta:
         ordering = ["name"]
         verbose_name = _("Platform")
         verbose_name_plural = _("Platforms")
+
+    def __str__(self):
+        return f"[Platform: {self.name}, {self.type}]"

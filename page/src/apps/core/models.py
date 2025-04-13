@@ -337,11 +337,6 @@ class Url(SoftDeleteModel):
         WEBSITE = 'website', _('Website')
         SOCIAL_MEDIA = 'social_media', _('Social Media')
         OTHER = "other", _("Other")
-        # FACEBOOK = 'facebook', _('Facebook')
-        # TWITTER = 'twitter', _('Twitter')
-        # LINKEDIN = 'linkedin', _('LinkedIn')
-        # DISCORD = 'discord', _('Discord')
-        # YOUTUBE = 'youtube', _('YouTube')
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     url = models.URLField(unique=True, blank=False, null=False)
@@ -353,14 +348,13 @@ class Url(SoftDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"[URL: {self.url}]"
+
     class Meta:
         ordering = ["url"]
         verbose_name = _("URL")
         verbose_name_plural = _("URLs")
-
-    def __str__(self):
-        return f"[URL: {self.url}]"
-
 
 class Platform(SoftDeleteModel):
     class Type(models.TextChoices):
@@ -388,7 +382,12 @@ class Platform(SoftDeleteModel):
     name = models.CharField(max_length=128, unique=True, blank=False, null=False)
     slug = models.SlugField(max_length=128, blank=True, null=True)
     type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
-    url = models.OneToOneField(Url, on_delete=models.SET_NULL, related_name="platform", blank=True, null=True)
+    base_url = models.OneToOneField(
+        Url, on_delete=models.SET_NULL, related_name="base_platform", blank=True, null=True
+    )
+    url = models.OneToOneField(
+        Url, on_delete=models.SET_NULL, related_name="platform", blank=True, null=True
+    )
     logo = models.ImageField(upload_to="platform_logos/", blank=True, null=True)
     founded_date = models.DateField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)

@@ -29,12 +29,12 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
         }
 
-    def validate(self, attrs) -> dict:
+    def validate(self, attrs: dict) -> dict:
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
         return attrs
 
-    def create(self, validated_data) -> User:
+    def create(self, validated_data: dict) -> User:
         validated_data.pop('password2')
         user = User(**validated_data)
         user.set_password(validated_data['password'])

@@ -1,10 +1,10 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.models import User
 
 from .serializers import RegistrationSerializer
+from .services.auth_service import AuthService
 
 
 class RegistrationApi(generics.CreateAPIView):
@@ -15,13 +15,14 @@ class RegistrationApi(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        #user = self.perform_create(serializer)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            },
-            status=status.HTTP_201_CREATED
-        )
+        try:
+            data = AuthService.register(**serializer.validated_data)
+            return Response(
+                data,
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )

@@ -4,29 +4,26 @@ from rest_framework import serializers
 from apps.core.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True, required=True, validator=[validate_password]
-    )
+class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(
-        write_only=True, required=True
+        style={"input_type": "password"},
+        write_only=True,
+        required=True,
+        validators=[validate_password]
     )
 
     class Meta:
         model = User
         fields = (
-            'id',
+            "id",
             'username',
             'email',
-            'first_name',
-            'last_name',
             'password',
             'password2',
         )
         extra_kwargs = {
             'email': {'required': True},
-            'first_name': {'required': False},
-            'last_name': {'required': False},
+            'password': {'write_only': True},
         }
 
     def validate(self, attrs: dict) -> dict:

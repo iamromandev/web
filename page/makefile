@@ -1,8 +1,16 @@
 # system
+.PHONY: clean-system
+clean-system:
+	docker system prune -a --force
+
+.PHONY: clean-db
+clean-db:
+	docker volume prune --all --force
+
 .PHONY: clean
 clean:
-	docker system prune -a --force
-	docker volume prune --all --force
+	make clean-system
+	make clean-db
 
 .PHONY: ps
 ps:
@@ -11,7 +19,7 @@ ps:
 # local
 .PHONY: build
 build:
-	docker compose -f docker-compose.yml build
+	COMPOSE_BAKE=true docker compose -f docker-compose.yml build
 
 .PHONY: up
 up:

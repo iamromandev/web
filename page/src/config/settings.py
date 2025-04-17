@@ -214,16 +214,17 @@ AUTHENTICATION_BACKENDS = [
 
 # rest framework
 REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
-    "DEFAULT_AUTHENTICATION_CLASSES": (
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
         # "rest_framework.authentication.BasicAuthentication",
         # "rest_framework.authentication.SessionAuthentication",
         # "rest_framework.authentication.TokenAuthentication",
         # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
+        "rest_framework_simplejwt.authentication.JWTAuthentication"
+    ],
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        #"rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly"
     ),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",

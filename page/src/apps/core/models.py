@@ -10,13 +10,13 @@ from django_softdelete.models import SoftDeleteModel
 from taggit.models import GenericUUIDTaggedItemBase, TaggedItemBase
 
 
-class Tag(SoftDeleteModel, GenericUUIDTaggedItemBase, TaggedItemBase):
+class Tag(GenericUUIDTaggedItemBase, TaggedItemBase, SoftDeleteModel):
     class Meta:
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
 
 
-class User(SoftDeleteModel, AbstractUser):
+class User(AbstractUser, SoftDeleteModel):
     # Django's AbstractUser already includes the following fields by default:
     # - id (AutoField, primary key)
     # - password
@@ -35,6 +35,8 @@ class User(SoftDeleteModel, AbstractUser):
 
     class Meta:
         ordering = ["username"]
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
 
     def __str__(self) -> str:
         return f"[User: {self.username} {self.email}]"
@@ -59,7 +61,7 @@ class Source(SoftDeleteModel):
         return f"[Source: {self.type}, {self.subtype}, {self.origin}, {self.source}]"
 
 
-class State(models.Model):
+class State(SoftDeleteModel):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     ref = models.UUIDField(editable=False, blank=False, null=False)
     source = models.ForeignKey(
@@ -350,11 +352,11 @@ class Url(SoftDeleteModel):
 
     class Meta:
         ordering = ["url"]
-        verbose_name = _("URL")
-        verbose_name_plural = _("URLs")
+        verbose_name = _("Url")
+        verbose_name_plural = _("Urls")
 
     def __str__(self):
-        return f"[URL: {self.url}]"
+        return f"[Url: {self.url}]"
 
 
 class Platform(SoftDeleteModel):

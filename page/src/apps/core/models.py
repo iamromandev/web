@@ -10,13 +10,13 @@ from django_softdelete.models import SoftDeleteModel
 from taggit.models import GenericUUIDTaggedItemBase, TaggedItemBase
 
 
-class Tag(SoftDeleteModel, GenericUUIDTaggedItemBase, TaggedItemBase):
+class Tag(GenericUUIDTaggedItemBase, TaggedItemBase, SoftDeleteModel):
     class Meta:
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
 
 
-class User(SoftDeleteModel, AbstractUser):
+class User(AbstractUser, SoftDeleteModel):
     # Django's AbstractUser already includes the following fields by default:
     # - id (AutoField, primary key)
     # - password

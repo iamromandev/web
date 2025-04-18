@@ -82,7 +82,7 @@ INSTALLED_APPS = [
     ## apps
     "apps.core",
     "apps.home",
-    #"apps.account",
+    "apps.account",
 ]
 
 MIDDLEWARE = [

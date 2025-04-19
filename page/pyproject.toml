@@ -6,7 +6,7 @@ authors = [
     { name = "Roman", email = "iamromandev@gmail.com" }
 ]
 readme = "README.md"
-requires-python = "==3.9.21"
+requires-python = "==3.13.2"
 dependencies = [
     ## reserved packages
     # for namecheap host issue

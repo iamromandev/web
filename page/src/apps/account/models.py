@@ -8,7 +8,7 @@ from django_softdelete.models import SoftDeleteModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 from apps.core.models import Address, Code, Language, Platform, Url, User
-from apps.core.time_utils import TimezoneChoices
+from apps.core.utils.time_utils import TimezoneChoices
 
 
 class SocialPlatform(SoftDeleteModel):

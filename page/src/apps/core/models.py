@@ -1,5 +1,4 @@
 import uuid
-from enum import unique
 from typing import Optional
 
 from django.contrib.auth.models import AbstractUser

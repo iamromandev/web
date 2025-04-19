@@ -44,7 +44,6 @@ dependencies = [
     #"libretranslatepy (==2.1.3)",
     # "django-imagekit (==4.1.0)",
     "django-phonenumber-field[phonenumbers] (==8.0.0)",
-    "django-timezone-field (==7.1)",
     "django-avatar (==8.0.1)",
 ]
 

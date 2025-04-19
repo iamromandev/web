@@ -16,15 +16,18 @@ from ..repos.user_repo import UserRepo
 
 
 class AuthService:
-    @staticmethod
+
+    def __init__(self, user_repo: Optional[UserRepo] = None):
+        self.user_repo = user_repo or UserRepo()
+
     def register(
-        request: Request,
+        self, request: Request,
         username: str, email: str, password: str, password2: str
     ) -> dict:
         if password != password2:
             return {"error": "Passwords do not match"}
 
-        user = UserRepo.create_user(username, email, password)
+        user = self.user_repo.create_user(username, email, password)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         verification_url = request.build_absolute_uri(

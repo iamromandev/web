@@ -10,7 +10,7 @@ requires-python = "==3.13.2"
 dependencies = [
     ## reserved packages
     # for namecheap host issue
-    "requests (==2.29.0)",
+   # "requests (==2.29.0)",
     ## end reserved packages
     ## core
     # must be installed for TokenAuthentication

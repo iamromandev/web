@@ -77,7 +77,6 @@ INSTALLED_APPS = [
     # 'theme',
     # "imagekit",
     "phonenumber_field",
-    "timezone_field",
     "avatar",
     ## apps
     "apps.core",

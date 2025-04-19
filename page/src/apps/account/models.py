@@ -6,7 +6,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_softdelete.models import SoftDeleteModel
 from phonenumber_field.modelfields import PhoneNumberField
-from timezone_field import TimeZoneField
 
 from apps.core.models import Address, Code, Language, Platform, Url, User
 from apps.core.time_utils import TimezoneChoices
@@ -104,7 +103,9 @@ class Profile(SoftDeleteModel):
     )
 
     social_platforms = models.ManyToManyField(SocialPlatform, related_name="profiles", blank=True)
-    timezone = TimeZoneField(choices=TimezoneChoices.get_choices(), default="UTC", blank=True, null=True)
+    timezone = models.CharField(
+        max_length=128, choices=TimezoneChoices.get_choices(), default="UTC", blank=True, null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

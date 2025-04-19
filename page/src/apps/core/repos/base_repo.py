@@ -1,6 +1,6 @@
+import uuid
 from abc import ABC
-from typing import Any, Generic, Optional, TypeVar
-from uuid import UUID
+from typing import Any, Generic, Optional, TypeVar, Union
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
@@ -14,33 +14,33 @@ class BaseRepo(ABC, Generic[_T]):
     def __init__(self, model: type[_T]):
         self.model = model
 
-    def get_all(self) -> list[_T]:
-        return list(self.model.objects.all())
-
-    def get_by_id(self, id: UUID) -> Optional[_T]:
+    def get_by_pk(self, pk: Union[str, uuid.UUID]) -> Optional[_T]:
         try:
-            return self.model.objects.get(id=id)
+            return self.model.objects.get(pk=pk)
         except ObjectDoesNotExist:
             return None
+
+    def get_all(self) -> list[_T]:
+        return list(self.model.objects.all())
 
     def create(self, **kwargs: Any) -> _T:
         return self.model.objects.create(**kwargs)
 
-
-    def update(self, id: UUID, **kwargs: Any) -> Optional[_T]:
-        instance = self.get_by_id(id)
-        if instance:
-            for attr, value in kwargs.items():
-                setattr(instance, attr, value)
-            instance.save()
-            return instance
+    def update(self, instance: _T, **kwargs: Any) -> _T:
+        for attr, value in kwargs.items():
+            setattr(instance, attr, value)
+        instance.save()
         return None
+
+    def update_by_pk(self, pk: Union[str, uuid.UUID], **kwargs: Any) -> Optional[_T]:
+        instance = self.get_by_pk(pk)
+        return self.update(instance, **kwargs) if instance else None
 
     def delete(self, instance: _T) -> None:
         instance.delete()
 
-    def delete_by_id(self, id: UUID) -> bool:
-        instance = self.get_by_id(id)
+    def delete_by_id(self, pk: Union[str, uuid.UUID]) -> bool:
+        instance = self.get_by_pk(pk)
         if instance:
             instance.delete()
             return True

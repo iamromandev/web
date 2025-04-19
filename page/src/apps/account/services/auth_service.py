@@ -5,8 +5,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework.request import Request
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -26,6 +26,24 @@ class AuthService:
         self.user_repo = user_repo or UserRepo()
         self.profile_repo = profile_repo or ProfileRepo()
 
+    def _create_verification_pkb64_token(self, user: User) -> tuple[str, str]:
+        pk_bytes = force_bytes(user.pk)
+        pkb64 = urlsafe_base64_encode(pk_bytes)
+        token = default_token_generator.make_token(user)
+        return pkb64, token
+
+    def _restore_pk(self, pkb64: str) -> str:
+        pk_bytes = urlsafe_base64_decode(pkb64)
+        pk = force_str(pk_bytes)
+        return pk
+
+    def _create_verification_url(self, request: Request, user: User) -> str:
+        pkb64, token = self._create_verification_pkb64_token(user)
+        verification_url = request.build_absolute_uri(
+            reverse("verify_email", kwargs={"pkb64": pkb64, "token": token})
+        )
+        return verification_url
+
     def register(
         self, request: Request,
         username: str, email: str, password: str, password2: str
@@ -39,11 +57,7 @@ class AuthService:
             password=password
         )
         self.profile_repo.create(user=user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-        verification_url = request.build_absolute_uri(
-            reverse("verify_email", kwargs={"uidb64": uid, "token": token})
-        )
+        verification_url = self._create_verification_url(request, user)
         send_mail(
             subject="Verify your email",
             message=f"Click the link to verify your email: {verification_url}",
@@ -58,6 +72,22 @@ class AuthService:
             'detail': 'Registration successful. '
                       'Please check your email to verify your account.'
         }
+
+    def verify_email(
+        self, pkb64: str, token: str
+    ) -> dict:
+        try:
+            pk = self._restore_pk(pkb64)
+            user = self.user_repo.get_by_pk(pk)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user and default_token_generator.check_token(user, token):
+            #user.is_email_verified = True
+            #user.save()
+            return {"detail": "Email verified successfully"}
+        else:
+            return {"error": "Invalid verification link"}
 
     @staticmethod
     def login(

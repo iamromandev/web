@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from loguru import logger
 from rest_framework import generics, permissions, status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -20,24 +21,8 @@ from .services.auth_service import AuthService
 
 class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
-    queryset = None # User.objects.all()
+    queryset = None  # User.objects.all()
     serializer_class = RegistrationSerializer
-
-    # def perform_create(self, serializer):
-    #     user = serializer.save()
-    #     token = default_token_generator.make_token(user)
-    #     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    #     verification_url = self.request.build_absolute_uri(
-    #         reverse("verify_email", kwargs={"uidb64": uid, "token": token})
-    #     )
-    #     send_mail(
-    #         subject="Verify your email",
-    #         message=f"Click the link to verify your email: {verification_url}",
-    #         from_email=settings.DEFAULT_FROM_EMAIL,
-    #         recipient_list=[user.email],
-    #         fail_silently=False,
-    #     )
-    #     return user
 
     def post(self, request, *args, **kwargs):
         logger.debug(f"Calling Registration POST: {request.data}")
@@ -58,14 +43,16 @@ class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        # self.perform_create(serializer)
-        # return Response(
-        #     {
-        #         'detail': 'Registration successful. '
-        #                   'Please check your email to verify your account.'
-        #     },
-        #     status=status.HTTP_201_CREATED
-        # )
+
+class VerifyEmailView(InjectAuthServiceMixin, generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request: Request, pkb64: str, token: str) -> Response:
+        self.auth_service.verify_email(pkb64, token)
+        return Response(
+            {'detail': 'Email verified successfully.'},
+            status=status.HTTP_200_OK
+        )
 
 
 class LoginView(TokenObtainPairView):
@@ -82,32 +69,6 @@ class LoginView(TokenObtainPairView):
             {'error': 'Invalid credentials'},
             status=status.HTTP_401_UNAUTHORIZED
         )
-
-
-class VerifyEmailView(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-
-    def get(self, request, uidb64, token):
-        pass
-        # try:
-        #     #uid = force_str(urlsafe_base64_decode(uidb64))
-        #     #user = User.objects.get(pk=uid)
-        # except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        #     user = None
-        #
-        # if user is not None and default_token_generator.check_token(user, token):
-        #     # user.is_email_verified = True
-        #     user.is_active = True
-        #     user.save()
-        #     return Response(
-        #         {'detail': 'Email verified successfully. You can now log in.'},
-        #         status=status.HTTP_200_OK
-        #     )
-        # else:
-        #     return Response(
-        #         {'detail': 'Invalid or expired verification link.'},
-        #         status=status.HTTP_400_BAD_REQUEST
-        #     )
 
 
 class ProtectedView(generics.RetrieveAPIView):

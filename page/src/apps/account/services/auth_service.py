@@ -12,13 +12,19 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.models import User
 
+from ..repos.profile_repo import ProfileRepo
 from ..repos.user_repo import UserRepo
 
 
 class AuthService:
 
-    def __init__(self, user_repo: Optional[UserRepo] = None):
+    def __init__(
+        self,
+        user_repo: Optional[UserRepo] = None,
+        profile_repo: Optional[ProfileRepo] = None,
+    ):
         self.user_repo = user_repo or UserRepo()
+        self.profile_repo = profile_repo or ProfileRepo()
 
     def register(
         self, request: Request,
@@ -27,7 +33,12 @@ class AuthService:
         if password != password2:
             return {"error": "Passwords do not match"}
 
-        user = self.user_repo.create_user(username, email, password)
+        user = self.user_repo.create(
+            username=username,
+            email=email,
+            password=password
+        )
+        self.profile_repo.create(user=user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         verification_url = request.build_absolute_uri(

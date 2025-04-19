@@ -12,13 +12,11 @@ class UserRepo(BaseRepo[User]):
     def create_user(
         self, username: str, email: str, password: str
     ) -> User:
-        user = User(
+        user = super().create(
             username=username,
             email=email,
             password=password
         )
-        user.set_password(password)
-        user.save()
         return user
 
     @staticmethod

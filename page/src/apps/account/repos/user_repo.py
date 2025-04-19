@@ -1,12 +1,16 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from apps.core.models import User
+from apps.core.repos.base_repo import BaseRepo
 
 
-class UserRepo:
-    @staticmethod
+class UserRepo(BaseRepo[User]):
+
+    def __init__(self):
+        super().__init__(User)
+
     def create_user(
-        username: str, email: str, password: str
+        self, username: str, email: str, password: str
     ) -> User:
         user = User(
             username=username,

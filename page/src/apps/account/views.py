@@ -13,13 +13,14 @@ from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
 
 from .constants import REGISTRATION_DATA_FIELDS
+from .mixins import InjectAuthServiceMixin
 from .serializers import RegistrationSerializer
 from .services.auth_service import AuthService
 
 
-class RegistrationView(generics.CreateAPIView):
+class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
-    queryset = User.objects.all()
+    queryset = None # User.objects.all()
     serializer_class = RegistrationSerializer
 
     # def perform_create(self, serializer):
@@ -46,9 +47,12 @@ class RegistrationView(generics.CreateAPIView):
         try:
             data = get_sub_dict(serializer.validated_data, REGISTRATION_DATA_FIELDS)
             logger.debug(f"Registration Data: {data}")
-            data = AuthService.register(self.request, **data)
+            data = self.auth_service.register(
+                self.request, **data
+            )
             return Response(data, status=status.HTTP_201_CREATED)
-        except Exception:
+        except Exception as error:
+            logger.error(f"Registration Error: {error}")
             return Response(
                 {'error': 'An unexpected error occurred during registration.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

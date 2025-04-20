@@ -54,11 +54,8 @@ class VerifyEmailView(InjectAuthServiceMixin, generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request: Request, pkb64: str, token: str) -> Response:
-        self.auth_service.verify_email(pkb64, token)
-        return Response(
-            {'detail': 'Email verified successfully.'},
-            status=status.HTTP_200_OK
-        )
+        response = self.auth_service.verify_email(pkb64, token)
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class LoginView(InjectAuthServiceMixin, generics.GenericAPIView):

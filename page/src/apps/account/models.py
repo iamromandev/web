@@ -158,3 +158,8 @@ class Verification(SoftDeleteModel):
 
     def __str__(self):
         return f"[Verification: {self.user.username}, {self.type}]"
+
+    @property
+    def is_verified(self) -> bool:
+        return self.status == Verification.Status.VERIFIED
+

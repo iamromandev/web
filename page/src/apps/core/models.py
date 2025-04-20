@@ -108,6 +108,7 @@ class Code(SoftDeleteModel):
         COLOR = "color", _("Color Code")
         POSTAL = "postal", _("Postal Code")
         INTERNAL = "internal", _("Internal Code")
+        VERIFICATION = "verification", _("Verification Code")
         ISO_3166_1_ALPHA2 = "iso_alpha2", _("ISO 3166-1 Alpha-2")
         ISO_3166_1_ALPHA3 = "iso_alpha3", _("ISO 3166-1 Alpha-3")
         ISO_3166_1_NUMERIC = "iso_numeric", _("ISO 3166-1 Numeric")
@@ -304,7 +305,6 @@ class Address(SoftDeleteModel):
 
     def __str__(self):
         return f"[Address: {self.name}, {self.location}]"
-
 
 class Url(SoftDeleteModel):
     class Type(models.TextChoices):

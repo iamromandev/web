@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from loguru import logger
 from rest_framework.request import Request
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -54,8 +55,8 @@ class AuthService:
         if password != password2:
             return {"error": "Passwords do not match"}
 
-        if self.user_repo.exists(email=email):
-            raise ValueError("Email address already exists.")
+        #if self.user_repo.exists(email=email):
+        #    raise ValueError("Email address already exists.")
 
         user: User = self.user_repo.create(
             username=username,
@@ -93,14 +94,22 @@ class AuthService:
             pk = self._restore_pk(pkb64)
             user = self.user_repo.get_by_pk(pk)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            logger.error("Invalid verification link")
             user = None
 
         if user and default_token_generator.check_token(user, token):
-            #user.is_email_verified = True
-            #user.save()
-            return {"detail": "Email verified successfully"}
-        else:
-            return {"error": "Invalid verification link"}
+            verification: Optional[Verification] = self.verification_repo.get_by_user(user)
+            if verification and verification.is_verified:
+                logger.info(f"User {user.email} already verified.")
+                return {"detail": "Email already verified"}
+            else:
+                self.verification_repo.update(
+                    verification,
+                    status=Verification.Status.VERIFIED
+                )
+                return {"detail": "Email verified successfully"}
+
+        return {"error": "Invalid verification link"}
 
     @staticmethod
     def login(

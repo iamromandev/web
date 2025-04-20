@@ -2,11 +2,15 @@ from typing import Optional
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.http import (
+    urlsafe_base64_decode,
+    urlsafe_base64_encode,
+)
 from loguru import logger
 from rest_framework.request import Request
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -55,13 +59,14 @@ class AuthService:
         if password != password2:
             return {"error": "Passwords do not match"}
 
-        #if self.user_repo.exists(email=email):
+        # if self.user_repo.exists(email=email):
         #    raise ValueError("Email address already exists.")
 
         user: User = self.user_repo.create(
             username=username,
             email=email,
-            password=password
+            password=make_password(password),
+            is_active=False,
         )
         self.profile_repo.create(user=user)
         self.verification_repo.create(
@@ -98,6 +103,7 @@ class AuthService:
             user = None
 
         if user and default_token_generator.check_token(user, token):
+            self.user_repo.update(user, is_active=True)
             verification: Optional[Verification] = self.verification_repo.get_by_user(user)
             if verification and verification.is_verified:
                 logger.info(f"User {user.email} already verified.")
@@ -111,18 +117,26 @@ class AuthService:
 
         return {"error": "Invalid verification link"}
 
-    @staticmethod
     def login(
-        username: str, password: str
+        self, username: str, password: str
     ) -> dict:
+        # Check if the user exists and is active
         user: Optional[User] = authenticate(username=username, password=password)
+        logger.info(f"User {user} attempted to log in.")
         if not user:
             return {"error": "User not found"}
 
         if not user.check_password(password):
             return {"error": "Invalid password"}
 
+        verification: Optional[Verification] = self.verification_repo.get_by_user(user)
+        if not verification or not verification.is_verified:
+            return {"error": "Email not verified"}
+        
+        refresh = RefreshToken.for_user(user)
+        logger.info(f"User {user.username} logged in successfully.")
         return {
-            "refresh": "str(refresh)",
-            "access": "str(refresh.access_token)",
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'detail': 'Login successful.'
         }

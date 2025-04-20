@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -13,10 +15,9 @@ from rest_framework_simplejwt.views import (
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
 
-from .constants import REGISTRATION_DATA_FIELDS
+from .constants import LOGIN_DATA_FIELDS, REGISTRATION_DATA_FIELDS
 from .mixins import InjectAuthServiceMixin
-from .serializers import RegistrationSerializer
-from .services.auth_service import AuthService
+from .serializers import LoginSerializer, RegistrationSerializer
 
 
 class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
@@ -24,7 +25,7 @@ class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     queryset = None  # User.objects.all()
     serializer_class = RegistrationSerializer
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         logger.debug(f"Calling Registration POST: {request.data}")
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
@@ -60,20 +61,21 @@ class VerifyEmailView(InjectAuthServiceMixin, generics.GenericAPIView):
         )
 
 
-class LoginView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
+class LoginView(InjectAuthServiceMixin, generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = LoginSerializer
+
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        login_data = AuthService.login(
-            username=request.data['username'],
-            password=request.data['password']
-        )
-        if login_data:
-            return Response(login_data)
-        return Response(
-            {'error': 'Invalid credentials'},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
+        if not serializer.is_valid():
+            logger.warning(f"Login data invalid: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = get_sub_dict(serializer.validated_data, LOGIN_DATA_FIELDS)
+        logger.debug(f"Login Data: {data}")
+        login_data = self.auth_service.login(**data)
+
+        return Response(login_data, status=status.HTTP_200_OK)
 
 
 class ProtectedView(generics.RetrieveAPIView):

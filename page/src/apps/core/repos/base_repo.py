@@ -23,6 +23,12 @@ class BaseRepo(ABC, Generic[_T]):
     def get_all(self) -> list[_T]:
         return list(self.model.objects.all())
 
+    def exists(self, **kwargs: Any) -> bool:
+        return self.model.objects.filter(**kwargs).exists()
+
+    def filter(self, **kwargs: Any) -> list[_T]:
+        return list(self.model.objects.filter(**kwargs))
+
     def create(self, **kwargs: Any) -> _T:
         return self.model.objects.create(**kwargs)
 

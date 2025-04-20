@@ -12,8 +12,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.models import User
 
+from ..models import Verification
 from ..repos.profile_repo import ProfileRepo
 from ..repos.user_repo import UserRepo
+from ..repos.verification_repo import VerificationRepo
 
 
 class AuthService:
@@ -22,9 +24,11 @@ class AuthService:
         self,
         user_repo: Optional[UserRepo] = None,
         profile_repo: Optional[ProfileRepo] = None,
+        verification_repo: Optional[VerificationRepo] = None,
     ):
         self.user_repo = user_repo or UserRepo()
         self.profile_repo = profile_repo or ProfileRepo()
+        self.verification_repo = verification_repo or VerificationRepo()
 
     def _create_verification_pkb64_token(self, user: User) -> tuple[str, str]:
         pk_bytes = force_bytes(user.pk)
@@ -45,19 +49,28 @@ class AuthService:
         return verification_url
 
     def register(
-        self, request: Request,
-        username: str, email: str, password: str, password2: str
+        self, request: Request, username: str, email: str, password: str, password2: str
     ) -> dict:
         if password != password2:
             return {"error": "Passwords do not match"}
 
-        user = self.user_repo.create(
+        if self.user_repo.exists(email=email):
+            raise ValueError("Email address already exists.")
+
+        user: User = self.user_repo.create(
             username=username,
             email=email,
             password=password
         )
         self.profile_repo.create(user=user)
+        self.verification_repo.create(
+            user=user,
+            type=Verification.Type.EMAIL,
+            status=Verification.Status.PENDING,
+        )
+
         verification_url = self._create_verification_url(request, user)
+        # TODO - Use a proper email template
         send_mail(
             subject="Verify your email",
             message=f"Click the link to verify your email: {verification_url}",

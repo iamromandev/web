@@ -118,12 +118,18 @@ class Profile(SoftDeleteModel):
         return f"[Profile: {self.display_name}]"
 
 
-class Registration(SoftDeleteModel):
+class Verification(SoftDeleteModel):
     class Type(models.TextChoices):
         EMAIL = 'email', _('Email')
         PHONE = 'phone', _('Phone')
         SOCIAL = 'social', _('Social')
         OTHER = 'other', _('Other')
+
+    class Status(models.TextChoices):
+        PENDING = 'pending', _('Pending')
+        VERIFIED = 'verified', _('Verified')
+        FAILED = 'failed', _('Failed')
+        EXPIRED = 'expired', _('Expired')
 
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4, )
     user = models.OneToOneField(
@@ -134,14 +140,21 @@ class Registration(SoftDeleteModel):
         null=True,
     )
     type = models.CharField(max_length=32, choices=Type.choices, blank=True, null=True)
-    is_verified = models.BooleanField(default=False)
+    status = models.CharField(max_length=32, choices=Status.choices, blank=True, null=True)
+    code = models.OneToOneField(
+        Code,
+        on_delete=models.SET_NULL,
+        related_name="verification",
+        blank=True,
+        null=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["user__username"]
-        verbose_name = _("Registration")
-        verbose_name_plural = _("Registrations")
+        verbose_name = _("Verification")
+        verbose_name_plural = _("Verifications")
 
     def __str__(self):
-        return f"[Registration: {self.user.username if self.user else 'N/A'}]"
+        return f"[Verification: {self.user.username}, {self.type}]"

@@ -27,8 +27,13 @@ class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         logger.debug(f"Calling Registration POST: {request.data}")
         serializer = self.get_serializer(data=request.data)
-        # TODO more control response
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            logger.error(f"Registration Error: {serializer.errors}")
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             data = get_sub_dict(serializer.validated_data, REGISTRATION_DATA_FIELDS)
             logger.debug(f"Registration Data: {data}")

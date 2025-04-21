@@ -55,7 +55,7 @@ class AuthService:
 
     def register(
         self, request: Request, username: str, email: str, password: str, password2: str
-    ) -> dict:
+    ) -> User:
         if password != password2:
             return {"error": "Passwords do not match"}
 
@@ -84,13 +84,7 @@ class AuthService:
             recipient_list=[user.email],
             fail_silently=False,
         )
-        refresh = RefreshToken.for_user(user)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'detail': 'Registration successful. '
-                      'Please check your email to verify your account.'
-        }
+        return user
 
     def verify_email(
         self, pkb64: str, token: str

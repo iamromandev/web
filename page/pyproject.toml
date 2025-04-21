@@ -45,6 +45,7 @@ dependencies = [
     # "django-imagekit (==4.1.0)",
     "django-phonenumber-field[phonenumbers] (==8.0.0)",
     "django-avatar (==8.0.1)",
+    "pytz (==2025.2)",
 ]
 
 [tool.poetry]

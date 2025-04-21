@@ -12,21 +12,27 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
 
+from apps.core.mixins import InjectCoreMixin
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
 
-from .constants import LOGIN_DATA_FIELDS, REGISTRATION_DATA_FIELDS
+from .constants import (
+    LOGIN_DATA_FIELDS,
+    MESSAGE_REGISTRATION_SUCCESS,
+    REGISTRATION_DATA_FIELDS,
+)
 from .mixins import InjectAuthServiceMixin
 from .serializers import LoginSerializer, RegistrationSerializer
 
 
-class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
+class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     queryset = None  # User.objects.all()
     serializer_class = RegistrationSerializer
 
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         logger.debug(f"Calling Registration POST: {request.data}")
+        rb = self.response_builder
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             logger.error(f"Registration Error: {serializer.errors}")
@@ -41,7 +47,8 @@ class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
             data = self.auth_service.register(
                 self.request, **data
             )
-            return Response(data, status=status.HTTP_201_CREATED)
+            rb.set_message(MESSAGE_REGISTRATION_SUCCESS)
+            return rb.build()
         except Exception as error:
             logger.error(f"Registration Error: {error}")
             return Response(

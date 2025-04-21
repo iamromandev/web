@@ -1,6 +1,7 @@
 import math
 from typing import Any, Optional
 
+from loguru import logger
 from rest_framework import response, status
 
 from ..types import ResponseStatus
@@ -32,7 +33,6 @@ class ResponseBuilder:
 
     @staticmethod
     def new(
-        cls,
         status: Optional[ResponseStatus] = None,
         timestamp: Optional[str] = None,
         code: Optional[str] = None,
@@ -100,6 +100,12 @@ class ResponseBuilder:
         return self
 
     def build(self, status_code=status.HTTP_200_OK) -> response.Response:
+        if not self.status:
+            self.status = (
+                ResponseStatus.ERROR
+                if status_code > status.HTTP_226_IM_USED
+                else ResponseStatus.SUCCESS
+            )
         data = {
             "status": self.status.value,
             "timestamp": self.timestamp,
@@ -109,8 +115,11 @@ class ResponseBuilder:
             "details": self.details,
             "meta": self.meta,
         }
+
+        data = {k: v for k, v in data.items() if v not in (None, "", [], {}, ())}
+        logger.info(f"Response Builder Data: {data}")
         return response.Response(
-            {k: v for k, v in data.items() if v not in (None, '', [], {}, ())},
+            data,
             status=status_code,
             headers=self.headers
         )

@@ -31,4 +31,5 @@ select = [
 "*/admin.py" = ["F401"]
 "*/models.py" = ["F401", "E501"]
 "*/views.py" = ["F401"]
+"*/constants.py" = ["E501"]
 "*/tests.py" = ["F401"]

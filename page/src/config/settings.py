@@ -69,10 +69,10 @@ INSTALLED_APPS = [
     # "dj_rest_auth",
     # "dj_rest_auth.registration",
     ## ui
-    "django_bootstrap5",
+    #"django_bootstrap5",
     "django_bootstrap_icons",
-    "crispy_forms",
-    "crispy_bootstrap5",
+    #"crispy_forms",
+    #"crispy_bootstrap5",
     # 'tailwind',
     # 'theme',
     # "imagekit",

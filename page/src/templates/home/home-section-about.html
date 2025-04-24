@@ -1,0 +1,46 @@
+{% block home-section-about %}
+{% load bootstrap_icons %}
+<div id="about" class="container-fluid" style="padding:80px 20px;">
+    <h1 class="text-center text-dark">About</h1>
+    <h4 class="text-secondary">About me</h4>
+    <p>
+        I am a self-taught developer with experience in designing, developing and maintaining software
+        applications.
+        I take into consideration the user experience while writing reusable and efficient code.
+        I passionately combine good design, technology, and innovation in all my projects.
+    </p>
+    <p>
+        Currently, I am focused on the Backend development and DevOps + AI practicing.
+    </p>
+    <br>
+    <h4 class="text-secondary">Technologies and Tools</h4>
+    <div class="row mt-4">
+        <div class="col-sm bg-green">
+            {% custom_icon 'python' size='3em' %}
+        </div>
+        <div class="col-sm bg-green">
+            {% custom_icon 'java' size='3em' %}
+        </div>
+        <div class="col-sm bg-green">
+            {% custom_icon 'kotlin' size='3em' %}
+        </div>
+        <div class="col-sm bg-green">
+            {% custom_icon 'spring' size='3em' %}
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-sm bg-green">
+            {% bs_icon 'git' size='3em' %}
+        </div>
+        <div class="col-sm bg-green">
+            {% bs_icon 'github' size='3em' %}
+        </div>
+        <div class="col-sm bg-green">
+            {% custom_icon 'postman' size='3em' %}
+        </div>
+        <div class="col-sm bg-green">
+            {% custom_icon 'aws' size='3em' %}
+        </div>
+    </div>
+</div>
+{% endblock home-section-about %}

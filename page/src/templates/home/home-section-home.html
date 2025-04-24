@@ -1,0 +1,38 @@
+{% block home-section-home %}
+{% load bootstrap_icons %}
+<div id="home" class="container-fluid" style="padding:100px 20px;">
+    <div class="row">
+        <div class="col-sm d-flex justify-content-center">
+            <div>
+                <h2 class="text-dark">Hi, I am Roman</h2>
+                <h5 class="text-dark">
+                    Software Engineer | Android | Spring | FastAPI | Django | gRPC | Terraform | AWS
+                </h5>
+                <p>
+                    Software Engineer with 10+ years of experience in building mobile and web application.
+                    Dedicated to continuously developing, researching, and adopting new technology to maximize
+                    development efficiency and produce innovative applications.
+                </p>
+
+                I am currently working at
+                <span class="fw-bold">Skipper Hospitality</span> as a <span
+                    class="fw-bold">Senior Software Engineer</span>
+                <br/>
+                <br/>
+                <a href="https://www.linkedin.com/in/iamromandev/">
+                    {% bs_icon 'linkedin' size='2em' %}
+                </a>
+                <a class="ms-2" href="https://github.com/iamromandev">
+                    {% bs_icon 'github' size='2em' %}
+                </a>
+                <a class="ms-2" href="https://stackoverflow.com/users/2791067/roman">
+                    {% bs_icon 'stack-overflow' size='2em' %}
+                </a>
+            </div>
+        </div>
+        <div class="col-sm center-block">
+
+        </div>
+    </div>
+</div>
+{% endblock home-section-home %}

@@ -20,9 +20,10 @@ from .constants import (
     LOGIN_DATA_FIELDS,
     MESSAGE_REGISTRATION_SUCCESS,
     REGISTRATION_DATA_FIELDS,
+    TOKEN_DATA_FIELDS,
 )
 from .mixins import InjectAuthServiceMixin
-from .serializers import LoginSerializer, RegistrationSerializer
+from .serializers import LoginSerializer, RegistrationSerializer, TokenSerializer
 
 
 class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateAPIView):
@@ -80,6 +81,23 @@ class LoginView(InjectAuthServiceMixin, generics.GenericAPIView):
         login_data = self.auth_service.login(**data)
 
         return Response(login_data, status=status.HTTP_200_OK)
+
+
+class TokenView(InjectAuthServiceMixin, generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = TokenSerializer
+
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            logger.warning(f"Token data invalid: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = get_sub_dict(serializer.validated_data, TOKEN_DATA_FIELDS)
+        logger.debug(f"Token Data: {data}")
+        token_data = self.auth_service.token(**data)
+
+        return Response(token_data, status=status.HTTP_200_OK)
 
 
 class ProtectedView(generics.RetrieveAPIView):

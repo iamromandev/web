@@ -126,11 +126,34 @@ class AuthService:
         verification: Optional[Verification] = self.verification_repo.get_by_user(user)
         if not verification or not verification.is_verified:
             return {"error": "Email not verified"}
-        
+
         refresh = RefreshToken.for_user(user)
         logger.info(f"User {user.username} logged in successfully.")
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'detail': 'Login successful.'
+        }
+
+    def token(
+        self, username: str, password: str
+    ) -> dict:
+        # Check if the user exists and is active
+        user: Optional[User] = authenticate(username=username, password=password)
+        logger.info(f"User {user} attempted for token.")
+        if not user:
+            return {"error": "User not found"}
+
+        if not user.check_password(password):
+            return {"error": "Invalid password"}
+
+        verification: Optional[Verification] = self.verification_repo.get_by_user(user)
+        if not verification or not verification.is_verified:
+            return {"error": "Email not verified"}
+
+        refresh = RefreshToken.for_user(user)
+        logger.info(f"User {user.username} logged in successfully.")
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
         }

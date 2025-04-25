@@ -4,19 +4,17 @@
     <div class="row">
         <div class="col-sm d-flex justify-content-center">
             <div>
-                <h2 class="text-dark">Hi, I am Roman</h2>
+                <h2 class="text-dark">{{ user.intro }}</h2>
                 <h5 class="text-dark">
-                    Software Engineer | Android | Spring | FastAPI | Django | gRPC | Terraform | AWS
+                    {{ user.title }}<br/>
                 </h5>
                 <p>
-                    Software Engineer with 10+ years of experience in building mobile and web application.
-                    Dedicated to continuously developing, researching, and adopting new technology to maximize
-                    development efficiency and produce innovative applications.
+                    {{ user.bio }}
                 </p>
 
                 I am currently working at
-                <span class="fw-bold">Skipper Hospitality</span> as a <span
-                    class="fw-bold">Senior Software Engineer</span>
+                <span class="fw-bold">{{ user.current_company }}</span> as a <span
+                    class="fw-bold">{{ user.current_designation }}</span>
                 <br/>
                 <br/>
                 <a href="https://www.linkedin.com/in/iamromandev/">

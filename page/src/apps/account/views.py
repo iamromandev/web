@@ -8,7 +8,6 @@ from loguru import logger
 from rest_framework import generics, permissions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
@@ -26,7 +25,12 @@ from .constants import (
     TOKEN_REFRESH_DATA_FIELDS,
 )
 from .mixins import InjectAuthServiceMixin
-from .serializers import LoginSerializer, RegistrationSerializer, TokenSerializer
+from .serializers import (
+    LoginSerializer,
+    RegistrationSerializer,
+    TokenRefreshSerializer,
+    TokenSerializer,
+)
 
 
 class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateAPIView):

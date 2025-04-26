@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Optional
 
 from django.conf import settings
@@ -13,7 +14,7 @@ from django.utils.http import (
 )
 from loguru import logger
 from rest_framework.request import Request
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from apps.core.models import User
 
@@ -151,9 +152,29 @@ class AuthService:
         if not verification or not verification.is_verified:
             return {"error": "Email not verified"}
 
-        refresh = RefreshToken.for_user(user)
-        logger.info(f"User {user.username} logged in successfully.")
+        refresh_token: RefreshToken = RefreshToken.for_user(user)
+        access_token: AccessToken = refresh_token.access_token
+
+        # time
+        access_expire: Optional[int] = access_token.payload.get("exp")
+        access_iat: Optional[int] = access_token.payload.get("iat")
+
+        refresh_expire: Optional[int] = refresh_token.payload.get("exp")
+        refresh_iat: Optional[int] = refresh_token.payload.get("iat")
+
+        access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=timezone.utc)
+        access_created_at_utc = datetime.fromtimestamp(access_iat, tz=timezone.utc)
+
+        refresh_expires_at_utc: datetime = datetime.fromtimestamp(refresh_expire, tz=timezone.utc)
+        refresh_created_at_utc = datetime.fromtimestamp(refresh_iat, tz=timezone.utc)
+        # TODO - Save tokens to database
+        logger.info(f"User {user.username} token generated.")
+
         return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+            'access_token': str(access_token),
+            'refresh_token': str(refresh_token),
+            'access_expires_at': access_expires_at_utc.isoformat(),
+            'refresh_expires_at': refresh_expires_at_utc.isoformat(),
+            'access_created_at': access_created_at_utc.isoformat(),
+            'refresh_created_at': refresh_created_at_utc.isoformat(),
         }

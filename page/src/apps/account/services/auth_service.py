@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -177,4 +177,23 @@ class AuthService:
             'refresh_expires_at': refresh_expires_at_utc.isoformat(),
             'access_created_at': access_created_at_utc.isoformat(),
             'refresh_created_at': refresh_created_at_utc.isoformat(),
+        }
+
+    def token_refresh(
+        self, data: dict[str, Any]
+    ) -> dict[str, Any]:
+        access_token: AccessToken = AccessToken(data.get("access"))
+        # time
+        access_expire: Optional[int] = access_token.payload.get("exp")
+        access_iat: Optional[int] = access_token.payload.get("iat")
+
+        access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=timezone.utc)
+        access_created_at_utc = datetime.fromtimestamp(access_iat, tz=timezone.utc)
+
+        logger.info(f"Access Token {str(access_token)} generated.")
+
+        return {
+            'access_token': str(access_token),
+            'access_expires_at': access_expires_at_utc.isoformat(),
+            'access_created_at': access_created_at_utc.isoformat(),
         }

@@ -8,9 +8,11 @@ from loguru import logger
 from rest_framework import generics, permissions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
+from rest_framework_simplejwt.views import TokenRefreshView as _TokenRefreshView
 
 from apps.core.mixins import InjectCoreMixin
 from apps.core.models import User
@@ -21,6 +23,7 @@ from .constants import (
     MESSAGE_REGISTRATION_SUCCESS,
     REGISTRATION_DATA_FIELDS,
     TOKEN_DATA_FIELDS,
+    TOKEN_REFRESH_DATA_FIELDS,
 )
 from .mixins import InjectAuthServiceMixin
 from .serializers import LoginSerializer, RegistrationSerializer, TokenSerializer
@@ -98,6 +101,24 @@ class TokenView(InjectAuthServiceMixin, generics.GenericAPIView):
         token_data = self.auth_service.token(**data)
 
         return Response(token_data, status=status.HTTP_200_OK)
+
+
+class TokenRefreshView(InjectAuthServiceMixin, _TokenRefreshView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = TokenRefreshSerializer
+
+    def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            logger.warning(f"Token refresh data invalid: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        data = serializer.validated_data
+        data = get_sub_dict(data, TOKEN_REFRESH_DATA_FIELDS)
+        data = self.auth_service.token_refresh(data)
+
+        logger.debug(f"Token Refresh Data: {data}")
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class ProtectedView(generics.RetrieveAPIView):

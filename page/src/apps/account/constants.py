@@ -11,7 +11,7 @@ TOKEN_DATA_FIELDS: list = [
 ]
 
 TOKEN_REFRESH_DATA_FIELDS: list = [
-    "access"
+    "access_token"
 ]
 
 MESSAGE_REGISTRATION_SUCCESS: str = "Registration successful. Please check your email to verify your account."

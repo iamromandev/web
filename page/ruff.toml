@@ -30,6 +30,7 @@ select = [
 "*/migrations/*.py" = ["E501"]
 "*/admin.py" = ["F401"]
 "*/models.py" = ["F401", "E501"]
+"*/serializers.py" = ["B904"]
 "*/views.py" = ["F401"]
 "*/constants.py" = ["E501"]
 "*/tests.py" = ["F401"]

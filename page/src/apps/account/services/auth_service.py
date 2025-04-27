@@ -180,9 +180,9 @@ class AuthService:
         }
 
     def token_refresh(
-        self, data: dict[str, Any]
+        self, access_token: str
     ) -> dict[str, Any]:
-        access_token: AccessToken = AccessToken(data.get("access"))
+        access_token: AccessToken = AccessToken(access_token)
         # time
         access_expire: Optional[int] = access_token.payload.get("exp")
         access_iat: Optional[int] = access_token.payload.get("iat")

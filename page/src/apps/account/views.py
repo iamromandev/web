@@ -119,7 +119,7 @@ class TokenRefreshView(InjectAuthServiceMixin, _TokenRefreshView):
 
         data = serializer.validated_data
         data = get_sub_dict(data, TOKEN_REFRESH_DATA_FIELDS)
-        data = self.auth_service.token_refresh(data)
+        data = self.auth_service.token_refresh(data.get("refresh_token"))
 
         logger.debug(f"Token Refresh Data: {data}")
         return Response(data, status=status.HTTP_200_OK)

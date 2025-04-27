@@ -16,24 +16,22 @@ from loguru import logger
 from rest_framework.request import Request
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
-from apps.account.repos.profile_repo import ProfileRepo
 from apps.core.models import User
+from apps.core.services.user_service import UserService
 
 from ..models import Verification
-from ..repos.user_repo import UserRepo
 from ..repos.verification_repo import VerificationRepo
 
 
-class AuthService:
+class AuthService(UserService):
 
     def __init__(
         self,
-        user_repo: Optional[UserRepo] = None,
-        profile_repo: Optional[ProfileRepo] = None,
+        *args: Any,
         verification_repo: Optional[VerificationRepo] = None,
+        **kwargs: Any,
     ) -> None:
-        self.user_repo = user_repo or UserRepo()
-        self.profile_repo = profile_repo or ProfileRepo()
+        super().__init__(*args, **kwargs)
         self.verification_repo = verification_repo or VerificationRepo()
 
     def _create_verification_pkb64_token(self, user: User) -> tuple[str, str]:
@@ -69,7 +67,7 @@ class AuthService:
             password=make_password(password),
             is_active=False,
         )
-        self.profile_repo.create(user=user)
+        # self.profile_repo.create(user=user)
         self.verification_repo.create(
             user=user,
             type=Verification.Type.EMAIL,

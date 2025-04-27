@@ -25,6 +25,7 @@ urlpatterns = [
     # path("admin/", admin.site.urls),
     path("", include("apps.home.urls")),
     path("", include("apps.authn.urls")),
+    path("", include("apps.account.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

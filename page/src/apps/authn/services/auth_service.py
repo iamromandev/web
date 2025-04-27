@@ -31,7 +31,7 @@ class AuthService:
         user_repo: Optional[UserRepo] = None,
         profile_repo: Optional[ProfileRepo] = None,
         verification_repo: Optional[VerificationRepo] = None,
-    ):
+    ) -> None:
         self.user_repo = user_repo or UserRepo()
         self.profile_repo = profile_repo or ProfileRepo()
         self.verification_repo = verification_repo or VerificationRepo()
@@ -163,10 +163,10 @@ class AuthService:
         refresh_iat: Optional[int] = refresh_token.payload.get("iat")
 
         access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=timezone.utc)
-        access_created_at_utc = datetime.fromtimestamp(access_iat, tz=timezone.utc)
+        access_created_at_utc: datetime = datetime.fromtimestamp(access_iat, tz=timezone.utc)
 
         refresh_expires_at_utc: datetime = datetime.fromtimestamp(refresh_expire, tz=timezone.utc)
-        refresh_created_at_utc = datetime.fromtimestamp(refresh_iat, tz=timezone.utc)
+        refresh_created_at_utc: datetime = datetime.fromtimestamp(refresh_iat, tz=timezone.utc)
         # TODO - Save tokens to database
         logger.info(f"User {user.username} token generated.")
 

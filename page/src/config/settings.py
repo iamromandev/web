@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     ## apps
     "apps.core",
     "apps.home",
+    "apps.authn",
     "apps.account",
 ]
 

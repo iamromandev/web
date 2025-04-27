@@ -46,7 +46,6 @@ logger.debug(f"DEBUG: {DEBUG}")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 logger.debug(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -69,10 +68,10 @@ INSTALLED_APPS = [
     # "dj_rest_auth",
     # "dj_rest_auth.registration",
     ## ui
-    #"django_bootstrap5",
+    # "django_bootstrap5",
     "django_bootstrap_icons",
-    #"crispy_forms",
-    #"crispy_bootstrap5",
+    # "crispy_forms",
+    # "crispy_bootstrap5",
     # 'tailwind',
     # 'theme',
     # "imagekit",
@@ -116,7 +115,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -144,7 +142,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -163,7 +160,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -174,7 +170,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -223,7 +218,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication"
     ],
     "DEFAULT_PERMISSION_CLASSES": (
-        #"rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        # "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
         "rest_framework.permissions.IsAuthenticatedOrReadOnly"
     ),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
@@ -241,7 +236,7 @@ logger.remove()
 logger.add(
     sys.stderr,
     format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{"
-    "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+           "function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
     backtrace=True,
     diagnose=True,
 )
@@ -266,3 +261,9 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'iamromandev@gmail.com'
 EMAIL_HOST_PASSWORD = 'hcct qukv ikej mxhh'
+
+# auth
+BASE_URL = env.str("BASE_URL", default="http://localhost:8000")
+USERNAME = env.str("USERNAME", default="")
+PASSWORD = env.str("PASSWORD", default="")
+logger.debug(f"BASE_URL: {BASE_URL}, USERNAME: {USERNAME}, PASSWORD: {PASSWORD}")

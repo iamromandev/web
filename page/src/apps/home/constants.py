@@ -1,6 +1,7 @@
 from typing import Any
 
 USER: dict[str, Any] = {
+    "web_title": "Roman | Software Enthusiast",
     "intro": "Hi there 👋 I'm Roman",
     "title": "Software Enthusiast || Python | Java | Kotlin | JavaScript || Backend & Android Developer || Django | FastAPI | Spring Boot || Docker & AWS",
     "focus": "Currently, I am focused on Backend development, DevOps and AI",

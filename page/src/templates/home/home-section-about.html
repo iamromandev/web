@@ -1,45 +1,55 @@
 {% block home-section-about %}
 {% load bootstrap_icons %}
-<div id="about" class="container-fluid" style="padding:80px 20px;">
-    <h1 class="text-center text-dark">About</h1>
-    <h4 class="text-secondary">About me</h4>
-    <p>
-        {{ user.intro }}<br/>
-        {{ user.title }}<br/>
-        {{ user.about }}
-    </p>
-    <p>
-        {{ user.focus }}
-    </p>
-    <br>
-    <h4 class="text-secondary">Technologies and Tools</h4>
-    <div class="row mt-4">
-        <div class="col-sm bg-green">
-            {% custom_icon 'python' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'java' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'kotlin' size='3em' %}
-        </div>
-        <div class="col-sm bg-green">
-            {% custom_icon 'spring' size='3em' %}
-        </div>
+
+<div id="about" class="container py-5">
+    <h2 class="text-center text-primary fw-bold mb-4">About Me</h2>
+
+    <!-- About Text -->
+    <div class="text-center mb-5">
+        <h5 class="text-secondary fw-semibold">Introduction</h5>
+        <p class="text-muted">{{ user.about }}</p>
+
+        <h5 class="text-secondary fw-semibold mt-4">Current Focus</h5>
+        <p class="text-muted">{{ user.focus }}</p>
     </div>
-    <div class="row mt-5">
-        <div class="col-sm bg-green">
+
+    <!-- Technologies and Tools -->
+    <h4 class="text-secondary fw-semibold text-center mb-4">Technologies and Tools</h4>
+
+    <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center">
+        <div class="col text-center">
+            {% custom_icon 'python' size='3em' %}
+            <p class="mt-2">Python</p>
+        </div>
+        <div class="col text-center">
+            {% custom_icon 'java' size='3em' %}
+            <p class="mt-2">Java</p>
+        </div>
+        <div class="col text-center">
+            {% custom_icon 'kotlin' size='3em' %}
+            <p class="mt-2">Kotlin</p>
+        </div>
+        <div class="col text-center">
+            {% custom_icon 'spring' size='3em' %}
+            <p class="mt-2">Spring</p>
+        </div>
+        <div class="col text-center">
             {% bs_icon 'git' size='3em' %}
+            <p class="mt-2">Git</p>
         </div>
-        <div class="col-sm bg-green">
+        <div class="col text-center">
             {% bs_icon 'github' size='3em' %}
+            <p class="mt-2">GitHub</p>
         </div>
-        <div class="col-sm bg-green">
+        <div class="col text-center">
             {% custom_icon 'postman' size='3em' %}
+            <p class="mt-2">Postman</p>
         </div>
-        <div class="col-sm bg-green">
+        <div class="col text-center">
             {% custom_icon 'aws' size='3em' %}
+            <p class="mt-2">AWS</p>
         </div>
     </div>
 </div>
+
 {% endblock home-section-about %}

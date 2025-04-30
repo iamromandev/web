@@ -1,36 +1,42 @@
 {% block home-section-home %}
 {% load bootstrap_icons %}
-<div id="home" class="container-fluid" style="padding:100px 20px;">
-    <div class="row">
-        <div class="col-sm d-flex justify-content-center">
-            <div>
-                <h2 class="text-dark">{{ user.intro }}</h2>
-                <h5 class="text-dark">
-                    {{ user.title }}<br/>
-                </h5>
-                <p>
-                    {{ user.bio }}
-                </p>
 
+<div id="home" class="container py-5">
+    <div class="row align-items-center">
+        <!-- Left Column: Text Content -->
+        <div class="col-md-6 text-center text-md-start">
+            <h2 class="text-primary fw-bold mb-3">{{ user.intro }}</h2>
+            <h5 class="text-dark fw-semibold mb-3">{{ user.title }}</h5>
+
+            <p class="text-muted">{{ user.bio }}</p>
+
+            <p class="mb-4">
                 I am currently working at
-                <span class="fw-bold">{{ user.current_company }}</span> as a <span
-                    class="fw-bold">{{ user.current_designation }}</span>
-                <br/>
-                <br/>
-                <a href="https://www.linkedin.com/in/iamromandev/">
+                <span class="fw-semibold text-dark">{{ user.current_company }}</span>
+                as a
+                <span class="fw-semibold text-dark">{{ user.current_designation }}</span>.
+            </p>
+
+            <!-- Social Icons -->
+            <div class="d-flex justify-content-center justify-content-md-start gap-3">
+                <a href="https://www.linkedin.com/in/iamromandev/" target="_blank" class="text-dark">
                     {% bs_icon 'linkedin' size='2em' %}
                 </a>
-                <a class="ms-2" href="https://github.com/iamromandev">
+                <a href="https://github.com/iamromandev" target="_blank" class="text-dark">
                     {% bs_icon 'github' size='2em' %}
                 </a>
-                <a class="ms-2" href="https://stackoverflow.com/users/2791067/roman">
+                <a href="https://stackoverflow.com/users/2791067/roman" target="_blank" class="text-dark">
                     {% bs_icon 'stack-overflow' size='2em' %}
                 </a>
             </div>
         </div>
-        <div class="col-sm center-block">
+
+        <!-- Right Column: Reserved for future image or content -->
+        <div class="col-md-6 text-center mt-4 mt-md-0">
+            <!-- Optional: Profile image, illustration, or animation -->
 
         </div>
     </div>
 </div>
+
 {% endblock home-section-home %}

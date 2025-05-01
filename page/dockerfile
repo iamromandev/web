@@ -8,11 +8,6 @@ FROM python:$PYTHON_VERSION AS base
 ARG ENV
 # workdir
 ARG WORK_DIR
-# poetry
-ARG POETRY_HOME="/opt/poetry"
-ARG POETRY_VERSION
-# node
-# ARG NODE_VERSION=14.20.1
 # path
 ARG SETUP_PATH="/opt/setup"
 
@@ -22,91 +17,54 @@ ENV ENV=$ENV
 # workdir
 ENV WORK_DIR=$WORK_DIR
 # python
-# If this is set to a non-empty string it is equivalent to specifying the -u option.
 ENV PYTHONUNBUFFERED=true
-# If this environment variable is set to a non-empty string
 ENV PYTHONFAULTHANDLER=true
-# If this is set to a non-empty string, Python won’t try to write .pyc files on the import of source modules.
 ENV PYTHONDONTWRITEBYTECODE=true
-# If this variable is not set or set to random, a random value is used to seed the hashes of str and bytes objects.
 ENV PYTHONHASHSEED=random
-# pip
-# ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-# ENV PIP_NO_CACHE_DIR=1
-# ENV PIP_DEFAULT_TIMEOUT=100
-# poetry
-ENV POETRY_HOME=$POETRY_HOME
-ENV POETRY_VERSION=$POETRY_VERSION
-ENV POETRY_NO_ANSI=1
-ENV POETRY_NO_INTERACTION=1
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-# node
-# ENV NODE_VERSION=$NODE_VERSION
 # path
 ENV SETUP_PATH=$SETUP_PATH
 ENV VENV_PATH="$SETUP_PATH/.venv"
-# ENV NVM_PATH="/root/.nvm"
 
-# prepend poetry, venv, nvm to path
-# $NVM_PATH/versions/node/v${NODE_VERSION}/bin
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+# prepend venv to path
+ENV PATH="$VENV_PATH/bin:$PATH"
 
 ### builder image ###
 FROM base AS builder
 
 ARG ENV
 ARG WORK_DIR
-ARG POETRY_VERSION
 
 ENV ENV=$ENV
 ENV WORK_DIR=$WORK_DIR
-ENV POETRY_VERSION=$POETRY_VERSION
 
-# install required packages
-#RUN apt-get update
-#RUN apt-get install --no-install-recommends -y curl build-essential
-
-# install poetry - respects $POETRY_VERSION & $POETRY_HOME
-RUN curl -sSL https://install.python-poetry.org | python3 -
-
-# install node
-#RUN apt install -y curl
-#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | NVM_DIR=$NVM_PATH bash
-#RUN . "$NVM_PATH/nvm.sh" && nvm install $NODE_VERSION
-#RUN . "$NVM_PATH/nvm.sh" && nvm use v$NODE_VERSION
-#RUN . "$NVM_PATH/nvm.sh" && nvm alias default v$NODE_VERSION
-#RUN node --version
-#RUN npm --version
+# install uv
+RUN pip install --upgrade pip
+RUN pip install uv
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $SETUP_PATH
 COPY pyproject.toml $SETUP_PATH
+#COPY . $SETUP_PATH
 
-# install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-# RUN poetry install $(test $ENV != prod && echo "--with dev,tests,docs -vvv") --sync
-RUN poetry sync
-RUN poetry install
+# Create and activate virtual environment
+RUN uv venv
+
+# install runtime deps
+RUN uv pip install -r $SETUP_PATH/pyproject.toml
 
 ### local image ###
 FROM base AS local
 
 ARG ENV
 ARG WORK_DIR
-ARG POETRY_VERSION
 
 ENV ENV=$ENV
 ENV WORK_DIR=$WORK_DIR
-ENV POETRY_VERSION=$POETRY_VERSION
 
 WORKDIR $WORK_DIR
 
 COPY --from=builder $SETUP_PATH $SETUP_PATH
-#COPY --from=builder $NVM_PATH $NVM_PATH
 COPY . $WORK_DIR
-
-#RUN SECRET_KEY=nothing python src/manage.py tailwind install --no-input
-#RUN SECRET_KEY=nothing python src/manage.py tailwind build --no-input
-#RUN SECRET_KEY=nothing python src/manage.py collectstatic --no-input
 
 #CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
 #CMD [ "python3", "./src/main.py" ]

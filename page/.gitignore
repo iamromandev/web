@@ -2,7 +2,7 @@
 .env
 .env.**
 __pycache__
-poetry.lock
+uv.lock
 #**/static/*
 #**/media/*
 **/staticfiles

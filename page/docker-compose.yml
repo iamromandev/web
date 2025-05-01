@@ -37,7 +37,6 @@ services:
       args:
         ENV: local
         WORK_DIR: /workdir
-        POETRY_VERSION: 2.1.2
     ports:
       - 8000:8000
     volumes:

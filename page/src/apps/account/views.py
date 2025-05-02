@@ -6,7 +6,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from apps.core.mixins import InjectCoreMixin
 
 from .mixins import InjectProfileServiceMixin
-from .models import Profile as _Profile
+from .models import Profile
 from .serializers import (
     ProfileCreateSerializer,
     ProfileSerializer,
@@ -18,7 +18,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = ProfileSerializer
-    queryset = _Profile.objects.all()
+    queryset = Profile.objects.all()
 
 
 class ProfileCreateView(
@@ -30,7 +30,7 @@ class ProfileCreateView(
     authentication_classes = [JWTAuthentication]
     serializer_class = ProfileCreateSerializer
 
-    def perform_create(self, serializer: ProfileCreateSerializer) -> _Profile:
+    def perform_create(self, serializer: ProfileCreateSerializer) -> Profile:
         user_id = serializer.validated_data.pop('user_id', None)
         user = self.core_service.get_user_by_id(user_id=user_id)
         profile = serializer.save(user=user)
@@ -45,7 +45,7 @@ class ProfileByUserIdApiView(InjectCoreMixin, InjectProfileServiceMixin, generic
     queryset = None
     lookup_field = None
 
-    def get_object(self) -> _Profile:
+    def get_object(self) -> Profile:
         user_id = self.request.query_params.get('user_id')
         if not user_id:
             logger.error("User ID not provided in the request.")

@@ -8,12 +8,13 @@ from loguru import logger
 from rest_framework import generics, permissions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
 from rest_framework_simplejwt.views import TokenRefreshView as _TokenRefreshView
 
-from apps.core.mixins import InjectCoreMixin
+from apps.core.mixins import InjectCoreMixin, InjectUserServiceMixin
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
 
@@ -124,12 +125,3 @@ class TokenRefreshView(InjectAuthServiceMixin, _TokenRefreshView):
         logger.debug(f"Token Refresh Data: {data}")
         return Response(data, status=status.HTTP_200_OK)
 
-
-class ProtectedView(generics.RetrieveAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        content = {
-            'message': 'This is a protected view, only accessible with a valid token.'
-        }
-        return Response(content)

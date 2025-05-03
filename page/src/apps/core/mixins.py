@@ -1,9 +1,6 @@
 from typing import Any, Optional
 
-from django.conf import settings
-
 from .builders.response import ResponseBuilder
-from .clients import ApiClient
 from .services.user_service import UserService
 
 
@@ -29,19 +26,19 @@ class InjectUserServiceMixin:
         self.user_service = user_service or UserService()
 
 
-class ApiMixin:
-    def __init__(
-        self,
-        base_url: settings.BASE_URL,
-        username: Optional[str] = settings.USERNAME,
-        password: Optional[str] = settings.PASSWORD,
-    ) -> None:
-        self.client = ApiClient(
-            base_url=base_url,
-            token_endpoint="auth/token/",
-            refresh_endpoint="auth/token/refresh/",
-            auth_payload={
-                "username": username,
-                "password": password,
-            } if username and password else None,
-        )
+# class InjectBaseApiClientMixin:
+#     def __init__(
+#         self,
+#         base_url: settings.BASE_URL,
+#         username: Optional[str] = settings.USERNAME,
+#         password: Optional[str] = settings.PASSWORD,
+#     ) -> None:
+#         self.client = ApiClient(
+#             base_url=base_url,
+#             token_endpoint="auth/token/",
+#             refresh_endpoint="auth/token/refresh/",
+#             auth_payload={
+#                 "username": username,
+#                 "password": password,
+#             } if username and password else None,
+#         )

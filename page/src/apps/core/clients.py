@@ -5,7 +5,7 @@ import requests
 from loguru import logger
 
 
-class ApiClient:
+class BaseApiClient:
     def __init__(
         self,
         base_url: str,
@@ -114,3 +114,30 @@ class ApiClient:
         response = self.session.request(method, url, params=params, json=data)
         response.raise_for_status()
         return response
+
+    def get(self, endpoint: str, params: Optional[dict] = None) -> requests.Response:
+        return self._request("GET", endpoint, params=params)
+
+    def post(self, endpoint: str, data: Optional[dict] = None) -> requests.Response:
+        return self._request("POST", endpoint, data=data)
+
+    def put(self, endpoint: str, data: Optional[dict] = None) -> requests.Response:
+        return self._request("PUT", endpoint, data=data)
+
+    def patch(self, endpoint: str, data: Optional[dict] = None) -> requests.Response:
+        return self._request("PATCH", endpoint, data=data)
+
+    def delete(self, endpoint: str) -> requests.Response:
+        return self._request("DELETE", endpoint)
+
+    def head(self, endpoint: str) -> requests.Response:
+        return self._request("HEAD", endpoint)
+
+    def options(self, endpoint: str) -> requests.Response:
+        return self._request("OPTIONS", endpoint)
+
+    def trace(self, endpoint: str) -> requests.Response:
+        return self._request("TRACE", endpoint)
+
+    def connect(self, endpoint: str) -> requests.Response:
+        return self._request("CONNECT", endpoint)

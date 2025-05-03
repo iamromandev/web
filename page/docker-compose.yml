@@ -57,6 +57,22 @@ services:
       && python src/manage.py runserver 0.0.0.0:8000"
     # after createcachetable && python src/manage.py createsuperuser --no-input --username ${DJANGO_SUPERUSER_USERNAME} --email ${DJANGO_SUPERUSER_EMAIL}
 
+  prometheus:
+    platform: linux/arm64
+    image: prom/prometheus:latest
+    hostname: prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    networks:
+      - server
+    depends_on:
+      - server
+
 networks:
   db:
     name: db
@@ -68,3 +84,5 @@ networks:
 volumes:
   db:
     name: db-page
+  prometheus:
+    name: prometheus-page

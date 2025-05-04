@@ -4,7 +4,7 @@ from typing import Any, Optional
 from loguru import logger
 from rest_framework import response, status
 
-from ..types import ResponseStatus
+from apps.core.libs.types import ResponseStatus
 
 
 class ResponseBuilder:

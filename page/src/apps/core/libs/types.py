@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ResponseStatus(Enum):
+class ResponseStatus(str, Enum):
     SUCCESS = "success"
     ERROR = "error"
     WARNING = "warning"

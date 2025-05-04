@@ -1,12 +1,16 @@
 import enum
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from rest_framework import status
+from rest_framework.response import Response
+
+from .formats import to_serialize
+from .types import ResponseStatus
 
 
 @dataclass
-class Error:
+class Error(Exception):
     class Code(enum.IntEnum):
         # 1xx Informational
         CONTINUE = status.HTTP_100_CONTINUE
@@ -79,7 +83,7 @@ class Error:
         NOT_EXTENDED = status.HTTP_510_NOT_EXTENDED
         NETWORK_AUTHENTICATION_REQUIRED = status.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
-    class ErrorType(enum.Enum):
+    class Type(str, enum.Enum):
         # General
         UNKNOWN_ERROR = "unknown_error"
         SERVER_ERROR = "server_error"
@@ -150,16 +154,21 @@ class Error:
         NOTIFICATION_ERROR = "notification_error"
 
     code: Code
-    error_type: ErrorType
+    type: Type
     message: str
-    field: Optional[str] = None  # Optional for field-level validation errors
-    details: Optional[Any] = None
+    details: Any = None
 
     def to_dict(self) -> dict:
         return {
+            "status": ResponseStatus.ERROR,
             "code": self.code,
-            "error_type": self.error_type.value,
+            "error_type": self.type,
             "message": self.message,
-            "field": self.field,
-            "details": self.details, # TODO serialize errors
+            "details": to_serialize(self.details),
         }
+
+    def to_resp(self) -> Response:
+        return Response(
+            data=self.to_dict(),
+            status=self.code,
+        )

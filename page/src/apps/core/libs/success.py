@@ -1,24 +1,26 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Optional
 
 from rest_framework.response import Response
 
 from .formats import to_serialize
+from .times import utc_iso_timestamp
 from .types import Code, Status
 
 
 @dataclass
 class Success:
-    status: Status
-    code: Code
-    message: str
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(
-            timezone.utc
-        ).isoformat().replace("+00:00", "Z")
-    )
+    status: Status = Status.SUCCESS
+    code: Code = Code.OK
+    timestamp: str = field(default_factory=utc_iso_timestamp)
+    message: Optional[str] = None
+    meta: Optional[dict[str, Any]] = None
     data: Any = None
+
+    def add_pagination(self, pagination: dict[str, Any]) -> None:
+        if self.meta is None:
+            self.meta = {}
+        self.meta["pagination"] = pagination
 
     def to_dict(self) -> dict:
         return {

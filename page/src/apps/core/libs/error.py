@@ -19,7 +19,7 @@ class Error(Exception):
         raw = {
             "status": RespStatus.ERROR,
             "code": self.code,
-            "error_type": self.type,
+            "type": self.type,
             "message": self.message,
             "details": to_serialize(self.details),
         }

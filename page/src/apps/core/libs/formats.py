@@ -3,6 +3,9 @@ from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Union
+from uuid import UUID
+
+from rest_framework.exceptions import ErrorDetail
 
 
 def to_serialize(obj: Any) -> Union[str, list, dict, None]:
@@ -19,12 +22,10 @@ def to_serialize(obj: Any) -> Union[str, list, dict, None]:
         return None
     elif isinstance(obj, (datetime, date)):
         return obj.isoformat()
-    elif isinstance(obj, Decimal):
+    elif isinstance(obj, (Decimal, UUID, Exception, ErrorDetail)):
         return str(obj)
     elif isinstance(obj, Enum):
         return obj.value
-    elif isinstance(obj, Exception):
-        return str(obj)
     elif isinstance(obj, (list, tuple, set)):
         return [to_serialize(item) for item in obj]
     elif isinstance(obj, Mapping):  # Handles dicts, OrderedDicts, etc.

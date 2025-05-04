@@ -48,13 +48,9 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             logger.error(f"Registration Error: {serializer.errors}")
-            # return Response(
-            #     serializer.errors,
-            #     status=status.HTTP_400_BAD_REQUEST
-            # )
             error = Error(
                 code = RespCode.BAD_REQUEST,
-                type=ErrorType.VALUE_ERROR,
+                type=ErrorType.UNIQUE_CONSTRAINT_VIOLATION,
                 details=serializer.errors,
             )
             return error.to_resp()

@@ -3,6 +3,7 @@ from typing import Any
 
 from rest_framework.response import Response
 
+from .data import exclude_empty
 from .formats import to_serialize
 from .types import Code, Status, Type
 
@@ -15,13 +16,14 @@ class Error(Exception):
     details: Any = None
 
     def to_dict(self) -> dict:
-        return {
+        raw = {
             "status": Status.ERROR,
             "code": self.code,
             "error_type": self.type,
             "message": self.message,
             "details": to_serialize(self.details),
         }
+        return exclude_empty(raw)
 
     def to_resp(self) -> Response:
         return Response(

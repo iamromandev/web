@@ -14,6 +14,9 @@ from rest_framework_simplejwt.views import (
 )
 from rest_framework_simplejwt.views import TokenRefreshView as _TokenRefreshView
 
+from apps.core.libs.error import Error
+from apps.core.libs.success import Success
+from apps.core.libs.types import ErrorType, RespCode
 from apps.core.mixins import InjectCoreMixin, InjectUserServiceMixin
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
@@ -45,10 +48,16 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
             logger.error(f"Registration Error: {serializer.errors}")
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
+            # return Response(
+            #     serializer.errors,
+            #     status=status.HTTP_400_BAD_REQUEST
+            # )
+            error = Error(
+                code = RespCode.BAD_REQUEST,
+                type=ErrorType.VALUE_ERROR,
+                details=serializer.errors,
             )
+            return error.to_resp()
 
         try:
             data = get_sub_dict(serializer.validated_data, REGISTRATION_DATA_FIELDS)
@@ -56,6 +65,7 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
             data = self.auth_service.register(
                 self.request, **data
             )
+
             rb.set_message(MESSAGE_REGISTRATION_SUCCESS)
             return rb.build()
         except Exception as error:
@@ -124,4 +134,3 @@ class TokenRefreshView(InjectAuthServiceMixin, _TokenRefreshView):
 
         logger.debug(f"Token Refresh Data: {data}")
         return Response(data, status=status.HTTP_200_OK)
-

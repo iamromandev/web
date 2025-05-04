@@ -7,13 +7,13 @@ from rest_framework.response import Response
 from .data import exclude_empty
 from .formats import to_serialize
 from .times import utc_iso_timestamp
-from .types import Code, Status
+from .types import RespCode, RespStatus
 
 
 @dataclass
 class Success:
-    status: Status = Status.SUCCESS
-    code: Code = Code.OK
+    status: RespStatus = RespStatus.SUCCESS
+    code: RespCode = RespCode.OK
     message: Optional[str] = None
     data: Any = None
     meta: Optional[dict[str, Any]] = None

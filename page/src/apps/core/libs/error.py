@@ -1,23 +1,23 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 from rest_framework.response import Response
 
 from .data import exclude_empty
 from .formats import to_serialize
-from .types import Code, Status, Type
+from .types import ErrorType, RespCode, RespStatus
 
 
 @dataclass
 class Error(Exception):
-    code: Code
-    type: Type
-    message: str
+    code: RespCode = RespCode.BAD_REQUEST
+    type: ErrorType = ErrorType.UNKNOWN_ERROR
+    message: Optional[str] = None
     details: Any = None
 
     def to_dict(self) -> dict:
         raw = {
-            "status": Status.ERROR,
+            "status": RespStatus.ERROR,
             "code": self.code,
             "error_type": self.type,
             "message": self.message,
@@ -30,6 +30,3 @@ class Error(Exception):
             data=self.to_dict(),
             status=self.code,
         )
-
-
-

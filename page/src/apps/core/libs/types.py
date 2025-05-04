@@ -3,13 +3,13 @@ from enum import Enum, IntEnum
 from rest_framework import status
 
 
-class Status(str, Enum):
+class RespStatus(str, Enum):
     SUCCESS = "success"
     ERROR = "error"
     WARNING = "warning"
 
 
-class Code(IntEnum):
+class RespCode(IntEnum):
     # 1xx Informational
     CONTINUE = status.HTTP_100_CONTINUE
     SWITCHING_PROTOCOLS = status.HTTP_101_SWITCHING_PROTOCOLS
@@ -82,7 +82,7 @@ class Code(IntEnum):
     NETWORK_AUTHENTICATION_REQUIRED = status.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
 
-class Type(str, Enum):
+class ErrorType(str, Enum):
     # General
     UNKNOWN_ERROR = "unknown_error"
     SERVER_ERROR = "server_error"

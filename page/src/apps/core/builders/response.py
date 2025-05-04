@@ -4,13 +4,13 @@ from typing import Any, Optional
 from loguru import logger
 from rest_framework import response, status
 
-from apps.core.libs.types import ResponseStatus
+from ..libs.types import Status
 
 
 class ResponseBuilder:
     def __init__(
         self,
-        status: Optional[ResponseStatus] = None,
+        status: Optional[Status] = None,
         timestamp: Optional[str] = None,
         code: Optional[str] = None,
         message: Optional[str] = None,
@@ -33,7 +33,7 @@ class ResponseBuilder:
 
     @staticmethod
     def new(
-        status: Optional[ResponseStatus] = None,
+        status: Optional[Status] = None,
         timestamp: Optional[str] = None,
         code: Optional[str] = None,
         message: Optional[str] = None,
@@ -54,7 +54,7 @@ class ResponseBuilder:
         )
         return builder
 
-    def set_status(self, status: ResponseStatus) -> "ResponseBuilder":
+    def set_status(self, status: Status) -> "ResponseBuilder":
         self.status = status
         return self
 
@@ -102,9 +102,9 @@ class ResponseBuilder:
     def build(self, status_code=status.HTTP_200_OK) -> response.Response:
         if not self.status:
             self.status = (
-                ResponseStatus.ERROR
+                Status.ERROR
                 if status_code > status.HTTP_226_IM_USED
-                else ResponseStatus.SUCCESS
+                else Status.SUCCESS
             )
         data = {
             "status": self.status.value,

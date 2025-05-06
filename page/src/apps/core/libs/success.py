@@ -2,19 +2,14 @@ import math
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from rest_framework.response import Response
-
 from .data import exclude_empty
 from .formats import to_serialize
+from .resp import Resp
 from .times import utc_iso_timestamp
-from .types import RespCode, RespStatus
 
 
 @dataclass
-class Success:
-    status: RespStatus = RespStatus.SUCCESS
-    code: RespCode = RespCode.OK
-    message: Optional[str] = None
+class Success(Resp):
     data: Any = None
     meta: Optional[dict[str, Any]] = None
     timestamp: str = field(default_factory=utc_iso_timestamp)
@@ -43,9 +38,3 @@ class Success:
             "timestamp": self.timestamp,
         }
         return exclude_empty(raw)
-
-    def to_resp(self) -> Response:
-        return Response(
-            data=self.to_dict(),
-            status=self.code,
-        )

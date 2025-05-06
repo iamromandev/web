@@ -82,6 +82,10 @@ class Error(Resp):
     type: Type = Type.UNKNOWN_ERROR
     details: Any = None
 
+    def __post_init__(self):
+        self.status = Resp.Status.ERROR
+        self.code = Resp.Code.INTERNAL_SERVER_ERROR
+
     def to_dict(self) -> dict:
         raw = {
             "status": Resp.Status.ERROR,

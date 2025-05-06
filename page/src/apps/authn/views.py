@@ -44,7 +44,7 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
         logger.debug(f"Calling Registration POST: {request.data}")
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            logger.error(f"Error||Registration - {serializer.errors}")
+            logger.error(f"Error||Registration Serializer: {serializer.errors}")
             error = Error(
                 code=Resp.Code.BAD_REQUEST,
                 type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
@@ -63,11 +63,13 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
             )
             return success.to_resp()
         except Exception as error:
-            logger.error(f"Registration Error: {error}")
-            return Response(
-                {'error': 'An unexpected error occurred during registration.'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            logger.error(f"Error||Registration: {error}")
+            error = Error(
+                code=Resp.Code.INTERNAL_SERVER_ERROR,
+                type=Error.Type.SERVER_ERROR,
+                details=error,
             )
+            return error.to_resp()
 
 
 class VerifyEmailView(InjectAuthServiceMixin, generics.GenericAPIView):
@@ -75,7 +77,10 @@ class VerifyEmailView(InjectAuthServiceMixin, generics.GenericAPIView):
 
     def get(self, request: Request, pkb64: str, token: str) -> Response:
         response = self.auth_service.verify_email(pkb64, token)
-        return Response(response, status=status.HTTP_200_OK)
+        success = Success(
+            data=response
+        )
+        return success.to_resp()
 
 
 class LoginView(InjectAuthServiceMixin, generics.GenericAPIView):
@@ -85,14 +90,22 @@ class LoginView(InjectAuthServiceMixin, generics.GenericAPIView):
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            logger.warning(f"Login data invalid: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Error||Login Serializer: {serializer.errors}")
+            error = Error(
+                code=Resp.Code.BAD_REQUEST,
+                type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
+                details=serializer.errors,
+            )
+            return error.to_resp()
 
         data = get_sub_dict(serializer.validated_data, LOGIN_DATA_FIELDS)
         logger.debug(f"Login Data: {data}")
-        login_data = self.auth_service.login(**data)
+        resp = self.auth_service.login(**data)
 
-        return Response(login_data, status=status.HTTP_200_OK)
+        success = Success(
+            data=resp
+        )
+        return success.to_resp()
 
 
 class TokenView(InjectAuthServiceMixin, generics.GenericAPIView):
@@ -102,14 +115,22 @@ class TokenView(InjectAuthServiceMixin, generics.GenericAPIView):
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            logger.warning(f"Token data invalid: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Error||Token Serializer: {serializer.errors}")
+            error = Error(
+                code=Resp.Code.BAD_REQUEST,
+                type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
+                details=serializer.errors,
+            )
+            return error.to_resp()
 
         data = get_sub_dict(serializer.validated_data, TOKEN_DATA_FIELDS)
         logger.debug(f"Token Data: {data}")
-        token_data = self.auth_service.token(**data)
+        resp = self.auth_service.token(**data)
 
-        return Response(token_data, status=status.HTTP_200_OK)
+        success = Success(
+            data=resp
+        )
+        return success.to_resp()
 
 
 class TokenRefreshView(InjectAuthServiceMixin, _TokenRefreshView):
@@ -119,12 +140,20 @@ class TokenRefreshView(InjectAuthServiceMixin, _TokenRefreshView):
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            logger.warning(f"Token refresh data invalid: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Error||Token Refresh Serializer: {serializer.errors}")
+            error = Error(
+                code=Resp.Code.BAD_REQUEST,
+                type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
+                details=serializer.errors,
+            )
+            return error.to_resp()
 
         data = serializer.validated_data
         data = get_sub_dict(data, TOKEN_REFRESH_DATA_FIELDS)
-        data = self.auth_service.token_refresh(data.get("refresh_token"))
+        resp = self.auth_service.token_refresh(data.get("refresh_token"))
 
-        logger.debug(f"Token Refresh Data: {data}")
-        return Response(data, status=status.HTTP_200_OK)
+        logger.debug(f"Token Refresh Data: {resp}")
+        success = Success(
+            data=resp
+        )
+        return success.to_resp()

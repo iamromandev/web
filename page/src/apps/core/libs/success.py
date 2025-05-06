@@ -14,6 +14,10 @@ class Success(Resp):
     meta: Optional[dict[str, Any]] = None
     timestamp: str = field(default_factory=utc_iso_timestamp)
 
+    def __post_init__(self):
+        self.status = Resp.Status.SUCCESS
+        self.code = Resp.Code.OK
+
     def add_pagination(
         self,
         page: int = 1,

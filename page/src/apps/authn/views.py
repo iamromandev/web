@@ -14,9 +14,7 @@ from rest_framework_simplejwt.views import (
 )
 from rest_framework_simplejwt.views import TokenRefreshView as _TokenRefreshView
 
-from apps.core.libs.error import Error
-from apps.core.libs.success import Success
-from apps.core.libs.types import ErrorType, RespCode
+from apps.core.libs import Error, Resp, Success
 from apps.core.mixins import InjectCoreMixin, InjectUserServiceMixin
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
@@ -44,13 +42,12 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
 
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         logger.debug(f"Calling Registration POST: {request.data}")
-        rb = self.response_builder
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            logger.error(f"Registration Error: {serializer.errors}")
+            logger.error(f"Error||Registration - {serializer.errors}")
             error = Error(
-                code = RespCode.BAD_REQUEST,
-                type=ErrorType.UNIQUE_CONSTRAINT_VIOLATION,
+                code=Resp.Code.BAD_REQUEST,
+                type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
                 details=serializer.errors,
             )
             return error.to_resp()
@@ -61,9 +58,10 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
             data = self.auth_service.register(
                 self.request, **data
             )
-
-            rb.set_message(MESSAGE_REGISTRATION_SUCCESS)
-            return rb.build()
+            success = Success(
+                message=MESSAGE_REGISTRATION_SUCCESS
+            )
+            return success.to_resp()
         except Exception as error:
             logger.error(f"Registration Error: {error}")
             return Response(

@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, Optional
 
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import transaction
+from django.db.models import QuerySet
 from loguru import logger
 from rest_framework import generics, permissions, status
 from rest_framework.request import Request
@@ -14,7 +15,7 @@ from rest_framework_simplejwt.views import (
 )
 from rest_framework_simplejwt.views import TokenRefreshView as _TokenRefreshView
 
-from apps.core.libs import Error, Resp, Success
+from apps.core.libs import Error, PasswordMismatchError, Resp, Success
 from apps.core.mixins import InjectCoreMixin, InjectUserServiceMixin
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
@@ -37,7 +38,7 @@ from .serializers import (
 
 class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
-    queryset = None  # User.objects.all()
+    queryset: Optional[QuerySet] = None
     serializer_class = RegistrationSerializer
 
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -46,6 +47,7 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
         if not serializer.is_valid():
             logger.error(f"Error||Registration Serializer: {serializer.errors}")
             error = Error(
+                status=Resp.Status.ERROR,
                 code=Resp.Code.BAD_REQUEST,
                 type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
                 details=serializer.errors,
@@ -55,13 +57,18 @@ class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateA
         try:
             data = get_sub_dict(serializer.validated_data, REGISTRATION_DATA_FIELDS)
             logger.debug(f"Registration Data: {data}")
-            data = self.auth_service.register(
+            self.auth_service.register(
                 self.request, **data
             )
             success = Success(
+                status=Resp.Status.SUCCESS,
+                code=Resp.Code.OK,
                 message=MESSAGE_REGISTRATION_SUCCESS
             )
             return success.to_resp()
+        except PasswordMismatchError as error:
+            logger.error(f"PasswordMismatchError||Registration: {error}")
+            return error.to_resp()
         except Exception as error:
             logger.error(f"Error||Registration: {error}")
             error = Error(
@@ -103,6 +110,8 @@ class LoginView(InjectAuthServiceMixin, generics.GenericAPIView):
         resp = self.auth_service.login(**data)
 
         success = Success(
+            status=Resp.Status.SUCCESS,
+            code=Resp.Code.OK,
             data=resp
         )
         return success.to_resp()
@@ -128,6 +137,8 @@ class TokenView(InjectAuthServiceMixin, generics.GenericAPIView):
         resp = self.auth_service.token(**data)
 
         success = Success(
+            status=Resp.Status.SUCCESS,
+            code=Resp.Code.OK,
             data=resp
         )
         return success.to_resp()

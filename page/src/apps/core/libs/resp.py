@@ -87,8 +87,8 @@ class Resp(ABC):
         NOT_EXTENDED = status.HTTP_510_NOT_EXTENDED
         NETWORK_AUTHENTICATION_REQUIRED = status.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
-    status: Status
-    code: Code
+    status: Optional[Status] = None
+    code: Optional[Code] = None
     message: Optional[str] = None
 
     @abstractmethod

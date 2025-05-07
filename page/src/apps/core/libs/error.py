@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 from .data import exclude_empty
 from .formats import to_serialize
@@ -8,7 +8,7 @@ from .types import StrBaseEnum
 
 
 @dataclass
-class Error(Resp):
+class Error(Resp, Exception):
     class Type(StrBaseEnum):
         # General
         UNKNOWN_ERROR = "unknown_error"
@@ -80,21 +80,29 @@ class Error(Resp):
         NOTIFICATION_ERROR = "notification_error"
 
     type: Type = Type.UNKNOWN_ERROR
-    details: Any = None
+    details: Optional[Any] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.status = Resp.Status.ERROR
-        self.code = Resp.Code.INTERNAL_SERVER_ERROR
 
     def to_dict(self) -> dict:
         raw = {
-            "status": Resp.Status.ERROR,
+            "status": self.status,
             "code": self.code,
             "message": self.message,
             "type": self.type,
             "details": to_serialize(self.details),
         }
         return exclude_empty(raw)
+
+
+@dataclass
+class PasswordMismatchError(Error):
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.code = Resp.Code.BAD_REQUEST
+        self.message = "Passwords do not match."
+        self.type = Error.Type.VALIDATION_ERROR
 
 # def error_handler(exc: Exception, context: dict[str, Any]) -> Optional[Response]:
 #     """

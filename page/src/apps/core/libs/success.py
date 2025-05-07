@@ -1,4 +1,3 @@
-import math
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
@@ -10,21 +9,17 @@ from .times import utc_iso_timestamp
 
 @dataclass
 class Success(Resp):
-    data: Any = None
+    data: Optional[Any] = None
     meta: Optional[dict[str, Any]] = None
     timestamp: str = field(default_factory=utc_iso_timestamp)
-
-    def __post_init__(self):
-        self.status = Resp.Status.SUCCESS
-        self.code = Resp.Code.OK
 
     def add_pagination(
         self,
         page: int = 1,
         page_size: int = 10, total: int = 0, total_pages: int = 0
     ) -> None:
-        if self.meta is None:
-            self.meta = {}
+        import math
+        self.meta = self.meta or {}
         self.meta["pagination"] = {
             "page": page,
             "page_size": page_size,

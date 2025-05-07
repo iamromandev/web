@@ -16,6 +16,7 @@ from loguru import logger
 from rest_framework.request import Request
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+from apps.core.libs import PasswordMismatchError
 from apps.core.models import User
 from apps.core.services.user_service import UserService
 
@@ -56,7 +57,7 @@ class AuthService(UserService):
         self, request: Request, username: str, email: str, password: str, password2: str
     ) -> User:
         if password != password2:
-            return {"error": "Passwords do not match"}
+            raise PasswordMismatchError()
 
         # if self.user_repo.exists(email=email):
         #    raise ValueError("Email address already exists.")

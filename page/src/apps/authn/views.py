@@ -44,15 +44,16 @@ class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         logger.debug(f"Calling Registration POST: {request.data}")
         serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid():
-            logger.error(f"Error||Registration Serializer: {serializer.errors}")
-            error = Error(
-                status=Resp.Status.ERROR,
-                code=Resp.Code.BAD_REQUEST,
-                type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
-                details=serializer.errors,
-            )
-            return error.to_resp()
+        serializer.is_valid(raise_exception=True)
+        # if not serializer.is_valid(raise_exception=True):
+        #     logger.error(f"Error||Registration Serializer: {serializer.errors}")
+        #     error = Error(
+        #         status=Resp.Status.ERROR,
+        #         code=Resp.Code.BAD_REQUEST,
+        #         type=Error.Type.UNIQUE_CONSTRAINT_VIOLATION,
+        #         details=serializer.errors,
+        #     )
+        #     return error.to_resp()
 
         try:
             data = get_sub_dict(serializer.validated_data, REGISTRATION_DATA_FIELDS)

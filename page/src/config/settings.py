@@ -223,7 +223,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    # 'EXCEPTION_HANDLER': 'core.libs.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'apps.core.libs.error.error_handler',
     "PAGE_SIZE": 10,
 }
 

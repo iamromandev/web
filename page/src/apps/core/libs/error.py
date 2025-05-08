@@ -1,5 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Optional, Union, cast
+
+from loguru import logger
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 
 from .data import exclude_empty
 from .formats import to_serialize
@@ -95,6 +99,18 @@ class Error(Resp, Exception):
         }
         return exclude_empty(raw)
 
+    @staticmethod
+    def of(error: Union[ValidationError]) -> Union["Error", None]:
+        if isinstance(error, ValidationError):
+            return Error(
+                status=Resp.Status.ERROR,
+                code=Resp.Code.BAD_REQUEST,
+                message="Validation failed",
+                type=Error.Type.VALIDATION_ERROR,
+                details=error.detail
+            )
+        return None
+
 
 @dataclass
 class PasswordMismatchError(Error):
@@ -104,24 +120,29 @@ class PasswordMismatchError(Error):
         self.message = "Passwords do not match."
         self.type = Error.Type.VALIDATION_ERROR
 
-# def error_handler(exc: Exception, context: dict[str, Any]) -> Optional[Response]:
-#     """
-#     Custom error handler for DRF views.
-#     """
-#     error: Optional[Error] = None
-#     if isinstance(exc, Error):
-#         error = cast(Error, exc)
-#     else:
-#         resp = exception_handler(exc, context)
-#         if resp is None:
-#             logger.error("Unhandled exception", exc_info=exc)
-#             error
-#
-#         # Default Error
-#         error = Error(
-#             code=resp.status_code,
-#             type=exc.__class__.__name__.lower(),
-#             message="An unknown error occurred.",
-#             details=resp.data,
-#         ) if not error else error
-#         return error.to_resp()
+
+def error_handler(exc: Exception, context: dict[str, Any]) -> Optional[Response]:
+    logger.error("Error||error_handler|Unhandled exception", exc_info=exc)
+
+    error: Optional[Error] = None
+    if isinstance(exc, Error):
+        error = cast(Error, exc)
+    else:
+        logger.error("Error||error_handler|Exception|", exc_info=exc)
+        error = Error.of(exc)
+
+    return error.to_resp() or None
+    # else:
+    #     resp = exception_handler(exc, context)
+    #     if resp is None:
+    #         logger.error("Unhandled exception", exc_info=exc)
+    #         error
+    #
+    #     # Default Error
+    #     error = Error(
+    #         code=resp.status_code,
+    #         type=exc.__class__.__name__.lower(),
+    #         message="An unknown error occurred.",
+    #         details=resp.data,
+    #     ) if not error else error
+    #     return error.to_resp()

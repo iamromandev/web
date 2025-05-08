@@ -7,7 +7,6 @@ uv.lock
 #**/media/*
 **/staticfiles
 **/mediafiles
-**/node_modules
 **/static_files/*
 
 # ignore generated files

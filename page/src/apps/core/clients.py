@@ -88,7 +88,7 @@ class BaseApiClient:
                 )
                 self._session.headers.update({"Authorization": f"Bearer {self._access_token}"})
                 return True
-            except requests.RequestException as error:
+            except (TypeError, requests.RequestException) as error:
                 logger.error(f"Authentication error: {error}")
                 self._access_token = None
                 self._refresh_token = None

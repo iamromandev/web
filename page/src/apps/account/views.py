@@ -3,8 +3,6 @@ from loguru import logger
 from rest_framework import generics, permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from apps.core.mixins import InjectCoreMixin
-
 from .mixins import InjectProfileServiceMixin
 from .models import Profile
 from .serializers import (
@@ -22,7 +20,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 
 class ProfileCreateView(
-    InjectCoreMixin,
     InjectProfileServiceMixin,
     generics.CreateAPIView
 ):
@@ -38,7 +35,7 @@ class ProfileCreateView(
         return profile
 
 
-class ProfileByUserIdApiView(InjectCoreMixin, InjectProfileServiceMixin, generics.RetrieveAPIView):
+class ProfileByUserIdApiView(InjectProfileServiceMixin, generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class = ProfileSerializer

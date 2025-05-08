@@ -1,18 +1,6 @@
 from typing import Any, Optional
 
-from .builders.response import ResponseBuilder
 from .services.user_service import UserService
-
-
-class InjectCoreMixin:
-    def __init__(
-        self,
-        *args: Any,
-        response_builder: Optional[ResponseBuilder] = None,
-        **kwargs: Any
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self.response_builder = response_builder or ResponseBuilder.new()
 
 
 class InjectUserServiceMixin:
@@ -24,7 +12,6 @@ class InjectUserServiceMixin:
     ) -> None:
         super().__init__(*args, **kwargs)
         self.user_service = user_service or UserService()
-
 
 # class InjectBaseApiClientMixin:
 #     def __init__(

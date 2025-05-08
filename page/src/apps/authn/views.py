@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import (
 from rest_framework_simplejwt.views import TokenRefreshView as _TokenRefreshView
 
 from apps.core.libs import Error, PasswordMismatchError, Resp, Success
-from apps.core.mixins import InjectCoreMixin, InjectUserServiceMixin
+from apps.core.mixins import InjectUserServiceMixin
 from apps.core.models import User
 from apps.core.utils.dict_utils import get_sub_dict
 
@@ -36,7 +36,7 @@ from .serializers import (
 )
 
 
-class RegistrationView(InjectCoreMixin, InjectAuthServiceMixin, generics.CreateAPIView):
+class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     queryset: Optional[QuerySet] = None
     serializer_class = RegistrationSerializer

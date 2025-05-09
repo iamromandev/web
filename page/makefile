@@ -42,6 +42,7 @@ restart:
 .PHONY: uv install
 install:
 	uv pip install -r pyproject.toml
+	uv lock
 
 .PHONY: ruff
 ruff:

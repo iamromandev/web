@@ -1,6 +1,6 @@
 import uuid
 from abc import ABC
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
@@ -14,7 +14,7 @@ class BaseRepo(ABC, Generic[_T]):
     def __init__(self, model: type[_T]):
         self.model = model
 
-    def get_by_pk(self, pk: Union[str, uuid.UUID]) -> Optional[_T]:
+    def get_by_pk(self, pk: str | uuid.UUID) -> _T | None:
         try:
             return self.model.objects.get(pk=pk)
         except ObjectDoesNotExist:
@@ -38,14 +38,14 @@ class BaseRepo(ABC, Generic[_T]):
         instance.save()
         return None
 
-    def update_by_pk(self, pk: Union[str, uuid.UUID], **kwargs: Any) -> Optional[_T]:
+    def update_by_pk(self, pk: str | uuid.UUID, **kwargs: Any) -> _T | None:
         instance = self.get_by_pk(pk)
         return self.update(instance, **kwargs) if instance else None
 
     def delete(self, instance: _T) -> None:
         instance.delete()
 
-    def delete_by_id(self, pk: Union[str, uuid.UUID]) -> bool:
+    def delete_by_id(self, pk: str | uuid.UUID) -> bool:
         instance = self.get_by_pk(pk)
         if instance:
             instance.delete()

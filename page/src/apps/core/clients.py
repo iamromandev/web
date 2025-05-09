@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import requests
 from loguru import logger
@@ -9,18 +9,18 @@ class BaseApiClient:
     def __init__(
         self,
         base_url: str,
-        token_endpoint: Optional[str] = None,
-        refresh_endpoint: Optional[str] = None,
-        auth_payload: Optional[dict] = None,
-        access_token: Optional[str] = None,
-        refresh_token: Optional[str] = None,
-        access_expires_at: Optional[datetime] = None,
-        refresh_expires_at: Optional[datetime] = None,
+        token_endpoint: str | None = None,
+        refresh_endpoint: str | None = None,
+        auth_payload: dict | None = None,
+        access_token: str | None = None,
+        refresh_token: str | None = None,
+        access_expires_at: datetime | None = None,
+        refresh_expires_at: datetime | None = None,
     ) -> None:
         self._base_url: str = base_url.rstrip("/")
-        self._token_endpoint: Optional[str] = token_endpoint
-        self._refresh_endpoint: Optional[str] = refresh_endpoint
-        self._auth_payload: Optional[dict] = auth_payload
+        self._token_endpoint: str | None = token_endpoint
+        self._refresh_endpoint: str | None = refresh_endpoint
+        self._auth_payload: dict | None = auth_payload
         self._access_token = access_token
         self._refresh_token = refresh_token
         self._access_expires_at = access_expires_at
@@ -34,20 +34,20 @@ class BaseApiClient:
     def _is_access_token_expired(self) -> bool:
         if not self._access_expires_at:
             return True
-        return datetime.now(timezone.utc) >= self._access_expires_at
+        return datetime.now(UTC) >= self._access_expires_at
 
     @property
     def _is_refresh_token_expired(self) -> bool:
         if not self._refresh_expires_at:
             return True
-        return datetime.now(timezone.utc) >= self._refresh_expires_at
+        return datetime.now(UTC) >= self._refresh_expires_at
 
     @property
-    def _is_refresh_required(self) -> Optional[dict[str, Any]]:
+    def _is_refresh_required(self) -> dict[str, Any] | None:
         return self._refresh_endpoint and self._refresh_token
 
     @property
-    def _refresh_payload(self) -> Optional[dict[str, Any]]:
+    def _refresh_payload(self) -> dict[str, Any] | None:
         return {
             "refresh": self._refresh_token,
         } if self._refresh_endpoint and self._refresh_token else None
@@ -107,24 +107,24 @@ class BaseApiClient:
         self,
         method: str,
         endpoint: str,
-        params: Optional[dict] = None,
-        data: Optional[dict] = None,
+        params: dict | None = None,
+        data: dict | None = None,
     ) -> requests.Response:
         url = f"{self._base_url}/{endpoint.lstrip("/")}"
         response = self.session.request(method, url, params=params, json=data)
         response.raise_for_status()
         return response
 
-    def get(self, endpoint: str, params: Optional[dict] = None) -> requests.Response:
+    def get(self, endpoint: str, params: dict | None = None) -> requests.Response:
         return self._request("GET", endpoint, params=params)
 
-    def post(self, endpoint: str, data: Optional[dict] = None) -> requests.Response:
+    def post(self, endpoint: str, data: dict | None = None) -> requests.Response:
         return self._request("POST", endpoint, data=data)
 
-    def put(self, endpoint: str, data: Optional[dict] = None) -> requests.Response:
+    def put(self, endpoint: str, data: dict | None = None) -> requests.Response:
         return self._request("PUT", endpoint, data=data)
 
-    def patch(self, endpoint: str, data: Optional[dict] = None) -> requests.Response:
+    def patch(self, endpoint: str, data: dict | None = None) -> requests.Response:
         return self._request("PATCH", endpoint, data=data)
 
     def delete(self, endpoint: str) -> requests.Response:

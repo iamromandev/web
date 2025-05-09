@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -29,7 +29,7 @@ class AuthService(UserService):
     def __init__(
         self,
         *args: Any,
-        verification_repo: Optional[VerificationRepo] = None,
+        verification_repo: VerificationRepo | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -98,7 +98,7 @@ class AuthService(UserService):
 
         if user and default_token_generator.check_token(user, token):
             self.user_repo.update(user, is_active=True)
-            verification: Optional[Verification] = self.verification_repo.get_by_user(user)
+            verification: Verification | None = self.verification_repo.get_by_user(user)
             if verification and verification.is_verified:
                 logger.info(f"User {user.email} already verified.")
                 return {"detail": "Email already verified"}
@@ -115,7 +115,7 @@ class AuthService(UserService):
         self, username: str, password: str
     ) -> dict:
         # Check if the user exists and is active
-        user: Optional[User] = authenticate(username=username, password=password)
+        user: User | None = authenticate(username=username, password=password)
         logger.info(f"User {user} attempted to log in.")
         if not user:
             return {"error": "User not found"}
@@ -123,7 +123,7 @@ class AuthService(UserService):
         if not user.check_password(password):
             return {"error": "Invalid password"}
 
-        verification: Optional[Verification] = self.verification_repo.get_by_user(user)
+        verification: Verification | None = self.verification_repo.get_by_user(user)
         if not verification or not verification.is_verified:
             return {"error": "Email not verified"}
 
@@ -139,7 +139,7 @@ class AuthService(UserService):
         self, username: str, password: str
     ) -> dict:
         # Check if the user exists and is active
-        user: Optional[User] = authenticate(username=username, password=password)
+        user: User | None = authenticate(username=username, password=password)
         logger.info(f"User {user} attempted for token.")
         if not user:
             return {"error": "User not found"}
@@ -147,7 +147,7 @@ class AuthService(UserService):
         if not user.check_password(password):
             return {"error": "Invalid password"}
 
-        verification: Optional[Verification] = self.verification_repo.get_by_user(user)
+        verification: Verification | None = self.verification_repo.get_by_user(user)
         if not verification or not verification.is_verified:
             return {"error": "Email not verified"}
 
@@ -155,17 +155,17 @@ class AuthService(UserService):
         access_token: AccessToken = refresh_token.access_token
 
         # time
-        access_expire: Optional[int] = access_token.payload.get("exp")
-        access_iat: Optional[int] = access_token.payload.get("iat")
+        access_expire: int | None = access_token.payload.get("exp")
+        access_iat: int | None = access_token.payload.get("iat")
 
-        refresh_expire: Optional[int] = refresh_token.payload.get("exp")
-        refresh_iat: Optional[int] = refresh_token.payload.get("iat")
+        refresh_expire: int | None = refresh_token.payload.get("exp")
+        refresh_iat: int | None = refresh_token.payload.get("iat")
 
-        access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=timezone.utc)
-        access_created_at_utc: datetime = datetime.fromtimestamp(access_iat, tz=timezone.utc)
+        access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=UTC)
+        access_created_at_utc: datetime = datetime.fromtimestamp(access_iat, tz=UTC)
 
-        refresh_expires_at_utc: datetime = datetime.fromtimestamp(refresh_expire, tz=timezone.utc)
-        refresh_created_at_utc: datetime = datetime.fromtimestamp(refresh_iat, tz=timezone.utc)
+        refresh_expires_at_utc: datetime = datetime.fromtimestamp(refresh_expire, tz=UTC)
+        refresh_created_at_utc: datetime = datetime.fromtimestamp(refresh_iat, tz=UTC)
         # TODO - Save tokens to database
         logger.info(f"User {user.username} token generated.")
 
@@ -183,11 +183,11 @@ class AuthService(UserService):
     ) -> dict[str, Any]:
         access_token: AccessToken = AccessToken(access_token)
         # time
-        access_expire: Optional[int] = access_token.payload.get("exp")
-        access_iat: Optional[int] = access_token.payload.get("iat")
+        access_expire: int | None = access_token.payload.get("exp")
+        access_iat: int | None = access_token.payload.get("iat")
 
-        access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=timezone.utc)
-        access_created_at_utc = datetime.fromtimestamp(access_iat, tz=timezone.utc)
+        access_expires_at_utc: datetime = datetime.fromtimestamp(access_expire, tz=UTC)
+        access_created_at_utc = datetime.fromtimestamp(access_iat, tz=UTC)
 
         logger.info(f"Access Token {str(access_token)} generated.")
 

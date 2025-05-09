@@ -39,13 +39,16 @@ restart:
 	make build
 	make up
 
-.PHONY: poetry install
+.PHONY: uv install
 install:
-	poetry lock
-	poetry update
-	poetry install
+	uv pip install -r pyproject.toml
 
 .PHONY: ruff
 ruff:
 	make install
-	poetry run ruff format
+	uvx ruff check --fix
+
+.PHONY: export
+export:
+	make ruff
+	uv export --format requirements-txt > requirements.txt

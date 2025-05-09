@@ -1,4 +1,3 @@
-from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -12,7 +11,7 @@ class VerificationRepo(BaseRepo[Verification]):
     def __init__(self):
         super().__init__(Verification)
 
-    def get_by_user(self, user: User) -> Optional[Verification]:
+    def get_by_user(self, user: User) -> Verification | None:
         try:
             verification = Verification.objects.get(user=user)
             return verification

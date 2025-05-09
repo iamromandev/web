@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from ..repos.user_repo import UserRepo
 from .base_service import BaseService
@@ -7,7 +7,7 @@ from .base_service import BaseService
 class UserService(BaseService):
     def __init__(
         self, *args: Any,
-        user_repo: Optional[UserRepo] = None,
+        user_repo: UserRepo | None = None,
         **kwargs: Any
     ) -> None:
         super().__init__(*args, **kwargs)

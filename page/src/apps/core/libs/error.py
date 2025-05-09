@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, Union, cast
+from typing import Any, Union, cast
 
 from loguru import logger
 from rest_framework.exceptions import ValidationError
@@ -84,7 +84,7 @@ class Error(Resp, Exception):
         NOTIFICATION_ERROR = "notification_error"
 
     type: Type = Type.UNKNOWN_ERROR
-    details: Optional[Any] = None
+    details: Any | None = None
 
     def __post_init__(self) -> None:
         self.status = Resp.Status.ERROR
@@ -100,7 +100,7 @@ class Error(Resp, Exception):
         return exclude_empty(raw)
 
     @staticmethod
-    def of(error: Union[ValidationError]) -> Union["Error", None]:
+    def of(error: ValidationError) -> Union["Error", None]:
         if isinstance(error, ValidationError):
             return Error(
                 status=Resp.Status.ERROR,
@@ -121,10 +121,10 @@ class PasswordMismatchError(Error):
         self.type = Error.Type.VALIDATION_ERROR
 
 
-def error_handler(exc: Exception, context: dict[str, Any]) -> Optional[Response]:
+def error_handler(exc: Exception, context: dict[str, Any]) -> Response | None:
     logger.error("Error||error_handler|Unhandled exception", exc_info=exc)
 
-    error: Optional[Error] = None
+    error: Error | None = None
     if isinstance(exc, Error):
         error = cast(Error, exc)
     else:

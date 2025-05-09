@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from .data import exclude_empty
 from .formats import to_serialize
@@ -9,8 +9,8 @@ from .times import utc_iso_timestamp
 
 @dataclass
 class Success(Resp):
-    data: Optional[Any] = None
-    meta: Optional[dict[str, Any]] = None
+    data: Any | None = None
+    meta: dict[str, Any] | None = None
     timestamp: str = field(default_factory=utc_iso_timestamp)
 
     def add_pagination(

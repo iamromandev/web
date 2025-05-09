@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.conf import settings
 
@@ -9,7 +9,7 @@ class InjectApiClientMixin:
     def __init__(
         self,
         *args: Any,
-        api_client: Optional[ApiClient] = None,
+        api_client: ApiClient | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)

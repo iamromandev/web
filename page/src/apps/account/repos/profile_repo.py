@@ -1,4 +1,3 @@
-from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -12,7 +11,7 @@ class ProfileRepo(BaseRepo[Profile]):
     def __init__(self):
         super().__init__(Profile)
 
-    def get_profile_by_user(self, user: User) -> Optional[Profile]:
+    def get_profile_by_user(self, user: User) -> Profile | None:
         try:
             profile = Profile.objects.get(user=user)
             return profile

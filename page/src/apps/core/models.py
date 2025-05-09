@@ -256,7 +256,7 @@ class Location(SoftDeleteModel):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def get_location_type_display(self) -> Optional[str]:
+    def get_location_type_display(self) -> str | None:
         return Location.LocationType.choices.get(self.type, self.type)
 
     class Meta:

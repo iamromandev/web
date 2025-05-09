@@ -38,7 +38,7 @@ from .serializers import (
 
 class RegistrationView(InjectAuthServiceMixin, generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
-    queryset: Optional[QuerySet] = None
+    queryset: QuerySet | None = None
     serializer_class = RegistrationSerializer
 
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:

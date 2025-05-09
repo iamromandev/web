@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from .services.auth_service import AuthService
 
@@ -7,7 +7,7 @@ class InjectAuthServiceMixin:
     def __init__(
         self,
         *args: Any,
-        auth_service: Optional[AuthService] = None,
+        auth_service: AuthService | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)

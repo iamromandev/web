@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -87,9 +86,9 @@ class Resp(ABC):
         NOT_EXTENDED = status.HTTP_510_NOT_EXTENDED
         NETWORK_AUTHENTICATION_REQUIRED = status.HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
-    status: Optional[Status] = None
-    code: Optional[Code] = None
-    message: Optional[str] = None
+    status: Status | None = None
+    code: Code | None = None
+    message: str | None = None
 
     @abstractmethod
     def to_dict(self) -> dict:

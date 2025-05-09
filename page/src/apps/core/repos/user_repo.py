@@ -1,4 +1,3 @@
-from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -14,7 +13,7 @@ class UserRepo(BaseRepo[User]):
     @staticmethod
     def get_user_by_username(
         username: str
-    ) -> Optional[User]:
+    ) -> User | None:
         try:
             user: User = User.objects.get(username=username)
             return user

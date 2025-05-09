@@ -1,4 +1,3 @@
-from typing import Optional
 
 from apps.core.clients import BaseApiClient
 
@@ -7,8 +6,8 @@ class ApiClient(BaseApiClient):
     def __init__(
         self,
         base_url: str,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> None:
         super().__init__(
             base_url=base_url,
@@ -20,6 +19,6 @@ class ApiClient(BaseApiClient):
             } if username and password else None,
         )
 
-    def get_self_user(self) -> Optional[dict]:
+    def get_self_user(self) -> dict | None:
         endpoint: str = "api/users/self/"
         return self.get(endpoint)

@@ -1,6 +1,6 @@
 ### ignore ###
 __pycache__
-poetry.lock
+uv.lock
 #**/static/*
 #**/media/*
 **/staticfiles

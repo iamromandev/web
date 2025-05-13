@@ -1,11 +1,23 @@
 from enum import Enum
-from typing import TypeVar
+from typing import Generic, TypeVar
 
-_BE = TypeVar("_BE", bound="_BaseEnum")
+_T = TypeVar("_T")
 
 
-class _BaseEnum(Enum):
-    pass
+class BaseEnum(Enum, Generic[_T]):
+    def __init__(self, value: _T) -> None:
+        self._value_ = value
+
+    @property
+    def value(self) -> _T:
+        return self._value_
+
+    @classmethod
+    def from_value(cls, value: _T) -> "BaseEnum[_T]":
+        for member in cls:
+            if member.value == value:
+                return member
+        raise ValueError(f"{value} is not a valid {cls.__name__}")
     # @classmethod
     # def choices(cls: Type[_BaseEnum]) -> list[tuple[str, T]]:
     #     return [(member.name, member.value) for member in cls]
@@ -40,9 +52,9 @@ class _BaseEnum(Enum):
     #     return name in cls.__members__
 
 
-class StrBaseEnum(str, _BaseEnum):
+class StrBaseEnum(BaseEnum[str]):
     pass
 
 
-class IntBaseEnum(str, _BaseEnum):
+class IntBaseEnum(BaseEnum[int]):
     pass
